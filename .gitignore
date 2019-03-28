@@ -1,0 +1,16 @@
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.app
+*.rc
+
+stdafx.cpp
+stdafx.h
+
+targetver.h
+
+res/
+
+Debug/
+
+Release/
