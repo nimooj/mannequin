@@ -3,6 +3,7 @@
 *.vcxproj.user
 *.aps
 *.rc
+*.zip
 
 stdafx.cpp
 stdafx.h
@@ -16,3 +17,6 @@ res/
 Debug/
 
 Release/
+
+layers/*.zip
+layers/*.obj
