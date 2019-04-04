@@ -55,8 +55,8 @@ BodyProxies::BodyProxies() {
 		}
 	}
 	infile0.close();
-	neck = Layer(layer);
-	bodyLayers.append(layerIdx, neck);
+	neck = new Layer(layer);
+	bodyLayers.append(layerIdx, *neck);
 	fileNum++;
 	layerIdx++;
 	layer.clear();
@@ -74,8 +74,8 @@ BodyProxies::BodyProxies() {
 		}
 	}
 	infile1.close();
-	shoulderTop = Layer(layer);
-	bodyLayers.append(layerIdx, shoulderTop);
+	shoulderTop = new Layer(layer);
+	bodyLayers.append(layerIdx, *shoulderTop);
 	fileNum++;
 	layerIdx++;
 	layer.clear();
@@ -93,8 +93,8 @@ BodyProxies::BodyProxies() {
 		}
 	}
 	infile2.close();
-	shoulderTopMid = Layer(layer);
-	bodyLayers.append(layerIdx, shoulderTopMid);
+	shoulderTopMid = new Layer(layer);
+	bodyLayers.append(layerIdx, *shoulderTopMid);
 	fileNum++;
 	layerIdx++;
 	layer.clear();
@@ -112,8 +112,8 @@ BodyProxies::BodyProxies() {
 		}
 	}
 	infile3.close();
-	shoulderMid = Layer(layer);
-	bodyLayers.append(layerIdx, shoulderMid);
+	shoulderMid = new Layer(layer);
+	bodyLayers.append(layerIdx, *shoulderMid);
 	fileNum++;
 	layerIdx++;
 	layer.clear();
@@ -131,8 +131,8 @@ BodyProxies::BodyProxies() {
 		}
 	}
 	infile4.close();
-	shoulderMidArmpit = Layer(layer);
-	bodyLayers.append(layerIdx, shoulderMidArmpit);
+	shoulderMidArmpit = new Layer(layer);
+	bodyLayers.append(layerIdx, *shoulderMidArmpit);
 	fileNum++;
 	layerIdx++;
 	layer.clear();
@@ -150,8 +150,8 @@ BodyProxies::BodyProxies() {
 		}
 	}
 	infile5.close();
-	armpit = Layer(layer);
-	bodyLayers.append(layerIdx, armpit);
+	armpit = new Layer(layer);
+	bodyLayers.append(layerIdx, *armpit);
 	fileNum++;
 	layerIdx++;
 	layer.clear();
@@ -169,8 +169,8 @@ BodyProxies::BodyProxies() {
 		}
 	}
 	infile6.close();
-	armpitBust = Layer(layer);
-	bodyLayers.append(layerIdx, armpitBust);
+	armpitBust = new Layer(layer);
+	bodyLayers.append(layerIdx, *armpitBust);
 	fileNum++;
 	layerIdx++;
 	layer.clear();
@@ -188,8 +188,8 @@ BodyProxies::BodyProxies() {
 		}
 	}
 	infile7.close();
-	bust = Layer(layer);
-	bodyLayers.append(layerIdx, bust);
+	bust = new Layer(layer);
+	bodyLayers.append(layerIdx, *bust);
 	fileNum++;
 	layerIdx++;
 	layer.clear();
@@ -207,8 +207,8 @@ BodyProxies::BodyProxies() {
 		}
 	}
 	infile8.close();
-	waist = Layer(layer);
-	bodyLayers.append(layerIdx, waist);
+	waist = new Layer(layer);
+	bodyLayers.append(layerIdx, *waist);
 	fileNum++;
 	layerIdx++;
 	layer.clear();
@@ -226,8 +226,8 @@ BodyProxies::BodyProxies() {
 		}
 	}
 	infile9.close();
-	hip = Layer(layer);
-	bodyLayers.append(layerIdx, hip);
+	hip = new Layer(layer);
+	bodyLayers.append(layerIdx, *hip);
 	fileNum++;
 	layerIdx++;
 	layer.clear();
@@ -245,8 +245,8 @@ BodyProxies::BodyProxies() {
 		}
 	}
 	infile10.close();
-	crotch = Layer(layer);
-	bodyLayers.append(layerIdx, crotch);
+	crotch = new Layer(layer);
+	bodyLayers.append(layerIdx, *crotch);
 	fileNum++;
 	layerIdx++;
 	layer.clear();
@@ -264,8 +264,8 @@ BodyProxies::BodyProxies() {
 		}
 	}
 	infile11.close();
-	highThighR = Layer(layer);
-	bodyLayers.append(layerIdx, highThighR);
+	highThighR = new Layer(layer);
+	bodyLayers.append(layerIdx, *highThighR);
 	fileNum++;
 	layerIdx++;
 	layer.clear();
@@ -283,8 +283,8 @@ BodyProxies::BodyProxies() {
 		}
 	}
 	infile12.close();
-	highThighL = Layer(layer);
-	bodyLayers.append(layerIdx, highThighL);
+	highThighL = new Layer(layer);
+	bodyLayers.append(layerIdx, *highThighL);
 	fileNum++;
 	layerIdx++;
 	layer.clear();
@@ -302,8 +302,8 @@ BodyProxies::BodyProxies() {
 		}
 	}
 	infile13.close();
-	kneeR = Layer(layer);
-	bodyLayers.append(layerIdx, kneeR);
+	kneeR = new Layer(layer);
+	bodyLayers.append(layerIdx, *kneeR);
 	fileNum++;
 	layerIdx++;
 	layer.clear();
@@ -321,8 +321,8 @@ BodyProxies::BodyProxies() {
 		}
 	}
 	infile14.close();
-	kneeL = Layer(layer);
-	bodyLayers.append(layerIdx, kneeL);
+	kneeL = new Layer(layer);
+	bodyLayers.append(layerIdx, *kneeL);
 	fileNum++;
 	layerIdx++;
 	layer.clear();
@@ -340,8 +340,8 @@ BodyProxies::BodyProxies() {
 		}
 	}
 	infile15.close();
-	ankleR = Layer(layer);
-	bodyLayers.append(layerIdx, ankleR);
+	ankleR = new Layer(layer);
+	bodyLayers.append(layerIdx, *ankleR);
 	fileNum++;
 	layerIdx++;
 	layer.clear();
@@ -359,8 +359,8 @@ BodyProxies::BodyProxies() {
 		}
 	}
 	infile16.close();
-	ankleL = Layer(layer);
-	bodyLayers.append(layerIdx, ankleL);
+	ankleL = new Layer(layer);
+	bodyLayers.append(layerIdx, *ankleL);
 	fileNum++;
 	layerIdx++;
 	layer.clear();
@@ -378,8 +378,8 @@ BodyProxies::BodyProxies() {
 		}
 	}
 	infile17.close();
-	armHoleR = Layer(layer);
-	bodyLayers.append(layerIdx, armHoleR);
+	armHoleR = new Layer(layer);
+	bodyLayers.append(layerIdx, *armHoleR);
 	fileNum++;
 	layerIdx++;
 	layer.clear();
@@ -397,8 +397,8 @@ BodyProxies::BodyProxies() {
 		}
 	}
 	infile18.close();
-	armpitR = Layer(layer);
-	bodyLayers.append(layerIdx, armpitR);
+	armpitR = new Layer(layer);
+	bodyLayers.append(layerIdx, *armpitR);
 	fileNum++;
 	layerIdx++;
 	layer.clear();
@@ -416,8 +416,8 @@ BodyProxies::BodyProxies() {
 		}
 	}
 	infile19.close();
-	elbowR = Layer(layer);
-	bodyLayers.append(layerIdx, elbowR);
+	elbowR = new Layer(layer);
+	bodyLayers.append(layerIdx, *elbowR);
 	fileNum++;
 	layerIdx++;
 	layer.clear();
@@ -435,8 +435,8 @@ BodyProxies::BodyProxies() {
 		}
 	}
 	infile20.close();
-	wristR = Layer(layer);
-	bodyLayers.append(layerIdx, wristR);
+	wristR = new Layer(layer);
+	bodyLayers.append(layerIdx, *wristR);
 	fileNum++;
 	layerIdx++;
 	layer.clear();
@@ -454,8 +454,8 @@ BodyProxies::BodyProxies() {
 		}
 	}
 	infile21.close();
-	armHoleL = Layer(layer);
-	bodyLayers.append(layerIdx, armHoleL);
+	armHoleL = new Layer(layer);
+	bodyLayers.append(layerIdx, *armHoleL);
 	fileNum++;
 	layerIdx++;
 	layer.clear();
@@ -473,8 +473,8 @@ BodyProxies::BodyProxies() {
 		}
 	}
 	infile22.close();
-	armpitL = Layer(layer);
-	bodyLayers.append(layerIdx, armpitL);
+	armpitL = new Layer(layer);
+	bodyLayers.append(layerIdx, *armpitL);
 	fileNum++;
 	layerIdx++;
 	layer.clear();
@@ -492,8 +492,8 @@ BodyProxies::BodyProxies() {
 		}
 	}
 	infile23.close();
-	elbowL = Layer(layer);
-	bodyLayers.append(layerIdx, elbowL);
+	elbowL = new Layer(layer);
+	bodyLayers.append(layerIdx, *elbowL);
 	fileNum++;
 	layerIdx++;
 	layer.clear();
@@ -511,8 +511,8 @@ BodyProxies::BodyProxies() {
 		}
 	}
 	infile24.close();
-	wristL = Layer(layer);
-	bodyLayers.append(layerIdx, wristL);
+	wristL = new Layer(layer);
+	bodyLayers.append(layerIdx, *wristL);
 	fileNum++;
 	layerIdx++;
 	layer.clear();
@@ -548,22 +548,22 @@ BodyProxies::BodyProxies() {
 		baseNormal.push_back(tmpNormal / numFaces);
 	}
 
-	joints.push_back(Joint(0, neck.getCenter()));
-	joints.push_back(Joint(1, shoulderTop.getCenter())); // shoulder top
-	joints.push_back(Joint(2, armHoleR.getCenter()));
-	joints.push_back(Joint(3, elbowR.getCenter()));
-	joints.push_back(Joint(4, wristR.getCenter()));
-	joints.push_back(Joint(5, waist.getCenter()));
-	joints.push_back(Joint(6, hip.getCenter()));
-	joints.push_back(Joint(7, highThighR.getCenter()));
-	joints.push_back(Joint(8, kneeR.getCenter()));
-	joints.push_back(Joint(9, ankleR.getCenter()));
-	joints.push_back(Joint(10, highThighL.getCenter()));
-	joints.push_back(Joint(11, kneeL.getCenter()));
-	joints.push_back(Joint(12, ankleL.getCenter()));
-	joints.push_back(Joint(13, armHoleL.getCenter()));
-	joints.push_back(Joint(14, elbowL.getCenter()));
-	joints.push_back(Joint(15, wristL.getCenter()));
+	joints.push_back(Joint(0, neck->getCenter()));
+	joints.push_back(Joint(1, shoulderTop->getCenter())); // shoulder top
+	joints.push_back(Joint(2, armHoleR->getCenter()));
+	joints.push_back(Joint(3, elbowR->getCenter()));
+	joints.push_back(Joint(4, wristR->getCenter()));
+	joints.push_back(Joint(5, waist->getCenter()));
+	joints.push_back(Joint(6, hip->getCenter()));
+	joints.push_back(Joint(7, highThighR->getCenter()));
+	joints.push_back(Joint(8, kneeR->getCenter()));
+	joints.push_back(Joint(9, ankleR->getCenter()));
+	joints.push_back(Joint(10, highThighL->getCenter()));
+	joints.push_back(Joint(11, kneeL->getCenter()));
+	joints.push_back(Joint(12, ankleL->getCenter()));
+	joints.push_back(Joint(13, armHoleL->getCenter()));
+	joints.push_back(Joint(14, elbowL->getCenter()));
+	joints.push_back(Joint(15, wristL->getCenter()));
 
 	setPosing();
 }
@@ -700,113 +700,119 @@ void BodyProxies::setPosing() {
 
 	joints[Joint_wristL].setParent(Joint_elbowL);
 
+	// Linking layers
+	vector<Layer> ls;
+
+	ls.push_back(*neck);
+	ls.push_back(*shoulderTop);
+	joints[Joint_neck].setLayers(ls);
+	ls.clear();
+
+	ls.push_back(*shoulderTop);
+	ls.push_back(*shoulderTopMid);
+	ls.push_back(*shoulderMidArmpit);
+	ls.push_back(*armpit);
+	joints[Joint_shoulderTop].setLayers(ls);
+	ls.clear();
+
+	ls.push_back(*armpitBust);
+	ls.push_back(*bust);
+	ls.push_back(*waist);
+	ls.push_back(*hip);
+	joints[Joint_waist].setLayers(ls);
+	ls.clear();
+
+	ls.push_back(*waist);
+	ls.push_back(*hip);
+	ls.push_back(*crotch);
+	joints[Joint_pelvis].setLayers(ls);
+	ls.clear();
+
+	ls.push_back(*highThighR);
+	ls.push_back(*kneeR);
+	ls.push_back(*ankleR);
+	joints[Joint_pelvisR].setLayers(ls);
+	ls.clear();
+
+	//ls.push_back(*kneeR);
+	ls.push_back(*ankleR);
+	joints[Joint_kneeR].setLayers(ls);
+	ls.clear();
+
+	//joints[Joint_ankleR].setLayer(*ankleR);
+
+	ls.push_back(*highThighL);
+	ls.push_back(*kneeL);
+	ls.push_back(*ankleL);
+	joints[Joint_pelvisL].setLayers(ls);
+	ls.clear();
+
+	//ls.push_back(*kneeL);
+	ls.push_back(*ankleL);
+	joints[Joint_kneeL].setLayers(ls);
+	ls.clear();
+
+	//joints[Joint_ankleL].setLayer(*ankleL);
+
+	//ls.push_back(*armHoleR);
+	ls.push_back(*armpitR);
+	ls.push_back(*elbowR);
+	ls.push_back(*wristR);
+	joints[Joint_shoulderR].setLayers(ls);
+	ls.clear();
+
+	//ls.push_back(*elbowR);
+	ls.push_back(*wristR);
+	joints[Joint_elbowR].setLayers(ls);
+	ls.clear();
+
+	//joints[Joint_wristR].setLayer(*wristR);
+
+	//ls.push_back(*armHoleL);
+	ls.push_back(*armpitL);
+	ls.push_back(*elbowL);
+	ls.push_back(*wristL);
+	joints[Joint_shoulderL].setLayers(ls);
+	ls.clear();
+
+	//ls.push_back(*elbowL);
+	ls.push_back(*wristL);
+	joints[Joint_elbowL].setLayers(ls);
+	ls.clear();
+
+	//joints[Joint_wristL].setLayer(*wristL);
+
 	// Form JointTree
 	for (vector<Joint>::iterator jt = joints.begin(); jt != joints.end(); jt++) {
 		jointTree.append(*jt);
 	}
-
-	// Linking layers
-	vector<Layer> ls;
-
-	ls.push_back(neck);
-	ls.push_back(shoulderTop);
-	joints[Joint_neck].setLayers(ls);
-	ls.clear();
-
-	ls.push_back(shoulderTop);
-	ls.push_back(shoulderTopMid);
-	ls.push_back(shoulderMidArmpit);
-	ls.push_back(armpit);
-	joints[Joint_shoulderTop].setLayers(ls);
-	ls.clear();
-
-	ls.push_back(armpitBust);
-	ls.push_back(bust);
-	ls.push_back(waist);
-	ls.push_back(hip);
-	joints[Joint_waist].setLayers(ls);
-	ls.clear();
-
-	ls.push_back(waist);
-	ls.push_back(hip);
-	ls.push_back(crotch);
-	joints[Joint_pelvis].setLayers(ls);
-	ls.clear();
-
-	ls.push_back(highThighR);
-	ls.push_back(kneeR);
-	ls.push_back(ankleR);
-	joints[Joint_pelvisR].setLayers(ls);
-	ls.clear();
-
-	ls.push_back(kneeR);
-	ls.push_back(ankleR);
-	joints[Joint_kneeR].setLayers(ls);
-	ls.clear();
-
-	joints[Joint_ankleR].setLayer(ankleR);
-
-	ls.push_back(highThighL);
-	ls.push_back(kneeL);
-	ls.push_back(ankleL);
-	joints[Joint_pelvisL].setLayers(ls);
-	ls.clear();
-
-	ls.push_back(kneeL);
-	ls.push_back(ankleL);
-	joints[Joint_kneeL].setLayers(ls);
-	ls.clear();
-
-	joints[Joint_ankleL].setLayer(ankleL);
-
-	ls.push_back(armHoleR);
-	ls.push_back(elbowR);
-	ls.push_back(wristR);
-	joints[Joint_shoulderR].setLayers(ls);
-	ls.clear();
-
-	ls.push_back(elbowR);
-	ls.push_back(wristR);
-	joints[Joint_elbowR].setLayers(ls);
-	ls.clear();
-
-	joints[Joint_wristR].setLayer(wristR);
-
-	ls.push_back(armHoleL);
-	ls.push_back(elbowL);
-	ls.push_back(wristL);
-	joints[Joint_shoulderL].setLayers(ls);
-	ls.clear();
-
-	ls.push_back(elbowL);
-	ls.push_back(wristL);
-	joints[Joint_elbowL].setLayers(ls);
-	ls.clear();
-
-	joints[Joint_wristL].setLayer(wristL);
 }
 
-vector<Vertex> BodyProxies::getVerts() {
+vector<Vertex>& BodyProxies::getVerts() {
 	return baseVert;
 }
 
-vector<int> BodyProxies::getIndices() {
+vector<int>& BodyProxies::getIndices() {
 	return baseIndices;
 }
 
-vector<Vertex> BodyProxies::getNormals() {
+vector<Vertex>& BodyProxies::getNormals() {
 	return baseNormal;
 }
 
-LayerTree BodyProxies::getBodyLayers() {
+LayerTree& BodyProxies::getBodyLayers() {
 	return bodyLayers;
 }
 
-JointTree BodyProxies::getJointTree() {
+JointTree& BodyProxies::getJointTree() {
 	return jointTree;
 }
 
-void BodyProxies::updateBodyProxies() {
+vector<Joint>& BodyProxies::getJoints() {
+	return joints;
+}
+
+void BodyProxies::updateBodyProxies(vector<Vertex> v) {
 
 }
 
@@ -817,18 +823,16 @@ void BodyProxies::centering(float x, float y, float z) {
 		baseVert[i].z -= z;
 	}
 }
-void BodyProxies::writeToOBJ(vector<Vertex> vert, vector<int> ind, vector<Vertex> norm) {
+
+void BodyProxies::writeToOBJ(vector<Vertex>* vert, vector<int>* ind, vector<Vertex>* norm) {
 	ofstream outfile("layers/Body.obj");
 
-	for (int i = 0; i < vert.size(); i++)
-		outfile << "v " << vert[i].x << " " << vert[i].y << " " << vert[i].z << endl;
-
-	for (int i = 0; i < norm.size(); i++)
-		outfile << "vn " << norm[i].x << " " << norm[i].y << " " << norm[i].z << endl;
+	for (int i = 0; i < vert->size(); i++)
+		outfile << "v " << (*vert)[i].x << " " << (*vert)[i].y << " " << (*vert)[i].z << endl;
 
 	/*
-	for (int i = 0; i < ind.size(); i += 3)
-		outfile << "f " << ind[i] << " " << ind[i + 1] << " " << ind[i + 2] << endl;
+	for (int i = 0; i < norm->size(); i++)
+		outfile << "vn " << (*norm)[i].x << " " << (*norm)[i].y << " " << (*norm)[i].z << endl;
 	*/
 
 	for (int i = 0; i < baseMesh.size(); i++) {
@@ -836,7 +840,8 @@ void BodyProxies::writeToOBJ(vector<Vertex> vert, vector<int> ind, vector<Vertex
 		int i2 = baseMesh[i].index2;
 		int i3 = baseMesh[i].index3;
 
-		outfile << "f " << i1 << "\/\/" << i1 << " " << i2 << "\/\/" << i2 << " " << i3 << "\/\/" << i3 << endl;
+		//outfile << "f " << i1 << "\/\/" << i1 << " " << i2 << "\/\/" << i2 << " " << i3 << "\/\/" << i3 << endl;
+		outfile << "f " << i1 << " " << i2 << " " << i3 << endl;
 	}
 	outfile.close();
 

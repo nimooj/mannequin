@@ -18,7 +18,7 @@ public :
 
 	}
 	
-	void append(int idx, Layer l) {
+	void append(int idx, Layer& l) {
 		layerIndices.push_back(idx);
 		layerTree.push_back(l);
 		size += 1;

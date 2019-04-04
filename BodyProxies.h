@@ -23,15 +23,16 @@ public:
 	BodyProxies(string);
 	~BodyProxies();
 
-	LayerTree getBodyLayers();
-	JointTree getJointTree();
+	LayerTree& getBodyLayers();
+	JointTree& getJointTree();
+	vector<Joint>& getJoints();
 
-	vector<Vertex> getVerts();
-	vector<int> getIndices();
-	vector<Vertex> getNormals();
+	vector<Vertex>& getVerts();
+	vector<int>& getIndices();
+	vector<Vertex>& getNormals();
 
-	void updateBodyProxies();
-	void writeToOBJ(vector<Vertex>, vector<int>, vector<Vertex>);
+	void updateBodyProxies(vector<Vertex>);
+	void writeToOBJ(vector<Vertex>*, vector<int>*, vector<Vertex>*);
 
 private:
 	vector<Vertex> baseVert;
@@ -45,16 +46,16 @@ private:
 	LayerTree bodyLayers;
 	JointTree jointTree;
 
-	Layer neck;
-	Layer shoulderTop, shoulderTopMid, shoulderMid, shoulderMidArmpit, armpit;
-	Layer armpitBust, bust, waist, hip, crotch;
-	Layer highThighR, highThighL;
-	Layer kneeR, kneeL;
-	Layer ankleR, ankleL;
-	Layer armHoleR, armHoleL;
-	Layer armpitR, armpitL;
-	Layer elbowR, elbowL;
-	Layer wristR, wristL;
+	Layer *neck;
+	Layer *shoulderTop, *shoulderTopMid, *shoulderMid, *shoulderMidArmpit, *armpit;
+	Layer *armpitBust, *bust, *waist, *hip, *crotch;
+	Layer *highThighR, *highThighL;
+	Layer *kneeR, *kneeL;
+	Layer *ankleR, *ankleL;
+	Layer *armHoleR, *armHoleL;
+	Layer *armpitR, *armpitL;
+	Layer *elbowR, *elbowL;
+	Layer *wristR, *wristL;
 
 	vector<Joint> joints;
 

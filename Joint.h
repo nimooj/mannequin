@@ -12,15 +12,19 @@ public:
 	bool hasParent;
 	bool hasChildren;
 
-	Vertex getCoord();
+	Vertex& getCoord();
 
 	void setParent(int);
 	void setChild(int);
 	void setChildren(int, int);
 	void setChildren(int, int, int);
+	int getParent();
+	vector<int>& getChildren();
 
 	void setLayer(Layer&);
 	void setLayers(vector<Layer>&);
+	Layer& getLayer(int);
+	vector<Layer>& getLayers();
 
 private:
 	int id;

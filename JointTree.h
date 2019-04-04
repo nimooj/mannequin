@@ -34,6 +34,10 @@ public:
 		return jointTree;
 	}
 
+	Joint& at(int i) {
+		return jointTree[i];
+	}
+
 	void append(Joint j) {
 		jointTree.push_back(j);
 	}

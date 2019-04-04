@@ -14,7 +14,7 @@ public:
 	
 	void setLayer(vector<Vertex>&);
 	Vertex getCenter();
-	vector<Vertex> getVerts();
+	vector<Vertex>& getVerts();
 	int getSize();
 
 	void moveCenter(float, float, float);

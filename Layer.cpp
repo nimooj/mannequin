@@ -62,7 +62,7 @@ Vertex Layer::getCenter() {
 	return center;
 }
 
-vector<Vertex> Layer::getVerts() {
+vector<Vertex>& Layer::getVerts() {
 	return vertices;
 }
 
