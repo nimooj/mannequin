@@ -1,7 +1,7 @@
 #pragma once
 
 #define Neck 0
-#define ShoulderTOP 1
+#define ShoulderTop 1
 #define ShoulderTopMid 2
 #define ShoulderMid 3
 #define ShoulderRMidArmpit 4
