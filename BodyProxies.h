@@ -27,6 +27,7 @@ public:
 	JointTree& getJointTree();
 	vector<Joint>& getJoints();
 
+	vector<Vertex>& getInitVert();
 	vector<Vertex>& getVerts();
 	vector<int>& getIndices();
 	vector<Vertex>& getNormals();
@@ -35,6 +36,7 @@ public:
 	void writeToOBJ(vector<Vertex>*, vector<int>*, vector<Vertex>*);
 
 private:
+	vector<Vertex> initVert;
 	vector<Vertex> baseVert;
 	vector<Mesh> baseMesh;
 	vector<int> baseIndices;

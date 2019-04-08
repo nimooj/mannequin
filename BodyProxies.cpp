@@ -565,6 +565,8 @@ BodyProxies::BodyProxies() {
 	joints.push_back(Joint(14, elbowL->getCenter()));
 	joints.push_back(Joint(15, wristL->getCenter()));
 
+	initVert.insert(initVert.end(), baseVert.begin(), baseVert.end());
+
 	setPosing();
 }
 
@@ -786,6 +788,10 @@ void BodyProxies::setPosing() {
 	for (vector<Joint>::iterator jt = joints.begin(); jt != joints.end(); jt++) {
 		jointTree.append(*jt);
 	}
+}
+
+vector<Vertex>& BodyProxies::getInitVert() {
+	return initVert;
 }
 
 vector<Vertex>& BodyProxies::getVerts() {

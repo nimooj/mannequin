@@ -25,11 +25,13 @@ void Pose::rotate(int jointId, int axis, float degree) {
 	vector<int>* jointChildrenIndices;
 	vector<Layer>* layerChildren;
 
+	vector<Vertex>* initV = &body->getInitVert();
 	vector<Vertex>* verts = &body->getVerts();
 	Vertex* jointCoord = &js->getCoord();
 
 	// Rotate from init pos of 90 degrees
-	float radian = -abs(90 - degree) * M_PI / 180;
+	//float radian = -abs(90 - degree) * M_PI / 180;
+	float radian = degree * M_PI / 180;
 
 	switch (axis) {
 	case axisX:
@@ -69,15 +71,16 @@ void Pose::rotate(int jointId, int axis, float degree) {
 
 		for (vector<Layer>::iterator lc = layerChildren->begin(); lc != layerChildren->end(); lc++) {
 			vector<Vertex>* layerVerts = &lc->getVerts();
+			Vertex jt = js->getCoord();
+			Vertex center = &lc->getCenter();
+			float radius = center.distance(jt);
 
 			for (int i = 0; i < layerVerts->size(); i++) {
-				Vertex jt = js->getCoord();
-
 				(*verts)[(*layerVerts)[i].idx - 1].x -= jt.x;
 				(*verts)[(*layerVerts)[i].idx - 1].y -= jt.y;
 
-				float x = (*verts)[(*layerVerts)[i].idx - 1].x;
-				float y = (*verts)[(*layerVerts)[i].idx - 1].y;
+				float x = (*initV)[(*layerVerts)[i].idx - 1].x - jt.x;
+				float y = (*initV)[(*layerVerts)[i].idx - 1].y - jt.y;
 
 				(*verts)[(*layerVerts)[i].idx - 1].x = cos(radian) * x - sin(radian) * y;
 				(*verts)[(*layerVerts)[i].idx - 1].y = sin(radian) * x + cos(radian) * y;
