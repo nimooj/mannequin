@@ -17,7 +17,29 @@ Pose::~Pose() {
 }
 
 void Pose::translate(int jointId, float x, float y, float z) {
+	Joint *js = &(joints->at(jointId));
+	Vertex *jv = &js->getCoord();
 
+	vector<Layer>* layerChildren = &(js->getLayers());
+
+	vector<Vertex>* initV = &body->getInitVert();
+	vector<Vertex>* verts = &body->getVerts();
+
+	Vertex initJ = body->getJoints().at(jointId).getCoord();
+
+	jv->x = initJ.x - x;
+	jv->y = initJ.y - y;
+	jv->z = initJ.z - z;
+
+	for ( vector<Layer>::iterator lc = layerChildren->begin(); lc != layerChildren->end(); lc++) {
+		vector<Vertex>* layerVerts = &lc->getVerts();
+
+		for (int i = 0; i < layerVerts->size(); i++) {
+			(*verts)[(*layerVerts)[i].idx - 1].x = (*initV)[(*layerVerts)[i].idx - 1].x - x;
+			(*verts)[(*layerVerts)[i].idx - 1].y = (*initV)[(*layerVerts)[i].idx - 1].y - y;
+			(*verts)[(*layerVerts)[i].idx - 1].z = (*initV)[(*layerVerts)[i].idx - 1].z - z;
+		}
+	}
 }
 
 void Pose::rotate(int jointId, int axis, float degree) {
@@ -67,8 +89,6 @@ void Pose::rotate(int jointId, int axis, float degree) {
 		for (vector<Layer>::iterator lc = layerChildren->begin(); lc != layerChildren->end(); lc++) {
 			vector<Vertex>* layerVerts = &lc->getVerts();
 			Vertex jt = js->getCoord();
-			Vertex center = &lc->getCenter();
-			float radius = center.distance(jt);
 
 			for (int i = 0; i < layerVerts->size(); i++) {
 				(*verts)[(*layerVerts)[i].idx - 1].x -= jt.x;
@@ -82,7 +102,6 @@ void Pose::rotate(int jointId, int axis, float degree) {
 
 				(*verts)[(*layerVerts)[i].idx - 1].x += jt.x;
 				(*verts)[(*layerVerts)[i].idx - 1].y += jt.y;
-
 			}
 		}
 

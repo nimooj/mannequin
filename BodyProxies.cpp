@@ -555,15 +555,17 @@ BodyProxies::BodyProxies() {
 	joints.push_back(Joint(4, wristR->getCenter()));
 	joints.push_back(Joint(5, waist->getCenter()));
 	joints.push_back(Joint(6, hip->getCenter()));
-	joints.push_back(Joint(7, highThighR->getCenter()));
-	joints.push_back(Joint(8, kneeR->getCenter()));
-	joints.push_back(Joint(9, ankleR->getCenter()));
-	joints.push_back(Joint(10, highThighL->getCenter()));
-	joints.push_back(Joint(11, kneeL->getCenter()));
-	joints.push_back(Joint(12, ankleL->getCenter()));
-	joints.push_back(Joint(13, armHoleL->getCenter()));
-	joints.push_back(Joint(14, elbowL->getCenter()));
-	joints.push_back(Joint(15, wristL->getCenter()));
+	joints.push_back(Joint(7, Vertex(highThighR->getCenter().x, crotch->getCenter().y, highThighR->getCenter().z)));
+	joints.push_back(Joint(8, highThighR->getCenter()));
+	joints.push_back(Joint(9, kneeR->getCenter()));
+	joints.push_back(Joint(10, ankleR->getCenter()));
+	joints.push_back(Joint(11, Vertex(highThighL->getCenter().x, crotch->getCenter().y, highThighL->getCenter().z)));
+	joints.push_back(Joint(12, highThighL->getCenter()));
+	joints.push_back(Joint(13, kneeL->getCenter()));
+	joints.push_back(Joint(14, ankleL->getCenter()));
+	joints.push_back(Joint(15, armHoleL->getCenter()));
+	joints.push_back(Joint(16, elbowL->getCenter()));
+	joints.push_back(Joint(17, wristL->getCenter()));
 
 	initVert.insert(initVert.end(), baseVert.begin(), baseVert.end());
 
@@ -665,8 +667,7 @@ void BodyProxies::setPosing() {
 	joints[Joint_shoulderTop].setChildren(Joint_shoulderR, Joint_waist, Joint_shoulderL);
 
 	joints[Joint_shoulderR].setParent(Joint_shoulderTop);
-	joints[Joint_shoulderR].setChild(Joint_elbowR);
-	joints[Joint_shoulderR].setChild(Joint_wristR);
+	joints[Joint_shoulderR].setChildren(Joint_elbowR, Joint_wristR);
 
 	joints[Joint_elbowR].setParent(Joint_shoulderR);
 	joints[Joint_elbowR].setChild(Joint_wristR);
@@ -680,17 +681,21 @@ void BodyProxies::setPosing() {
 	joints[Joint_pelvis].setChildren(Joint_pelvisR, Joint_pelvisL);
 
 	joints[Joint_pelvisR].setParent(Joint_pelvis);
-	joints[Joint_pelvisR].setChild(Joint_kneeR);
-	joints[Joint_pelvisR].setChild(Joint_ankleR);
+	joints[Joint_pelvisR].setChildren(Joint_highLegR, Joint_kneeR, Joint_ankleR);
 
-	joints[Joint_kneeR].setParent(Joint_pelvisR);
+	joints[Joint_highLegR].setParent(Joint_pelvisR);
+	joints[Joint_highLegR].setChildren(Joint_kneeR, Joint_ankleR);
+
+	joints[Joint_kneeR].setParent(Joint_highLegR);
 	joints[Joint_kneeR].setChild(Joint_ankleR);
 
 	joints[Joint_ankleR].setParent(Joint_kneeR);
 
 	joints[Joint_pelvisL].setParent(Joint_pelvis);
-	joints[Joint_pelvisL].setChild(Joint_kneeL);
-	joints[Joint_pelvisL].setChild(Joint_ankleL);
+	joints[Joint_pelvisL].setChildren(Joint_highLegL, Joint_kneeL, Joint_ankleL);
+
+	joints[Joint_highLegL].setParent(Joint_pelvisL);
+	joints[Joint_highLegL].setChildren(Joint_kneeL, Joint_ankleL);
 
 	joints[Joint_kneeL].setParent(Joint_pelvisL);
 	joints[Joint_kneeL].setChild(Joint_ankleL);
@@ -698,8 +703,7 @@ void BodyProxies::setPosing() {
 	joints[Joint_ankleL].setParent(Joint_kneeL);
 
 	joints[Joint_shoulderL].setParent(Joint_shoulderTop);
-	joints[Joint_shoulderL].setChild(Joint_elbowL);
-	joints[Joint_shoulderL].setChild(Joint_wristL);
+	joints[Joint_shoulderL].setChildren(Joint_elbowL, Joint_wristL);
 
 	joints[Joint_elbowL].setParent(Joint_shoulderL);
 	joints[Joint_elbowL].setChild(Joint_wristL);
@@ -841,17 +845,17 @@ void BodyProxies::writeToOBJ(vector<Vertex>* vert, vector<int>* ind, vector<Vert
 		outfile << "v " << (*vert)[i].x << " " << (*vert)[i].y << " " << (*vert)[i].z << endl;
 
 	/*
+	*/
 	for (int i = 0; i < norm->size(); i++)
 		outfile << "vn " << (*norm)[i].x << " " << (*norm)[i].y << " " << (*norm)[i].z << endl;
-	*/
 
 	for (int i = 0; i < baseMesh.size(); i++) {
 		int i1 = baseMesh[i].index1;
 		int i2 = baseMesh[i].index2;
 		int i3 = baseMesh[i].index3;
 
-		//outfile << "f " << i1 << "\/\/" << i1 << " " << i2 << "\/\/" << i2 << " " << i3 << "\/\/" << i3 << endl;
-		outfile << "f " << i1 << " " << i2 << " " << i3 << endl;
+		outfile << "f " << i1 << "\/\/" << i1 << " " << i2 << "\/\/" << i2 << " " << i3 << "\/\/" << i3 << endl;
+		//outfile << "f " << i1 << " " << i2 << " " << i3 << endl;
 	}
 	outfile.close();
 
