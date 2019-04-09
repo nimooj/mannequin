@@ -25,6 +25,7 @@ public:
 
 	LayerTree& getBodyLayers();
 	JointTree& getJointTree();
+
 	vector<Joint>& getJoints();
 
 	vector<Vertex>& getInitVert();

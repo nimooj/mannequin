@@ -666,6 +666,7 @@ void BodyProxies::setPosing() {
 
 	joints[Joint_shoulderR].setParent(Joint_shoulderTop);
 	joints[Joint_shoulderR].setChild(Joint_elbowR);
+	joints[Joint_shoulderR].setChild(Joint_wristR);
 
 	joints[Joint_elbowR].setParent(Joint_shoulderR);
 	joints[Joint_elbowR].setChild(Joint_wristR);
@@ -680,6 +681,7 @@ void BodyProxies::setPosing() {
 
 	joints[Joint_pelvisR].setParent(Joint_pelvis);
 	joints[Joint_pelvisR].setChild(Joint_kneeR);
+	joints[Joint_pelvisR].setChild(Joint_ankleR);
 
 	joints[Joint_kneeR].setParent(Joint_pelvisR);
 	joints[Joint_kneeR].setChild(Joint_ankleR);
@@ -688,6 +690,7 @@ void BodyProxies::setPosing() {
 
 	joints[Joint_pelvisL].setParent(Joint_pelvis);
 	joints[Joint_pelvisL].setChild(Joint_kneeL);
+	joints[Joint_pelvisL].setChild(Joint_ankleL);
 
 	joints[Joint_kneeL].setParent(Joint_pelvisL);
 	joints[Joint_kneeL].setChild(Joint_ankleL);
@@ -696,6 +699,7 @@ void BodyProxies::setPosing() {
 
 	joints[Joint_shoulderL].setParent(Joint_shoulderTop);
 	joints[Joint_shoulderL].setChild(Joint_elbowL);
+	joints[Joint_shoulderL].setChild(Joint_wristL);
 
 	joints[Joint_elbowL].setParent(Joint_shoulderL);
 	joints[Joint_elbowL].setChild(Joint_wristL);
