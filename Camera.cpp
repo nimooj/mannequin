@@ -14,7 +14,7 @@ Camera::Camera() {
 	cameraUp = cross(cameraDirection, cameraRight);
 
 	//view = lookAt(cameraPosition, -cameraDirection, cameraUp);
-	step = 0.3;
+	step = 1;
 }
 
 Camera::~Camera() {

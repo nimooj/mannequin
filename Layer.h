@@ -25,5 +25,4 @@ private:
 
 	Vertex center;
 	vector<Vertex> vertices;
-
 };

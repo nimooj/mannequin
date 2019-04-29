@@ -12,6 +12,7 @@ public:
 	bool hasParent;
 	bool hasChildren;
 
+	void setCoord(Vertex&);
 	Vertex& getCoord();
 
 	void setParent(int);

@@ -21,6 +21,10 @@ Joint::~Joint() {
 
 }
 
+void Joint::setCoord(Vertex& v) {
+	coord = v;
+}
+
 Vertex& Joint::getCoord() {
 	return coord;
 }

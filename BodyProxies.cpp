@@ -517,6 +517,180 @@ BodyProxies::BodyProxies() {
 	layerIdx++;
 	layer.clear();
 
+	/* Import sub-layers */
+	// 25
+	ifstream infile25("layers/sublayers/26.txt");
+	if (infile25.is_open()) {
+		while (getline(infile25, s)) {
+			istringstream iss(s);
+			Vertex v;
+			iss >> v.x >> v.y >> v.z;
+			v.set();
+
+			baseVert.push_back(Vertex(idx, v));
+			layer.push_back(Vertex(idx, v));
+			idx++;
+		}
+	}
+	infile25.close();
+	layerIdx++;
+	layer.clear();
+	// 26
+	ifstream infile26("layers/sublayers/27.txt");
+	if (infile26.is_open()) {
+		while (getline(infile26, s)) {
+			istringstream iss(s);
+			Vertex v;
+			iss >> v.x >> v.y >> v.z;
+			v.set();
+
+			baseVert.push_back(Vertex(idx, v));
+			layer.push_back(Vertex(idx, v));
+			idx++;
+		}
+	}
+	infile26.close();
+	layerIdx++;
+	layer.clear();
+	// 27
+	ifstream infile27("layers/sublayers/28.txt");
+	if (infile27.is_open()) {
+		while (getline(infile27, s)) {
+			istringstream iss(s);
+			Vertex v;
+			iss >> v.x >> v.y >> v.z;
+			v.set();
+
+			baseVert.push_back(Vertex(idx, v));
+			layer.push_back(Vertex(idx, v));
+			idx++;
+		}
+	}
+	infile27.close();
+	layerIdx++;
+	layer.clear();
+	// 28
+	ifstream infile28("layers/sublayers/29.txt");
+	if (infile28.is_open()) {
+		while (getline(infile28, s)) {
+			istringstream iss(s);
+			Vertex v;
+			iss >> v.x >> v.y >> v.z;
+			v.set();
+
+			baseVert.push_back(Vertex(idx, v));
+			layer.push_back(Vertex(idx, v));
+			idx++;
+		}
+	}
+	infile28.close();
+	layerIdx++;
+	layer.clear();
+	/*** Waist - Hip ***/
+	// 29
+	ifstream infile29("layers/sublayers/30.txt");
+	if (infile29.is_open()) {
+		while (getline(infile29, s)) {
+			istringstream iss(s);
+			Vertex v;
+			iss >> v.x >> v.y >> v.z;
+			v.set();
+
+			baseVert.push_back(Vertex(idx, v));
+			layer.push_back(Vertex(idx, v));
+			idx++;
+		}
+	}
+	infile29.close();
+	layerIdx++;
+	layer.clear();
+	// 30
+	ifstream infile30("layers/sublayers/31.txt");
+	if (infile30.is_open()) {
+		while (getline(infile30, s)) {
+			istringstream iss(s);
+			Vertex v;
+			iss >> v.x >> v.y >> v.z;
+			v.set();
+
+			baseVert.push_back(Vertex(idx, v));
+			layer.push_back(Vertex(idx, v));
+			idx++;
+		}
+	}
+	infile30.close();
+	layerIdx++;
+	layer.clear();
+	// 31
+	ifstream infile31("layers/sublayers/32.txt");
+	if (infile31.is_open()) {
+		while (getline(infile31, s)) {
+			istringstream iss(s);
+			Vertex v;
+			iss >> v.x >> v.y >> v.z;
+			v.set();
+
+			baseVert.push_back(Vertex(idx, v));
+			layer.push_back(Vertex(idx, v));
+			idx++;
+		}
+	}
+	infile31.close();
+	layerIdx++;
+	layer.clear();
+	// 32
+	ifstream infile32("layers/sublayers/33.txt");
+	if (infile32.is_open()) {
+		while (getline(infile32, s)) {
+			istringstream iss(s);
+			Vertex v;
+			iss >> v.x >> v.y >> v.z;
+			v.set();
+
+			baseVert.push_back(Vertex(idx, v));
+			layer.push_back(Vertex(idx, v));
+			idx++;
+		}
+	}
+	infile32.close();
+	layerIdx++;
+	layer.clear();
+	// 33
+	ifstream infile33("layers/sublayers/34.txt");
+	if (infile33.is_open()) {
+		while (getline(infile33, s)) {
+			istringstream iss(s);
+			Vertex v;
+			iss >> v.x >> v.y >> v.z;
+			v.set();
+
+			baseVert.push_back(Vertex(idx, v));
+			layer.push_back(Vertex(idx, v));
+			idx++;
+		}
+	}
+	infile33.close();
+	layerIdx++;
+	layer.clear();
+	// 35
+	ifstream infile34("layers/sublayers/35.txt");
+	if (infile34.is_open()) {
+		while (getline(infile34, s)) {
+			istringstream iss(s);
+			Vertex v;
+			iss >> v.x >> v.y >> v.z;
+			v.set();
+
+			baseVert.push_back(Vertex(idx, v));
+			layer.push_back(Vertex(idx, v));
+			idx++;
+		}
+	}
+	infile34.close();
+	layerIdx++;
+	layer.clear();
+
+	////////////////////////////////////////////////////////////////////
 	ifstream meshFile("layers/meshProxies");
 	if (meshFile.is_open()) {
 		while (getline(meshFile, s)) {
@@ -533,7 +707,9 @@ BodyProxies::BodyProxies() {
 		}
 	}
 	meshFile.close();
+	////////////////////////////////////////////////////////////////////
 
+	// Calculate normals
 	for (int i = 0; i < baseVert.size(); i++) {
 		int numFaces = 0;
 		Vertex tmpNormal = Vertex();
@@ -567,8 +743,16 @@ BodyProxies::BodyProxies() {
 	joints.push_back(Joint(16, elbowL->getCenter()));
 	joints.push_back(Joint(17, wristL->getCenter()));
 
-	initVert.insert(initVert.end(), baseVert.begin(), baseVert.end());
+	initVert.insert(initVert.begin(), baseVert.begin(), baseVert.end());
 
+	/*
+	vertices.insert(vertices.end(), baseVert.begin(), baseVert.end());
+	normals.insert(normals.end(), baseNormal.begin(), baseNormal.end());
+	indices.insert(indices.end(), baseIndices.begin(), baseIndices.end());
+	meshes.insert(meshes.end(), baseMesh.begin(), baseMesh.end());
+	*/
+
+	//subdivision(Bust, Waist, 4);
 	setPosing();
 }
 
@@ -586,33 +770,33 @@ BodyProxies::BodyProxies(string dir) {
 	while (getline(basics, line)) {
 		istringstream iss(line);
 		string f;
-		float x, w, y, z;
+		float x = -1, y = -1, z = -1, w = -1;
+
 		iss >> f >> x >> y >> z >> w;
+
+		if (minX > x) {
+			minX = x;
+		}
+		if (x > maxX) {
+			maxX = x;
+		}
+		if (minY > y) {
+			minY = y;
+		}
+		if (y > maxY) {
+			maxY = y;
+		}
+		if (minZ > z) {
+			minZ = z;
+		}
+		if (z > maxZ) {
+			maxZ = z;
+		}
+
 		if (f == "v") {
-			/*
-			baseVert.push_back(Vertex(idx, x*10, y*10, z*10));
-			idx++;
-			if (minX > x * 10) {
-				minX = x * 10;
-			}
-			if (x * 10 > maxX) {
-				maxX = x * 10;
-			}
-			if (minY > y * 10) {
-				minY = y * 10;
-			}
-			if (y * 10 > maxY) {
-				maxY = y * 10;
-			}
-			if (minZ > z * 10) {
-				minZ = z * 10;
-			}
-			if (z * 10 > maxZ) {
-				maxZ = z * 10;
-			}
-			*/
 			baseVert.push_back(Vertex(idx, x, y, z));
 			idx++;
+
 			if (minX > x ) {
 				minX = x;
 			}
@@ -632,41 +816,105 @@ BodyProxies::BodyProxies(string dir) {
 				maxZ = z;
 			}
 		}
+		else if (f == "vn") {
+			baseNormal.push_back(Vertex(x, y, z));
+		}
 		else if (f == "f") {
-			baseMesh.push_back(Mesh(baseVert[x-1], baseVert[y-1], baseVert[z-1], baseVert[w-1]));
+			string newLine = line.substr(2, line.length());
+			string delimiter1 = " ";
+			string delimiter2 = "//";
+			size_t pos = 0;
+			string token;
+			vector<string> ss;
+			vector<string> index;
+
+			while( (pos = newLine.find(delimiter1)) != string::npos ) {
+				token = newLine.substr(0, pos);
+				ss.push_back(token);
+				newLine.erase(0, pos + delimiter1.length());
+			}
+			ss.push_back(newLine);
+
+			while (!ss.empty()) {
+				string sn = ss.back();
+				while ((pos = sn.find(delimiter2)) != string::npos) {
+					token = sn.substr(0, pos);
+					index.push_back(token);
+					sn.erase(0, pos + delimiter2.length());
+				}
+				ss.pop_back();
+			}
+			for (int i = index.size() - 1; i >= 0; i--) {
+				baseIndices.push_back(atoi(index[i].c_str()));
+			}
+
 		}
 	}
 
-	sort(baseMesh.begin(), baseMesh.end(), [](Mesh &a, Mesh &b) { return a.center.y > b.center.y; });
 	centering((minX + maxX)/2, (minY + maxY)/2, (minZ + maxZ)/2);
-
-	/* Write newly alinged obj file
-	*/
-	ofstream outfile;
-	outfile.open("newLowpoly.obj");
-	outfile << "# Newly aligned obj by mjKang" << endl << endl;
-
-	for (int i = 0; i < baseVert.size(); i++) {
-		outfile << "v " << baseVert[i].x << " " << baseVert[i].y << " " << baseVert[i].z << endl;
-	}
-	for (int i = 0; i < baseMesh.size(); i++) {
-		outfile << "f " << baseMesh[i].index1 << " " << baseMesh[i].index2 << " " << baseMesh[i].index3 << " " << baseMesh[i].index4 << endl;
-	}
-	outfile.close();
 }
 
 BodyProxies::~BodyProxies() {
 
 }
 
+void BodyProxies::subdivision(int layer1, int layer2, int num) {
+	vector<Layer> lt = bodyLayers.getAllLayers();
+	vector<Vertex> l1 = lt[layer1].getVerts();
+	vector<Vertex> l2 = lt[layer2].getVerts();
+
+	int layerSize = l1.size();
+	float interval = (l1[0].y - l2[0].y) / (float) num;
+
+	// Assign new vertex index from the last
+	int vIdx = l1.size();
+
+	int count = 1;
+	for (float y = l1[0].y - interval; y > l2[0].y; y -= interval) {
+		vector<Vertex> newLayerVerts;
+		vector<Mesh> newMeshes;
+
+		for (int i = 0; i < layerSize; i++) {
+			float x = (l1[i].x * (num - count) + l2[i].x * count)/count;
+			float z = (l1[i].z * (num - count) + l2[i].z * count)/count;
+			Vertex newV = Vertex(vIdx, x, y, z);
+			newLayerVerts.push_back(newV);
+
+			if (i == layerSize - 1) {
+			}
+			else {
+				//if (x < 0)
+					//newMeshes.push_back(Mesh(vIdx - layerSize, vIdx - (layerSize - 1), vIdx, , , newV));
+
+
+			}
+
+			vIdx++;
+		}
+
+		Layer newLayer = Layer(newLayerVerts);
+		bodyLayers.insert(layer1 + (count - 1), newLayer);
+
+		count++;
+	}
+
+	/* Update :
+	*			 vertices
+	*			 normals ... meshes
+	*			 indices
+	*/
+	//update();
+
+}
+
 void BodyProxies::setPosing() {
 	// Parent-Child definition
-	joints[Joint_neck].setChild(Joint_shoulderTop);
+	joints[Joint_neck].setChild(Joint_shoulderMid);
 
-	joints[Joint_shoulderTop].setParent(Joint_neck);
-	joints[Joint_shoulderTop].setChildren(Joint_shoulderR, Joint_waist, Joint_shoulderL);
+	joints[Joint_shoulderMid].setParent(Joint_neck);
+	joints[Joint_shoulderMid].setChildren(Joint_shoulderR, Joint_waist, Joint_shoulderL);
 
-	joints[Joint_shoulderR].setParent(Joint_shoulderTop);
+	joints[Joint_shoulderR].setParent(Joint_shoulderMid);
 	joints[Joint_shoulderR].setChildren(Joint_elbowR, Joint_wristR);
 
 	joints[Joint_elbowR].setParent(Joint_shoulderR);
@@ -674,13 +922,13 @@ void BodyProxies::setPosing() {
 
 	joints[Joint_wristR].setParent(Joint_elbowR);
 
-	joints[Joint_waist].setParent(Joint_shoulderTop);
-	joints[Joint_waist].setChild(Joint_pelvis);
+	joints[Joint_waist].setParent(Joint_shoulderMid);
+	joints[Joint_waist].setChild(Joint_pelvisMid);
 
-	joints[Joint_pelvis].setParent(Joint_waist);
-	joints[Joint_pelvis].setChildren(Joint_pelvisR, Joint_pelvisL);
+	joints[Joint_pelvisMid].setParent(Joint_waist);
+	joints[Joint_pelvisMid].setChildren(Joint_pelvisR, Joint_pelvisL);
 
-	joints[Joint_pelvisR].setParent(Joint_pelvis);
+	joints[Joint_pelvisR].setParent(Joint_pelvisMid);
 	joints[Joint_pelvisR].setChildren(Joint_highLegR, Joint_kneeR, Joint_ankleR);
 
 	joints[Joint_highLegR].setParent(Joint_pelvisR);
@@ -691,7 +939,7 @@ void BodyProxies::setPosing() {
 
 	joints[Joint_ankleR].setParent(Joint_kneeR);
 
-	joints[Joint_pelvisL].setParent(Joint_pelvis);
+	joints[Joint_pelvisL].setParent(Joint_pelvisMid);
 	joints[Joint_pelvisL].setChildren(Joint_highLegL, Joint_kneeL, Joint_ankleL);
 
 	joints[Joint_highLegL].setParent(Joint_pelvisL);
@@ -702,7 +950,7 @@ void BodyProxies::setPosing() {
 
 	joints[Joint_ankleL].setParent(Joint_kneeL);
 
-	joints[Joint_shoulderL].setParent(Joint_shoulderTop);
+	joints[Joint_shoulderL].setParent(Joint_shoulderMid);
 	joints[Joint_shoulderL].setChildren(Joint_elbowL, Joint_wristL);
 
 	joints[Joint_elbowL].setParent(Joint_shoulderL);
@@ -722,7 +970,7 @@ void BodyProxies::setPosing() {
 	ls.push_back(*shoulderTopMid);
 	ls.push_back(*shoulderMidArmpit);
 	ls.push_back(*armpit);
-	joints[Joint_shoulderTop].setLayers(ls);
+	joints[Joint_shoulderMid].setLayers(ls);
 	ls.clear();
 
 	ls.push_back(*armpitBust);
@@ -735,7 +983,7 @@ void BodyProxies::setPosing() {
 	ls.push_back(*waist);
 	ls.push_back(*hip);
 	ls.push_back(*crotch);
-	joints[Joint_pelvis].setLayers(ls);
+	joints[Joint_pelvisMid].setLayers(ls);
 	ls.clear();
 
 	ls.push_back(*highThighR);
@@ -826,8 +1074,13 @@ vector<Joint>& BodyProxies::getJoints() {
 	return joints;
 }
 
-void BodyProxies::updateBodyProxies(vector<Vertex> v) {
+void BodyProxies::update() {
 
+}
+
+void BodyProxies::updateBodyProxies(vector<Vertex> v) {
+	// update layer tree with baseVert
+	// update joint tree
 }
 
 void BodyProxies::centering(float x, float y, float z) {
@@ -838,26 +1091,114 @@ void BodyProxies::centering(float x, float y, float z) {
 	}
 }
 
+void BodyProxies::attachHead() {
+	ifstream headFile("layers/Head.obj");
+	string s;
+
+	vector<Vertex> normals;
+
+	int vIdx = 1;
+	if (headFile.is_open()) {
+		while (getline(headFile, s)) {
+			istringstream iss(s);
+			string type;
+			float i1 = -1, i2 = -1, i3 = -1, i4 = -1;
+			iss >> type >> i1 >> i2 >> i3 >> i4;
+
+			if (type == "v") {
+				head.push_back(Vertex(vIdx, i1/10, i2/10 - 8, i3/10));
+				vIdx++;
+			}
+			else if (type == "vn") {
+				normals.push_back(Vertex(i1, i2, i3));
+			}
+			else if (type == "f") {
+				if (i4 != -1) {
+					vector<int> i;
+					i.push_back(i1);
+					i.push_back(i2);
+					i.push_back(i3);
+					i.push_back(i4);
+
+					headIndices.push_back(i);
+				}
+				else {
+					vector<int> i;
+					i.push_back(i1);
+					i.push_back(i2);
+					i.push_back(i3);
+
+					headIndices.push_back(i);
+				}
+
+			}
+		}
+	}
+	headFile.close();
+
+	vector<int> originIdx;
+	int baseVInitSize = baseVert.size();
+
+	int idx = baseVert.size() + 1;
+	for (int i = 0; i < head.size(); i++) {
+		originIdx.push_back(head[i].idx);
+		baseVert.push_back(Vertex(idx, head[i]));
+		idx++;
+	}
+
+	for (int i = 0; i < headIndices.size(); i++) {
+		for (int j = 0; j < headIndices[i].size(); j++) {
+			baseIndices.push_back(headIndices[i][j] + baseVInitSize);
+		}
+		int i1 = headIndices[i][0] + baseVInitSize;
+		int i2 = headIndices[i][1] + baseVInitSize;
+		int i3 = headIndices[i][2] + baseVInitSize;
+		baseMesh.push_back(Mesh(i1, i2, i3, baseVert[i1 - 1], baseVert[i2 - 1], baseVert[i3 - 1]));
+	}
+
+	for (int i = 0; i < normals.size(); i++) {
+		baseNormal.push_back(normals[i]);
+	}
+
+
+	/*
+	for (int i = baseVInitSize; i < baseVert.size(); i++) {
+		int numFaces = 0;
+		Vertex tmpNormal = Vertex();
+
+		for (int j = 0; j < baseMesh.size(); j++) {
+			if (baseMesh[j].has(baseVert[i].idx)) {
+				tmpNormal = tmpNormal + baseMesh[j].normal;
+				numFaces++;
+			}
+		}
+		baseNormal.push_back(tmpNormal / numFaces);
+	}
+	*/
+}
+
 void BodyProxies::writeToOBJ(vector<Vertex>* vert, vector<int>* ind, vector<Vertex>* norm) {
 	ofstream outfile("layers/Body.obj");
 
 	for (int i = 0; i < vert->size(); i++)
 		outfile << "v " << (*vert)[i].x << " " << (*vert)[i].y << " " << (*vert)[i].z << endl;
 
-	/*
-	*/
-	for (int i = 0; i < norm->size(); i++)
-		outfile << "vn " << (*norm)[i].x << " " << (*norm)[i].y << " " << (*norm)[i].z << endl;
-
-	for (int i = 0; i < baseMesh.size(); i++) {
-		int i1 = baseMesh[i].index1;
-		int i2 = baseMesh[i].index2;
-		int i3 = baseMesh[i].index3;
-
-		outfile << "f " << i1 << "\/\/" << i1 << " " << i2 << "\/\/" << i2 << " " << i3 << "\/\/" << i3 << endl;
-		//outfile << "f " << i1 << " " << i2 << " " << i3 << endl;
+	for (int i = 0; i < ind->size(); i+=3) {
+		int i1 = (*ind)[i];
+		int i2 = (*ind)[i+1];
+		int i3 = (*ind)[i+2];
+		//outfile << "f " << i1 << "\/\/" << i1 << " " << i2 << "\/\/" << i2 << " " << i3 << "\/\/" << i3 << endl;
+		outfile << "f " << i1 << " " << i2 << " " << i3 << endl;
 	}
 	outfile.close();
+
+	ofstream joutfile("layers/joints.txt");
+	for (int i = 0; i < joints.size(); i++) {
+		Vertex v = joints[i].getCoord();
+		joutfile << v.x << " " << v.y << " " << v.z << endl;
+	}
+	joutfile.close();
+
 
 	//AfxMessageBox(CString("OBJ exported.\n"));
 	cout << "OBJ exported.\n" << endl;

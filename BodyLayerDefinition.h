@@ -9,7 +9,7 @@
 #define ArmpitBust 6
 #define Bust 7
 #define Waist 8
-#define Hhip 9
+#define Hip 9
 #define Crotch 10
 #define HighThighR 11
 #define HighThighL 12

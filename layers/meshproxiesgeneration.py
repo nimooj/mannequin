@@ -1,6 +1,10 @@
 import sys
 
 sizes = [36, 36, 28, 28, 28, 24, 36, 36, 36, 36, 36, 18, 18, 18, 18, 18, 18, 14, 14, 14, 14, 14, 14, 14, 14]
+bust_waist_sizes = [36, 36, 36, 36]
+waist_hip_sizes = [36, 36, 36, 36, 36, 36]
+
+sizes = sizes + bust_waist_sizes + waist_hip_sizes
 accumSizes = [0]
 
 for i in range(0, len(sizes)) :
