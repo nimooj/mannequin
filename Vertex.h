@@ -3,6 +3,9 @@
 #include <math.h>
 #include <vector>
 #include <iostream>
+
+//#include "Bone.h"
+
 using namespace std;
 
 class Vertex {
@@ -16,6 +19,12 @@ public:
 	
 	int idx;
 	float x, y, z;
+	float nx, ny, nz;
+	vector<int> meshIds;
+	bool updated = false;
+
+	vector<int> jointsRelated;
+	vector<float> jointWeights;
 
 	bool isNull();
 	void set();
@@ -35,8 +44,11 @@ public:
 	Vertex operator*(const float&);
 
 	float distance(Vertex);
+	float distanceToLine(Vertex, Vertex);
+	float length();
 	Vertex closest(vector<Vertex>);
 	Vertex closest(float, float, float, float);
+	vector<Vertex> firstSecondClosest(vector<Vertex>);
 
 	Vertex subtract(Vertex);
 	Vertex add(Vertex);

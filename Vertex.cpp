@@ -7,6 +7,10 @@ Vertex::Vertex() {
 	x = 0;
 	y = 0;
 	z = 0;
+
+	nx = 0;
+	ny = 0;
+	nz = 0;
 }
 
 Vertex::Vertex(float _x, float _y, float _z) {
@@ -15,6 +19,9 @@ Vertex::Vertex(float _x, float _y, float _z) {
 	x = _x;
 	y = _y;
 	z = _z;
+	nx = 0;
+	ny = 0;
+	nz = 0;
 }
 
 Vertex::Vertex(int i, float _x, float _y, float _z) {
@@ -23,6 +30,9 @@ Vertex::Vertex(int i, float _x, float _y, float _z) {
 	x = _x;
 	y = _y;
 	z = _z;
+	nx = 0;
+	ny = 0;
+	nz = 0;
 }
 
 Vertex::Vertex(int i, Vertex v) {
@@ -31,6 +41,9 @@ Vertex::Vertex(int i, Vertex v) {
 	x = v.x;
 	y = v.y;
 	z = v.z;
+	nx = 0;
+	ny = 0;
+	nz = 0;
 }
 
 Vertex::Vertex(Vertex* v) {
@@ -39,6 +52,9 @@ Vertex::Vertex(Vertex* v) {
 	x = v->x;
 	y = v->y;
 	z = v->z;
+	nx = 0;
+	ny = 0;
+	nz = 0;
 }
 
 Vertex::~Vertex() {
@@ -128,6 +144,19 @@ float Vertex::distance(Vertex v) {
 	return sqrt(pow(x - v.x, 2) + pow(y - v.y, 2) + pow(z - v.z, 2));
 }
 
+float Vertex::distanceToLine(Vertex line0, Vertex line1) {
+	Vertex x1 = line0;
+	Vertex x2 = line1;
+	Vertex x2_x1 = x2 - x1;
+	Vertex x1_x0 = x1 - *this;
+	Vertex s = x2_x1.cross(x1_x0);
+	Vertex p = x2_x1;
+
+	float dist = sqrt(pow(s.x, 2) + pow(s.y, 2) + pow(s.z, 2)) / sqrt(pow(p.x, 2) + pow(p.y, 2) + pow(p.z, 2));
+
+	return dist;
+}
+
 Vertex Vertex::closest(vector<Vertex> v) {
 	float min = 100;
 	Vertex closestV;
@@ -156,7 +185,7 @@ Vertex Vertex::closest(float x1, float y1, float x2, float y2) {
 		float slope1 = (y1 - y2) / (x1 - x2);
 		float intercept1 = y1 - slope1 * x1;
 
-		float slope2 = -1/slope1;
+		float slope2 = -1 / slope1;
 		float intercept2 = y - slope2 * x;
 
 		float nx = (intercept2 - intercept1) / (slope1 - slope2);
@@ -166,7 +195,7 @@ Vertex Vertex::closest(float x1, float y1, float x2, float y2) {
 	}
 
 	return n;
-} 
+}
 
 void Vertex::print() {
 	cout << x << ", " << y << ", " << z << endl;
@@ -206,6 +235,9 @@ Vertex Vertex::dot(Vertex v) {
 
 Vertex Vertex::normalize() {
 	float s = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+	this->x /= s;
+	this->y /= s;
+	this->z /= s;
 
-	return *this / s;
+	return *this;
 }

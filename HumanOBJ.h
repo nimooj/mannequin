@@ -11,7 +11,9 @@ using namespace std;
 #include "Vertex.h"
 #include "Mesh.h"
 #include "JointTree.h"
+//#include "Bone.h"
 #include "Skinning.h"
+#include "GrahamScan.h"
 
 class HumanOBJ {
 public :
@@ -19,34 +21,66 @@ public :
 	HumanOBJ(string);
 	~HumanOBJ();
 
+	vector<Mesh> meshes;
+
 	Vertex scaleFactor;
 	Vertex translateFactor;
+	vector<int> segmentGroup;
+	vector<int> weightGroup;
+	vector<float> weightValues;
+
+	Skinning skinning;
+	vector<int> segmentHash[16];
+	vector<int> weightHash[16];
+	vector<float> weightValueHash[16];
 
 	vector<Vertex>& getVerts();
 	vector<Vertex>& getNormals();
 	vector<int>& getIndices();
 	vector<Joint>& getJoints();
 
-	vector<int> vertexJointGroup;
+	float getBustSize();
+	float getWaistSize();
+	float getHipSize();
+
+	void setThreeSize(float, float, float);
 
 	void setJoint(int, float, float);
-	void setPosing();
+	void setRigs();
+	void setSegments();
+	void setFeatures();
+	void setWeights();
 
 	void jointExport();
 	void writeToOBJ();
-	void rig(BodyProxies&);
-	void segment();
+
+	vector<Vertex> vertices;
+	vector<Joint> joints;
 
 private :
-	vector<Vertex> vertices;
 	vector<Vertex> normals;
 	vector<Mesh> faces;
 	vector<int> indices;
 
 	JointTree jointTree;
-	vector<Joint> joints;
-	Skinning skinning;
+	vector<Bone> bones;
 
+
+	float bustLevel, waistLevel, hipLevel;
+	float bustSize, waistSize, hipSize;
+	vector<int> bustConvexIndices, waistConvexIndices, hipConvexIndices;
+
+	int shoulderRIndex, shoulderLIndex; // Index of armhole point with biggest abs(x value)
+
+	vector<Vertex*> neckPlane;
+	vector<Vertex*> shoulderMidPlane, shoulderRPlane, shoulderLPlane;
+	vector<Vertex*> elbowRPlane, elbowLPlane, wristRPlane, wristLPlane;
+	vector<Vertex*> waistPlane, pelvisMidPlane, pelvisRPlane, pelvisLPlane;
+	vector<Vertex*> highThighRPlane, highThighLPlane;
+	vector<Vertex*> kneeRPlane, kneeLPlane, ankleRPlane, ankleLPlane;
+
+	void bindRigs();
+	void updateRigs();
 
 	void centering(float, float, float);
 };

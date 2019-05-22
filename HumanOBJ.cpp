@@ -2,7 +2,9 @@
 #include "HumanOBJ.h"
 
 HumanOBJ::HumanOBJ() {
-
+	bustLevel = 0;
+	waistLevel = 0;
+	hipLevel = 0;
 }
 
 HumanOBJ::HumanOBJ(string dir) {
@@ -12,6 +14,10 @@ HumanOBJ::HumanOBJ(string dir) {
 	float maxX = -1000, minX = 1000;
 	float maxY = -1000, minY = 1000;
 	float maxZ = -1000, minZ = 1000;
+
+	bustLevel = 0;
+	waistLevel = 0;
+	hipLevel = 0;
 
 	vector<Vertex> tmpnormals;
 	while (getline(basics, line)) {
@@ -48,14 +54,13 @@ HumanOBJ::HumanOBJ(string dir) {
 			vertices.push_back(Vertex(idx, x, y, z));
 			idx++;
 			/* Initialize vertex-joint group */
-			vertexJointGroup.push_back(0);
+			segmentGroup.push_back(0);
 		}
 		else if (f == "vn") {
 			tmpnormals.push_back(Vertex(x, y, z));
 			normals.push_back(Vertex());
 		}
 		else if (f == "f") {
-
 			string newLine = line.substr(2, line.length());
 			string delimiter1 = " ";
 			string delimiter2 = "//";
@@ -89,29 +94,47 @@ HumanOBJ::HumanOBJ(string dir) {
 				indices.push_back(idx0);
 				indices.push_back(idx1);
 				indices.push_back(idx3);
+				meshes.push_back(Mesh(vertices[idx0 - 1], vertices[idx1 - 1], vertices[idx3 - 1]));
 
 				indices.push_back(idx1);
 				indices.push_back(idx2);
 				indices.push_back(idx3);
+				meshes.push_back(Mesh(vertices[idx1 - 1], vertices[idx2 - 1], vertices[idx3 - 1]));
 
 				normals[idx0 - 1] = tmpnormals[idx0 - 1];
 				normals[idx1 - 1] = tmpnormals[idx1 - 1];
 				normals[idx2 - 1] = tmpnormals[idx2 - 1];
 				normals[idx3 - 1] = tmpnormals[idx3 - 1];
+
 			}
 			else if (index.size() == 3) {
+				vector<int> tmpIdx;
 				for (int i = index.size() - 1; i >= 0; i--) {
 					int idx = atoi(index[i].c_str());
+					tmpIdx.push_back(idx);
 
 					normals[idx - 1] = tmpnormals[idx - 1];
 					indices.push_back(idx);
 					//indices.push_back(atoi(index[i].c_str()));
 				}
+				meshes.push_back(Mesh(vertices[tmpIdx[0] - 1], vertices[tmpIdx[1] - 1], vertices[tmpIdx[2] - 1]));
 			}
 		}
 	}
 
+	/*** Assign tri-mesh ids to vertices ***/
+	for (int i = 0; i < meshes.size(); i++) {
+		int index1 = meshes[i].index1;
+		int index2 = meshes[i].index2;
+		int index3 = meshes[i].index3;
+		
+		vertices[index1 - 1].meshIds.push_back(i);
+		vertices[index2 - 1].meshIds.push_back(i);
+		vertices[index3 - 1].meshIds.push_back(i);
+	}
+
 	centering((minX + maxX)/2, (minY + maxY)/2, (minZ + maxZ)/2);
+	skinning = Skinning();
 }
 
 HumanOBJ::~HumanOBJ() {
@@ -190,67 +213,344 @@ void HumanOBJ::setJoint(int jointIdx, float x, float y) {
 	}
 }
 
-void HumanOBJ::setPosing() {
-	// Parent-Child definition
-	joints[Joint_neck].setChild(Joint_shoulderMid);
+float HumanOBJ::getBustSize() {
+	float dist = 0;
+	Vertex prevV, currV;
+	for (int i = 1; i < bustConvexIndices.size(); i++) {
+		prevV = vertices[bustConvexIndices[i - 1] - 1];
+		currV = vertices[bustConvexIndices[i] - 1];
 
-	joints[Joint_shoulderMid].setParent(Joint_neck);
-	joints[Joint_shoulderMid].setChildren(Joint_shoulderR, Joint_waist, Joint_shoulderL);
+		prevV.y = bustLevel;
+		currV.y = bustLevel;
 
-	joints[Joint_shoulderR].setParent(Joint_shoulderMid);
-	joints[Joint_shoulderR].setChildren(Joint_elbowR, Joint_wristR);
+		dist += currV.distance(prevV);
+	}
 
-	joints[Joint_elbowR].setParent(Joint_shoulderR);
-	joints[Joint_elbowR].setChild(Joint_wristR);
+	prevV = vertices[bustConvexIndices[bustConvexIndices.size() - 1] - 1];
+	currV = vertices[bustConvexIndices[0] - 1];
 
-	joints[Joint_wristR].setParent(Joint_elbowR);
+	prevV.y = bustLevel;
+	currV.y = bustLevel;
 
-	joints[Joint_waist].setParent(Joint_shoulderMid);
-	joints[Joint_waist].setChild(Joint_pelvisMid);
+	dist += currV.distance(prevV);
 
-	joints[Joint_pelvisMid].setParent(Joint_waist);
-	joints[Joint_pelvisMid].setChildren(Joint_pelvisR, Joint_pelvisL);
+	bustSize = dist * 10;
 
-	joints[Joint_pelvisR].setParent(Joint_pelvisMid);
-	joints[Joint_pelvisR].setChildren(Joint_highLegR, Joint_kneeR, Joint_ankleR);
-
-	joints[Joint_highLegR].setParent(Joint_pelvisR);
-	joints[Joint_highLegR].setChildren(Joint_kneeR, Joint_ankleR);
-
-	joints[Joint_kneeR].setParent(Joint_highLegR);
-	joints[Joint_kneeR].setChild(Joint_ankleR);
-
-	joints[Joint_ankleR].setParent(Joint_kneeR);
-
-	joints[Joint_pelvisL].setParent(Joint_pelvisMid);
-	joints[Joint_pelvisL].setChildren(Joint_highLegL, Joint_kneeL, Joint_ankleL);
-
-	joints[Joint_highLegL].setParent(Joint_pelvisL);
-	joints[Joint_highLegL].setChildren(Joint_kneeL, Joint_ankleL);
-
-	joints[Joint_kneeL].setParent(Joint_pelvisL);
-	joints[Joint_kneeL].setChild(Joint_ankleL);
-
-	joints[Joint_ankleL].setParent(Joint_kneeL);
-
-	joints[Joint_shoulderL].setParent(Joint_shoulderMid);
-	joints[Joint_shoulderL].setChildren(Joint_elbowL, Joint_wristL);
-
-	joints[Joint_elbowL].setParent(Joint_shoulderL);
-	joints[Joint_elbowL].setChild(Joint_wristL);
-
-	joints[Joint_wristL].setParent(Joint_elbowL);
-
+	return bustSize;
 }
 
-void HumanOBJ::rig(BodyProxies& body) {
-	skinning = Skinning(body);
-	skinning.matchRigs(joints);
+float HumanOBJ::getWaistSize() {
+	float dist = 0;
+	Vertex prevV, currV;
+	for (int i = 1; i < waistConvexIndices.size(); i++) {
+		prevV = vertices[waistConvexIndices[i - 1] - 1];
+		currV = vertices[waistConvexIndices[i] - 1];
+
+		prevV.y = waistLevel;
+		currV.y = waistLevel;
+
+		dist += currV.distance(prevV);
+	}
+
+	prevV = vertices[waistConvexIndices[waistConvexIndices.size() - 1] - 1];
+	currV = vertices[waistConvexIndices[0] - 1];
+
+	prevV.y = waistLevel;
+	currV.y = waistLevel;
+
+	dist += currV.distance(prevV);
+
+	waistSize = dist * 10;
+
+	return waistSize;
 }
 
-void HumanOBJ::segment() {
-	// Result saved in vertexJointGroup
-	skinning.segment(vertices, joints, vertexJointGroup);
+float HumanOBJ::getHipSize() {
+	float dist = 0;
+	Vertex prevV, currV;
+	for (int i = 1; i < hipConvexIndices.size(); i++) {
+		prevV = vertices[hipConvexIndices[i - 1] - 1];
+		currV = vertices[hipConvexIndices[i] - 1];
+
+		prevV.y = hipLevel;
+		currV.y = hipLevel;
+
+		dist += currV.distance(prevV);
+	}
+
+	prevV = vertices[hipConvexIndices[hipConvexIndices.size() - 1] - 1];
+	currV = vertices[hipConvexIndices[0] - 1];
+
+	prevV.y = hipLevel;
+	currV.y = hipLevel;
+
+	dist += currV.distance(prevV);
+
+	hipSize = dist * 10;
+
+	return hipSize;
+}
+
+void HumanOBJ::setThreeSize(float b, float w, float h) {
+	float bustScale = b / bustSize;
+	float waistScale = w / waistSize;
+	float hipScale = h / hipSize;
+	float armHoleMovementR = 0;
+	float armHoleMovementL = 0;
+
+	cout << "current sizes : " << bustSize << " " << waistSize << " " << hipSize << endl;
+	cout << "change sizes to : " << b << " " << w << " " << h << endl;
+	cout << "size scales : " << bustScale << " " << waistScale << " " << hipScale << endl;
+
+	vector<int> armRIdx;
+	vector<int> armLIdx;
+	vector<int> vertIdx;
+	armRIdx.insert(armRIdx.end(), segmentHash[2].begin(), segmentHash[2].end());
+	armRIdx.insert(armRIdx.end(), segmentHash[3].begin(), segmentHash[3].end());
+	armRIdx.insert(armRIdx.end(), segmentHash[4].begin(), segmentHash[4].end());
+
+	armLIdx.insert(armLIdx.end(), segmentHash[5].begin(), segmentHash[5].end());
+	armLIdx.insert(armLIdx.end(), segmentHash[6].begin(), segmentHash[6].end());
+	armLIdx.insert(armLIdx.end(), segmentHash[7].begin(), segmentHash[7].end());
+
+	vertIdx.insert(vertIdx.end(), segmentHash[0].begin(), segmentHash[0].end());
+	vertIdx.insert(vertIdx.end(), segmentHash[1].begin(), segmentHash[1].end());
+	vertIdx.insert(vertIdx.end(), segmentHash[8].begin(), segmentHash[8].end());
+	vertIdx.insert(vertIdx.end(), segmentHash[9].begin(), segmentHash[9].end());
+	vertIdx.insert(vertIdx.end(), segmentHash[10].begin(), segmentHash[10].end());
+	vertIdx.insert(vertIdx.end(), segmentHash[11].begin(), segmentHash[11].end());
+	vertIdx.insert(vertIdx.end(), segmentHash[12].begin(), segmentHash[12].end());
+	vertIdx.insert(vertIdx.end(), segmentHash[13].begin(), segmentHash[13].end());
+	vertIdx.insert(vertIdx.end(), segmentHash[14].begin(), segmentHash[14].end());
+	vertIdx.insert(vertIdx.end(), segmentHash[15].begin(), segmentHash[15].end());
+
+	for (int i = 0; i < vertIdx.size(); i++) {
+		int idx = vertIdx[i];
+		/**/
+		if (abs(vertices[idx].y - bustLevel) < 0.2) {
+			vertices[idx].x *= bustScale;
+			vertices[idx].z *= bustScale;
+		}
+		else if (abs(vertices[idx].y - waistLevel) < 0.2) {
+			vertices[idx].x *= waistScale;
+			vertices[idx].z *= waistScale;
+		}
+		else if (abs(vertices[idx].y - hipLevel) < 0.2) {
+			vertices[idx].x *= hipScale;
+			vertices[idx].z *= hipScale;
+		}
+		else if (vertices[idx].y > bustLevel) {
+			if (idx == shoulderRIndex) {
+				armHoleMovementR = vertices[idx].x*bustScale - vertices[idx].x;
+			}
+			if (idx == shoulderLIndex) {
+				armHoleMovementL = vertices[idx].x*bustScale - vertices[idx].x;
+			}
+			vertices[idx].x *= bustScale;
+			vertices[idx].z *= bustScale;
+		}
+		else if (vertices[idx].y < bustLevel + 0.2 && vertices[idx].y > waistLevel) {
+			/*
+			*/
+			Vertex* v = &vertices[idx];
+			Vertex vb = vertices[idx];
+			Vertex vw = vertices[idx];
+
+			float a = (bustLevel - 0.2 - v->y);
+			float b = (v->y - waistLevel - 0.2);
+
+			vb.x *= bustScale;
+			vb.z *= bustScale;
+			vw.x *= waistScale;
+			vw.z *= waistScale;
+
+			v->x = (vb.x*b + vw.x*a) / (a+b);
+			v->z = (vb.z*b + vw.z*a) / (a+b);
+		}
+		else if (vertices[idx].y < waistLevel + 0.2 && vertices[idx].y > hipLevel) {
+			/*
+			*/
+			Vertex* v = &vertices[idx];
+			Vertex vw = vertices[idx];
+			Vertex vh = vertices[idx];
+
+			float a = (waistLevel - 0.2 - v->y);
+			float b = (v->y - hipLevel - 0.2);
+
+			vw.x *= waistScale;
+			vw.z *= waistScale;
+			vh.x *= hipScale;
+			vh.z *= hipScale;
+
+			v->x = (vw.x*b + vh.x * a) / (a+b);
+			v->z = (vw.z*b + vh.z * a) / (a+b);
+		}
+		else if (vertices[idx].y < hipLevel + 0.2) {
+			vertices[idx].x *= hipScale;
+			vertices[idx].z *= hipScale;
+		}
+	}
+	for (int i = 0; i < armRIdx.size(); i++) {
+		vertices[armRIdx[i]].x += armHoleMovementR;
+	}
+	for (int i = 0; i < armLIdx.size(); i++) {
+		vertices[armLIdx[i]].x += armHoleMovementL;
+	}
+
+	bustSize = getBustSize();
+	waistSize = getWaistSize();
+	hipSize = getHipSize();
+
+	/*** Joint transition ***/
+	updateRigs();
+}
+
+void HumanOBJ::setRigs() {
+	skinning.setHierarchy(joints);
+	skinning.setBones(joints, bones);
+
+	setSegments();
+	bindRigs();
+	setFeatures();  //... Segment 다 나누면 다시 활성화 필요 for Sizing
+	skinning.paintWeights(vertices, joints, weightGroup);
+}
+
+void HumanOBJ::setSegments() {
+	// Result saved in segmentGroup, segmentHash;
+	// segmentGroup.size() == vertices.size() and share indices
+	skinning.setSegments(vertices, joints, segmentGroup, weightHash, weightValueHash);
+}
+
+void HumanOBJ::setWeights() {
+}
+
+void HumanOBJ::setFeatures() {
+	float minZ = 1000, maxZ = -1000;
+	float minX = 1000, maxX = -1000; 
+	float minY = 1000, maxY = -1000;
+
+	for (int i = 0; i < segmentGroup.size(); i++) {
+		segmentHash[segmentGroup[i]].push_back(i); // push vertices ARRAY index
+	}
+
+	/********************** BUST **********************/
+	// Bust : max z val in segment 8
+	for (int i = 0; i < segmentHash[8].size(); i++) {
+		if (vertices[segmentHash[8][i]].z > maxZ) {
+			maxZ = vertices[segmentHash[8][i]].z;
+			bustLevel = vertices[segmentHash[8][i]].y;
+		}
+
+		if (vertices[segmentHash[8][i]].x < minX) {
+			minX = vertices[segmentHash[8][i]].x;
+			shoulderRIndex = segmentHash[8][i];
+		}
+
+		if (vertices[segmentHash[8][i]].x > maxX) {
+			maxX = vertices[segmentHash[8][i]].x;
+			shoulderLIndex = segmentHash[8][i];
+		}
+	}
+	/*** Align verts near bust level ***/
+	vector<Vertex> nearBust; 
+	for (int i = 0; i < segmentHash[8].size(); i++) {
+		if (abs(vertices[segmentHash[8][i]].y - bustLevel) <= 0.5) {
+			Vertex v = vertices[segmentHash[8][i]];
+			nearBust.push_back(Vertex(v.idx, v.x, bustLevel, v.z));
+		}
+	}
+	/*** Get convex hull***/
+	GrahamScan g = GrahamScan(nearBust);
+	vector<Vertex> bustConvex = g.GenerateConvexHull();
+	float dist = 0;
+	for (int i = 1; i < bustConvex.size(); i++) {
+		dist += bustConvex[i].distance(bustConvex[i - 1]);
+		bustConvexIndices.push_back(bustConvex[i].idx);
+	}
+	dist += bustConvex[bustConvex.size() - 1].distance(bustConvex[0]);
+	bustSize = dist * 10;
+	/**************************************************/
+
+	/********************** WAIST **********************/
+	// Waist : min X val around waist level in segment 8 and 9
+	minX = 1000;
+	minY = 1000;
+	Vertex waistJoint = joints[Joint_waist].getCoord();
+	vector<int> segment_8_9;
+	segment_8_9.insert(segment_8_9.end(), segmentHash[8].begin(), segmentHash[8].end());
+	segment_8_9.insert(segment_8_9.end(), segmentHash[9].begin(), segmentHash[9].end());
+	for (int i = 0; i < segment_8_9.size(); i++) {
+		if (abs(vertices[segment_8_9[i]].y - waistJoint.y) <= 1) {
+			if (vertices[segment_8_9[i]].x > 0 && vertices[segment_8_9[i]].x < minX) {
+				minX = vertices[segment_8_9[i]].x;
+				waistLevel = vertices[segment_8_9[i]].y;
+			}
+		}
+
+	}
+	/*** Align verts near waist level ***/
+	vector<Vertex> nearWaist;
+	for (int i = 0; i < segment_8_9.size(); i++) {
+		if (abs(vertices[segment_8_9[i]].y - waistLevel) <= 0.5) {
+			Vertex v = vertices[segment_8_9[i]];
+			nearWaist.push_back(Vertex(v.idx, v.x, waistLevel, v.z));
+		}
+	}
+	/*** Get convex hull***/
+	g = GrahamScan(nearWaist);
+	vector<Vertex> waistConvex = g.GenerateConvexHull();
+	dist = 0;
+	for (int i = 1; i < waistConvex.size(); i++) {
+		dist += waistConvex[i].distance(waistConvex[i - 1]);
+		waistConvexIndices.push_back(waistConvex[i].idx);
+	}
+	dist += waistConvex[waistConvex.size() - 1].distance(waistConvex[0]);
+	waistSize = dist * 10;
+	/***************************************************/
+
+	/********************** Hip **********************/
+	// Hip : min Z val around pelvisMid level in segment 9, 10 and 13
+	minZ = 1000;
+	Vertex pelvisJoint = joints[Joint_pelvisMid].getCoord();
+	vector<int> segment_9_10_13;
+	segment_9_10_13.insert(segment_9_10_13.end(), segmentHash[8].begin(), segmentHash[8].end());
+	segment_9_10_13.insert(segment_9_10_13.end(), segmentHash[10].begin(), segmentHash[10].end());
+	segment_9_10_13.insert(segment_9_10_13.end(), segmentHash[13].begin(), segmentHash[13].end());
+	for (int i = 0; i < segment_9_10_13.size(); i++) {
+		if (abs(vertices[segment_9_10_13[i]].y - pelvisJoint.y) <= 1) {
+			if (vertices[segment_9_10_13[i]].z < minZ) {
+				minZ = vertices[segment_9_10_13[i]].z;
+				hipLevel = vertices[segment_9_10_13[i]].y;
+			}
+		}
+	}
+	/*** Align verts near hip level ***/
+	vector<Vertex> nearHip;
+	for (int i = 0; i < segment_9_10_13.size(); i++) {
+		if (abs(vertices[segment_9_10_13[i]].y - hipLevel) <= 0.5) {
+			Vertex v = vertices[segment_9_10_13[i]];
+			nearHip.push_back(Vertex(v.idx, v.x, hipLevel, v.z));
+		}
+	}
+	/*** Get convex hull***/
+	g = GrahamScan(nearHip);
+	vector<Vertex> hipConvex = g.GenerateConvexHull();
+	dist = 0;
+	for (int i = 1; i < hipConvex.size(); i++) {
+		dist += hipConvex[i].distance(hipConvex[i - 1]);
+		hipConvexIndices.push_back(hipConvex[i].idx);
+	}
+	dist += hipConvex[hipConvex.size() - 1].distance(hipConvex[0]);
+	hipSize = dist * 10;
+	/*************************************************/
+}
+
+void HumanOBJ::bindRigs() {
+	skinning.setBindings(vertices, joints, segmentGroup);
+}
+
+void HumanOBJ::updateRigs() {
+	skinning.updateRigs(joints);
 }
 
 void HumanOBJ::centering(float x, float y, float z) {
@@ -271,8 +571,6 @@ void HumanOBJ::jointExport() {
 	cout << "Joints exported.\n" << endl;
 	outfile.close();
 
-	/*** Auto Rig match && skinning ***/
-	skinning.matchRigs(joints);
 }
 
 void HumanOBJ::writeToOBJ() {

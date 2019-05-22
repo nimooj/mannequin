@@ -9,6 +9,9 @@ public:
 	Joint(int, Vertex);
 	~Joint();
 
+	int id;
+	Vertex coord;
+
 	bool hasParent;
 	bool hasChildren;
 
@@ -27,12 +30,19 @@ public:
 	Layer& getLayer(int);
 	vector<Layer>& getLayers();
 
+	void setRelatedSegment(int);
+	vector<int>& getRelatedSegments();
+
+	void setRelatedVerts(int, Vertex*);
+	vector<Vertex*>& getRelatedVerts();
+
 private:
-	int id;
-	Vertex coord;
 
 	int parent;
 	vector<int> children;
 
 	vector<Layer> layers;
+
+	vector<int> relatedSegments; 
+	vector<Vertex*> relatedVerts; // CCW : minZ -> minX -> maxZ -> maxX;
 };
