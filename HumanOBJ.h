@@ -43,7 +43,11 @@ public :
 	float getWaistSize();
 	float getHipSize();
 
-	void setThreeSize(float, float, float);
+	void setThreeSize(float, float, float, float);
+	float height; 
+	float topMostLevel, bottomMostLevel;
+	float bustLevel, waistLevel, hipLevel;
+	vector<int> bustConvexIndices, waistConvexIndices, hipConvexIndices;
 
 	void setJoint(int, float, float);
 	void setRigs();
@@ -66,9 +70,7 @@ private :
 	vector<Bone> bones;
 
 
-	float bustLevel, waistLevel, hipLevel;
 	float bustSize, waistSize, hipSize;
-	vector<int> bustConvexIndices, waistConvexIndices, hipConvexIndices;
 
 	int shoulderRIndex, shoulderLIndex; // Index of armhole point with biggest abs(x value)
 
