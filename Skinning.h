@@ -18,22 +18,36 @@ public :
 	void setBones(vector<Joint>&, vector<Bone>&);
 	void setSegments(vector<Vertex>&, vector<Joint>&, vector<int>&, vector<int>[], vector<float>[]);
 	void setBindings(vector<Vertex>&, vector<Joint>&, vector<int>&);
-	void paintWeights(vector<Vertex>&, vector<Joint>&, vector<int>&);
-	void updateRigs(vector<Joint>&);
+	void paintWeights(int, vector<Vertex>&, vector<Joint>&);
+	void updateRigs(vector<Vertex>&, vector<Joint>&);
 
 	vector<int> armRSegment;
 	vector<int> armLSegment;
+	vector<int> elbowRSegment;
+	vector<int> elbowLSegment;
+
 	vector<int> legRSegment;
 	vector<int> legLSegment;
+	vector<int> kneeRSegment;
+	vector<int> kneeLSegment;
 
-	void rotateAR(int, float, vector<Vertex>&, vector<Joint>&);
-	void rotateAL(int, float, vector<Vertex>&, vector<Joint>&);
+	vector<int> bodySegment[SegmentNum];
 
-	void rotateLR(int, float, vector<Vertex>&, vector<Joint>&);
-	void rotateLL(int, float, vector<Vertex>&, vector<Joint>&);
+	void bendTorso(int, float, vector<Vertex>&, vector<Joint>&);
+
+	void rotateArmR(int, float, vector<Vertex>&, vector<Joint>&);
+	void rotateArmL(int, float, vector<Vertex>&, vector<Joint>&);
+
+	void rotateElbowR(int, float, vector<Vertex>&, vector<Joint>&);
+	void rotateElbowL(int, float, vector<Vertex>&, vector<Joint>&);
+
+	void rotateLegR(int, float, vector<Vertex>&, vector<Joint>&);
+	void rotateLegL(int, float, vector<Vertex>&, vector<Joint>&);
+
+	void rotateKneeR(int, float, vector<Vertex>&, vector<Joint>&);
+	void rotateKneeL(int, float, vector<Vertex>&, vector<Joint>&);
+
 private:
-	vector<int> bodySegments[18];
 	vector<int> weightIndices;
 	vector<int> weightSegment[18];
-
 };

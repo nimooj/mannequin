@@ -19,7 +19,7 @@ HumanOBJ::HumanOBJ(string dir) {
 	waistLevel = 0;
 	hipLevel = 0;
 
-	vector<Vertex> tmpnormals;
+	vector<Vertex> tmpnormals, tmptextures;
 	while (getline(basics, line)) {
 		istringstream iss(line);
 		string f;
@@ -52,70 +52,136 @@ HumanOBJ::HumanOBJ(string dir) {
 			}
 
 			vertices.push_back(Vertex(idx, x, y, z));
+			textures.push_back(Vertex());
+			normals.push_back(Vertex());
 			idx++;
 			/* Initialize vertex-joint group */
 			segmentGroup.push_back(0);
 		}
+		else if (f == "vt") {
+			tmptextures.push_back(Vertex(x, y , z));
+		}
 		else if (f == "vn") {
 			tmpnormals.push_back(Vertex(x, y, z));
-			normals.push_back(Vertex());
+			//normals.push_back(Vertex(x, y, z));
 		}
 		else if (f == "f") {
 			string newLine = line.substr(2, line.length());
 			string delimiter1 = " ";
-			string delimiter2 = "//";
+			string delimiter2 = "/";
 			size_t pos = 0;
 			string token;
 			vector<string> ss;
 			vector<string> index;
+			vector<string> texture;
+			vector<string> normal;
 
+			/*** Truncate type area ***/
 			while( (pos = newLine.find(delimiter1)) != string::npos ) {
 				token = newLine.substr(0, pos);
 				ss.push_back(token);
 				newLine.erase(0, pos + delimiter1.length());
 			}
 			ss.push_back(newLine);
+			/**************************/
 
+			/*** Get values ***/
 			while (!ss.empty()) {
 				string sn = ss.back();
+				int count = 0;
 				while ((pos = sn.find(delimiter2)) != string::npos) {
 					token = sn.substr(0, pos);
-					index.push_back(token);
+					if (count == 0)
+						index.push_back(token);
+					else if (count == 1)
+						texture.push_back(token);
 					sn.erase(0, pos + delimiter2.length());
+					count++;
 				}
+				if (count == 2)
+					normal.push_back(sn);
 				ss.pop_back();
 			}
+			/******************/
+
 			if (index.size() == 4) {
-				int idx0 = atoi(index[3].c_str());
-				int idx1 = atoi(index[2].c_str());
-				int idx2 = atoi(index[1].c_str());
-				int idx3 = atoi(index[0].c_str());
+				int i0 = atoi(index[3].c_str());
+				int i1 = atoi(index[2].c_str());
+				int i2 = atoi(index[1].c_str());
+				int i3 = atoi(index[0].c_str());
 
-				indices.push_back(idx0);
-				indices.push_back(idx1);
-				indices.push_back(idx3);
-				meshes.push_back(Mesh(vertices[idx0 - 1], vertices[idx1 - 1], vertices[idx3 - 1]));
+				int t0 = atoi(texture[3].c_str());
+				int t1 = atoi(texture[2].c_str());
+				int t2 = atoi(texture[1].c_str());
+				int t3 = atoi(texture[0].c_str());
+				
+				int n0 = atoi(normal[3].c_str());
+				int n1 = atoi(normal[2].c_str());
+				int n2 = atoi(normal[1].c_str());
+				int n3 = atoi(normal[0].c_str());
 
-				indices.push_back(idx1);
-				indices.push_back(idx2);
-				indices.push_back(idx3);
-				meshes.push_back(Mesh(vertices[idx1 - 1], vertices[idx2 - 1], vertices[idx3 - 1]));
+				if (i0 < 0) {
+					i0 = vertices.size() + i0 + 1;
+					i1 = vertices.size() + i1 + 1;
+					i2 = vertices.size() + i2 + 1;
+					i3 = vertices.size() + i3 + 1;
+				}
+				if (t0 < 0) {
+					t0 = tmptextures.size() + t0 + 1;
+					t1 = tmptextures.size() + t1 + 1;
+					t2 = tmptextures.size() + t2 + 1;
+					t3 = tmptextures.size() + t3 + 1;
+				}
+				if (n0 < 0) {
+					n0 = tmpnormals.size() + n0 + 1;
+					n1 = tmpnormals.size() + n1 + 1;
+					n2 = tmpnormals.size() + n2 + 1;
+					n3 = tmpnormals.size() + n3 + 1;
+				}
 
-				normals[idx0 - 1] = tmpnormals[idx0 - 1];
-				normals[idx1 - 1] = tmpnormals[idx1 - 1];
-				normals[idx2 - 1] = tmpnormals[idx2 - 1];
-				normals[idx3 - 1] = tmpnormals[idx3 - 1];
+				indices.push_back(i0);
+				indices.push_back(i1);
+				indices.push_back(i3);
+				meshes.push_back(Mesh(vertices[i0 - 1], vertices[i1 - 1], vertices[i3 - 1]));
+
+				indices.push_back(i1);
+				indices.push_back(i2);
+				indices.push_back(i3);
+				meshes.push_back(Mesh(vertices[i1 - 1], vertices[i2 - 1], vertices[i3 - 1]));
+
+				textures[i0 - 1] = tmptextures[t0 - 1];
+				textures[i1 - 1] = tmptextures[t1 - 1];
+				textures[i2 - 1] = tmptextures[t2 - 1];
+				textures[i3 - 1] = tmptextures[t3 - 1];
+
+				normals[i0 - 1] = tmpnormals[n0 - 1];
+				normals[i1 - 1] = tmpnormals[n1 - 1];
+				normals[i2 - 1] = tmpnormals[n2 - 1];
+				normals[i3 - 1] = tmpnormals[n3 - 1];
 
 			}
 			else if (index.size() == 3) {
 				vector<int> tmpIdx;
 				for (int i = index.size() - 1; i >= 0; i--) {
 					int idx = atoi(index[i].c_str());
+					int t = atoi(texture[i].c_str());
+					int n = atoi(normal[i].c_str());
+
+					if (idx < 0) {
+						idx = vertices.size() + idx + 1;
+					}
+					if (t < 0) {
+						t = tmptextures.size() + t + 1;
+					}
+					if (n < 0) {
+						n = tmpnormals.size() + n + 1;
+					}
+
 					tmpIdx.push_back(idx);
 
-					normals[idx - 1] = tmpnormals[idx - 1];
 					indices.push_back(idx);
-					//indices.push_back(atoi(index[i].c_str()));
+					textures[idx - 1] = tmptextures[t - 1];
+					normals[idx - 1] = tmpnormals[n - 1];
 				}
 				meshes.push_back(Mesh(vertices[tmpIdx[0] - 1], vertices[tmpIdx[1] - 1], vertices[tmpIdx[2] - 1]));
 			}
@@ -153,20 +219,21 @@ vector<int>& HumanOBJ::getIndices() {
 	return indices;
 }
 
-vector<Joint>& HumanOBJ::getJoints() {
-	if (joints.size() == 0) {
-		ifstream infile("layers/humanJoints.txt");
-		string s;
-		int idx = 0;
-		while (getline(infile, s)) {
-			istringstream iss(s);
-			float x, y, z;
-			iss >> x >> y >> z;
-			joints.push_back(Joint(idx, Vertex(x, y, z)));
-			idx++;
-		}
-		infile.close();
+vector<Joint>& HumanOBJ::getJoints(string dir) {
+	joints.clear();
+
+	ifstream infile(dir);
+	string s;
+	int idx = 0;
+	while (getline(infile, s)) {
+		istringstream iss(s);
+		float x, y, z;
+		iss >> x >> y >> z;
+		joints.push_back(Joint(idx, Vertex(x, y, z)));
+		idx++;
 	}
+	infile.close();
+
 	return joints;
 }
 
@@ -291,12 +358,14 @@ float HumanOBJ::getHipSize() {
 	return hipSize;
 }
 
-void HumanOBJ::setThreeSize(float height, float b, float w, float h) {
+void HumanOBJ::setSize(float _height, float b, float w, float h) {
 	float bustScale = b / bustSize;
 	float waistScale = w / waistSize;
 	float hipScale = h / hipSize;
-	float armHoleMovementR = 0;
-	float armHoleMovementL = 0;
+	float armHoleMovementRx = 0;
+	float armHoleMovementLx = 0;
+
+	float heightScale = _height / height;
 
 	vector<int> armRIdx;
 	vector<int> armLIdx;
@@ -326,27 +395,40 @@ void HumanOBJ::setThreeSize(float height, float b, float w, float h) {
 		if (abs(vertices[idx].y - bustLevel) < range) {
 			vertices[idx].x *= bustScale;
 			vertices[idx].z *= bustScale;
+			vertices[idx].y *= heightScale;
 		}
 		else if (abs(vertices[idx].y - waistLevel) < range) {
 			vertices[idx].x *= waistScale;
 			vertices[idx].z *= waistScale;
+			vertices[idx].y *= heightScale;
 		}
 		else if (abs(vertices[idx].y - hipLevel) < range) {
 			vertices[idx].x *= hipScale;
 			vertices[idx].z *= hipScale;
+			vertices[idx].y *= heightScale;
 		}
+		/*
 		else if (vertices[idx].y >= bustLevel + range) {
 			if (idx == shoulderRIndex) {
-				armHoleMovementR = vertices[idx].x*bustScale - vertices[idx].x;
+				armHoleMovementRx = vertices[idx].x*bustScale - vertices[idx].x;
+				armHoleMovementRy = vertices[idx].y*heightScale - vertices[idx].y;
 			}
 			if (idx == shoulderLIndex) {
-				armHoleMovementL = vertices[idx].x*bustScale - vertices[idx].x;
+				armHoleMovementLx = vertices[idx].x*bustScale - vertices[idx].x;
+				armHoleMovementLy = vertices[idx].y*heightScale - vertices[idx].y;
 			}
 
 			vertices[idx].x *= bustScale;
 			vertices[idx].z *= bustScale;
 		}
+		*/
 		else if (vertices[idx].y >= bustLevel + range) {
+			if (idx == shoulderRIndex) {
+				armHoleMovementRx = vertices[idx].x*bustScale - vertices[idx].x;
+			}
+			if (idx == shoulderLIndex) {
+				armHoleMovementLx = vertices[idx].x*bustScale - vertices[idx].x;
+			}
 			Vertex* v = &vertices[idx];
 			Vertex vn = vertices[idx];
 			Vertex vb = vertices[idx];
@@ -361,6 +443,7 @@ void HumanOBJ::setThreeSize(float height, float b, float w, float h) {
 
 			v->x = (vn.x*b + vb.x*a) / (a+b);
 			v->z = (vn.z*b + vb.z*a) / (a+b);
+			v->y *= heightScale;
 
 		}
 		else if (vertices[idx].y <= bustLevel - range && vertices[idx].y >= waistLevel + range) {
@@ -378,6 +461,7 @@ void HumanOBJ::setThreeSize(float height, float b, float w, float h) {
 
 			v->x = (vb.x*b + vw.x*a) / (a+b);
 			v->z = (vb.z*b + vw.z*a) / (a+b);
+			v->y *= heightScale;
 		}
 		else if (vertices[idx].y <= waistLevel - range && vertices[idx].y >= hipLevel + range) {
 			Vertex* v = &vertices[idx];
@@ -394,6 +478,7 @@ void HumanOBJ::setThreeSize(float height, float b, float w, float h) {
 
 			v->x = (vw.x*b + vh.x * a) / (a+b);
 			v->z = (vw.z*b + vh.z * a) / (a+b);
+			v->y *= heightScale;
 		}
 		else if (vertices[idx].y <= hipLevel - range) {
 			Vertex* v = &vertices[idx];
@@ -410,23 +495,31 @@ void HumanOBJ::setThreeSize(float height, float b, float w, float h) {
 
 			v->x = (vh.x*b + vf.x * a) / (a+b);
 			v->z = (vh.z*b + vf.z * a) / (a+b);
+			v->y *= heightScale;
 		}
 	}
 	/*** Move arm ***/
 	for (int i = 0; i < armRIdx.size(); i++) {
-		vertices[armRIdx[i]].x += armHoleMovementR;
+		vertices[armRIdx[i]].x += armHoleMovementRx;
+		vertices[armRIdx[i]].y *= heightScale;
 	}
 	for (int i = 0; i < armLIdx.size(); i++) {
-		vertices[armLIdx[i]].x += armHoleMovementL;
+		vertices[armLIdx[i]].x += armHoleMovementLx;
+		vertices[armLIdx[i]].y *= heightScale;
+		
 	}
 
+	bustLevel *= heightScale;
+	waistLevel *= heightScale;
+	hipLevel *= heightScale;
+
+	//height = (topMostLevel - bottomMostLevel) * 10;
 	bustSize = getBustSize();
 	waistSize = getWaistSize();
 	hipSize = getHipSize();
 
-	height = (topMostLevel - bottomMostLevel) * 10;
 	/*** Joint transition ***/
-	//updateRigs();
+	updateRigs();
 }
 
 void HumanOBJ::setRigs() {
@@ -436,7 +529,18 @@ void HumanOBJ::setRigs() {
 	setSegments();
 	bindRigs();
 	setFeatures();  //... Segment 다 나누면 다시 활성화 필요 for Sizing
-	skinning.paintWeights(vertices, joints, weightGroup);
+
+	/*
+	skinning.paintWeights(Segment_UpperArmR, vertices, joints);
+	skinning.paintWeights(Segment_UpperArmL, vertices, joints);
+	skinning.paintWeights(Segment_LowerArmR, vertices, joints);
+	skinning.paintWeights(Segment_LowerArmL, vertices, joints);
+
+	skinning.paintWeights(Segment_UpperLegR, vertices, joints);
+	skinning.paintWeights(Segment_UpperLegL, vertices, joints);
+	skinning.paintWeights(Segment_LowerLegR, vertices, joints);
+	skinning.paintWeights(Segment_LowerLegL, vertices, joints);
+	*/
 }
 
 void HumanOBJ::setSegments() {
@@ -456,7 +560,6 @@ void HumanOBJ::setFeatures() {
 	for (int i = 0; i < segmentGroup.size(); i++) {
 		segmentHash[segmentGroup[i]].push_back(i); // push vertices ARRAY index
 	}
-
 
 	/********************** BUST **********************/
 	// Bust : max z val in segment 8
@@ -569,6 +672,7 @@ void HumanOBJ::setFeatures() {
 	hipSize = dist * 10;
 	/*************************************************/
 
+	// Get height
 	maxY = -1000;
 	for (int i = 0; i < segmentHash[Segment_Head].size(); i++) {
 		if (vertices[segmentHash[Segment_Head][i]].y > maxY) {
@@ -586,6 +690,8 @@ void HumanOBJ::setFeatures() {
 		}
 	}
 
+	height = (topMostLevel - bottomMostLevel) * 10;
+
 }
 
 void HumanOBJ::bindRigs() {
@@ -593,7 +699,7 @@ void HumanOBJ::bindRigs() {
 }
 
 void HumanOBJ::updateRigs() {
-	skinning.updateRigs(joints);
+	skinning.updateRigs(vertices, joints);
 }
 
 void HumanOBJ::centering(float x, float y, float z) {
@@ -611,7 +717,8 @@ void HumanOBJ::jointExport() {
 		Vertex v = joints[i].getCoord();
 		outfile << v.x << " " << v.y << " " << v.z << endl;
 	}
-	cout << "Joints exported.\n" << endl;
+	//cout << "Joints exported.\n" << endl;
+	AfxMessageBox(_T("Joints exported.\n"));
 	outfile.close();
 
 }
@@ -631,6 +738,6 @@ void HumanOBJ::writeToOBJ() {
 	}
 	outfile.close();
 
-	//AfxMessageBox(CString("OBJ exported.\n"));
-	cout << "OBJ exported.\n" << endl;
+	AfxMessageBox(_T("File exported.\n"));
+	//cout << "OBJ exported.\n" << endl;
 }

@@ -37,13 +37,13 @@ public :
 	vector<Vertex>& getVerts();
 	vector<Vertex>& getNormals();
 	vector<int>& getIndices();
-	vector<Joint>& getJoints();
+	vector<Joint>& getJoints(string);
 
 	float getBustSize();
 	float getWaistSize();
 	float getHipSize();
 
-	void setThreeSize(float, float, float, float);
+	void setSize(float, float, float, float);
 	float height; 
 	float topMostLevel, bottomMostLevel;
 	float bustLevel, waistLevel, hipLevel;
@@ -60,9 +60,10 @@ public :
 
 	vector<Vertex> vertices;
 	vector<Joint> joints;
+	vector<Vertex> textures;
+	vector<Vertex> normals;
 
 private :
-	vector<Vertex> normals;
 	vector<Mesh> faces;
 	vector<int> indices;
 
