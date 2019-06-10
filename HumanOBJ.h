@@ -14,6 +14,7 @@ using namespace std;
 //#include "Bone.h"
 #include "Skinning.h"
 #include "GrahamScan.h"
+#include "Landmark.h"
 
 class HumanOBJ {
 public :
@@ -39,6 +40,8 @@ public :
 	vector<int>& getIndices();
 	vector<Joint>& getJoints(string);
 
+	vector<Landmark>& setLandmarks(string);
+
 	float getBustSize();
 	float getWaistSize();
 	float getHipSize();
@@ -62,6 +65,8 @@ public :
 	vector<Joint> joints;
 	vector<Vertex> textures;
 	vector<Vertex> normals;
+
+	vector<Landmark> landmarks;
 
 private :
 	vector<Mesh> faces;

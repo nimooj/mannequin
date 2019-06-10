@@ -8,7 +8,7 @@ Joint::Joint() {
 	hasParent = false;
 	hasChildren = false;
 	for (int i = 0; i < 4; i++)
-		relatedVerts.push_back(new Vertex());
+		relatedVerts.push_back(0);
 }
 
 Joint::Joint(int i, Vertex c) {
@@ -18,7 +18,7 @@ Joint::Joint(int i, Vertex c) {
 	hasParent = false;
 	hasChildren = false;
 	for (int i = 0; i < 4; i++)
-		relatedVerts.push_back(new Vertex());
+		relatedVerts.push_back(0);
 }
 
 Joint::~Joint() {
@@ -88,10 +88,10 @@ vector<int>& Joint::getRelatedSegments() {
 	return relatedSegments;
 }
 
-void Joint::setRelatedVerts(int i, Vertex* v) {
-	relatedVerts[i] = v;
+void Joint::setRelatedVerts(int i, int vIdx) {
+	relatedVerts[i] = vIdx;
 }
 
-vector<Vertex*>& Joint::getRelatedVerts() {
+vector<int>& Joint::getRelatedVerts() {
 	return relatedVerts;
 }

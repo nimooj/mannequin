@@ -1,5 +1,6 @@
 #pragma once
 
+#define SegmentNum 16
 #define Segment_Head 0
 #define Segment_Neck 1
 #define Segment_UpperArmR 2

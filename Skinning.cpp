@@ -1227,7 +1227,7 @@ void Skinning::setBindings(vector<Vertex>& vertices, vector<Joint>& joints, vect
 	}
 
 	/*** Reverse re-definition ***/
-	updateRigs(vertices, joints);
+	//updateRigs(vertices, joints);
 }
 
 void Skinning::paintWeights(int part, vector<Vertex>& vertices, vector<Joint>& joints) {
@@ -1692,7 +1692,7 @@ void Skinning::rotateArmL(int part, float degree, vector<Vertex>& vertices, vect
 				tmp_x += v->jointWeights[j] * (cos(thisRad) * (x)-sin(thisRad) * (y)+pivotJoint.x);
 				tmp_y += v->jointWeights[j] * (sin(thisRad) * (x)+cos(thisRad)  * (y)+pivotJoint.y);
 			}
-			else if (v->jointsRelated[j] == Joint_shoulderR ) {
+			else if (v->jointsRelated[j] == Joint_shoulderL ) {
 				pivotJoint = joints[Joint_shoulderL].getCoord();
 				x = v->x - pivotJoint.x;
 				y = v->y - pivotJoint.y;

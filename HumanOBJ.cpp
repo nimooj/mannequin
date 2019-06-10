@@ -28,9 +28,9 @@ HumanOBJ::HumanOBJ(string dir) {
 		iss >> f >> x >> y >> z >> w;
 
 		if (f == "v") {
-			x /= 10;
-			y /= 10;
-			z /= 10;
+			//x /= 10;
+			//y /= 10;
+			//z /= 10;
 
 			if (minX > x) {
 				minX = x;
@@ -149,16 +149,20 @@ HumanOBJ::HumanOBJ(string dir) {
 				indices.push_back(i3);
 				meshes.push_back(Mesh(vertices[i1 - 1], vertices[i2 - 1], vertices[i3 - 1]));
 
-				textures[i0 - 1] = tmptextures[t0 - 1];
-				textures[i1 - 1] = tmptextures[t1 - 1];
-				textures[i2 - 1] = tmptextures[t2 - 1];
-				textures[i3 - 1] = tmptextures[t3 - 1];
+				if (tmptextures.size() > 0) {
+					textures[i0 - 1] = tmptextures[t0 - 1];
+					textures[i1 - 1] = tmptextures[t1 - 1];
+					textures[i2 - 1] = tmptextures[t2 - 1];
+					textures[i3 - 1] = tmptextures[t3 - 1];
+				}
 
-				normals[i0 - 1] = tmpnormals[n0 - 1];
-				normals[i1 - 1] = tmpnormals[n1 - 1];
-				normals[i2 - 1] = tmpnormals[n2 - 1];
-				normals[i3 - 1] = tmpnormals[n3 - 1];
+				if (tmpnormals.size() > 0) {
 
+					normals[i0 - 1] = tmpnormals[n0 - 1];
+					normals[i1 - 1] = tmpnormals[n1 - 1];
+					normals[i2 - 1] = tmpnormals[n2 - 1];
+					normals[i3 - 1] = tmpnormals[n3 - 1];
+				}
 			}
 			else if (index.size() == 3) {
 				vector<int> tmpIdx;
@@ -180,8 +184,10 @@ HumanOBJ::HumanOBJ(string dir) {
 					tmpIdx.push_back(idx);
 
 					indices.push_back(idx);
-					textures[idx - 1] = tmptextures[t - 1];
-					normals[idx - 1] = tmpnormals[n - 1];
+					if (tmptextures.size() > 0)
+						textures[idx - 1] = tmptextures[t - 1];
+					if (tmpnormals.size() > 0)
+						normals[idx - 1] = tmpnormals[n - 1];
 				}
 				meshes.push_back(Mesh(vertices[tmpIdx[0] - 1], vertices[tmpIdx[1] - 1], vertices[tmpIdx[2] - 1]));
 			}
@@ -237,10 +243,71 @@ vector<Joint>& HumanOBJ::getJoints(string dir) {
 	return joints;
 }
 
+vector<Landmark>& HumanOBJ::setLandmarks(string dir) {
+	landmarks.clear();
+
+	ifstream infile(dir);
+	string s;
+	int line = 0;
+
+	Landmark l;
+	while (getline(infile, s)) {
+		if (s == "") {
+			line = -1;
+		}
+
+		if (line == 0) {
+			l = Landmark();
+			l.name = s.c_str();
+		}
+		else if (line == 1) {
+			istringstream iss(s);
+			float t = 0;
+			iss >> t;
+			l.type = t;
+		}
+		else if (line == 2) {
+			istringstream iss(s);
+			float t = 0;
+			iss >> t;
+			l.level = t;
+		}
+		else if (line == 3) {
+			istringstream iss(s);
+			float t = 0;
+			iss >> t;
+			l.value = t;
+		}
+		else if (line == 4) {
+			string delimiter1 = " ";
+			size_t pos = 0;
+			string token;
+			vector<string> ss;
+
+			while( (pos = s.find(delimiter1)) != string::npos ) {
+				token = s.substr(0, pos);
+				ss.push_back(token);
+				s.erase(0, pos + delimiter1.length());
+			}
+
+			for (int i = 0; i < ss.size(); i++) {
+				l.vertIdx.push_back(atoi(ss[i].c_str()));
+			}
+			landmarks.push_back(l);
+		}
+
+		line++;
+	}
+
+	infile.close();
+
+	return landmarks;
+}
+
 void HumanOBJ::setJoint(int jointIdx, float x, float y) {
 	vector<Vertex> vinQ;
 	for (int i = 0; i < vertices.size(); i++) {
-		if (abs(vertices[i].x - x) <= 0.3 && abs(vertices[i].y - y) <= 0.3 )  {
+		if (abs(vertices[i].x - x) <= 1 && abs(vertices[i].y - y) <= 1 )  {
 			vinQ.push_back(vertices[i]);
 		}
 	}
@@ -301,7 +368,7 @@ float HumanOBJ::getBustSize() {
 
 	dist += currV.distance(prevV);
 
-	bustSize = dist * 10;
+	bustSize = dist ;
 
 	return bustSize;
 }
@@ -327,7 +394,7 @@ float HumanOBJ::getWaistSize() {
 
 	dist += currV.distance(prevV);
 
-	waistSize = dist * 10;
+	waistSize = dist;
 
 	return waistSize;
 }
@@ -353,7 +420,7 @@ float HumanOBJ::getHipSize() {
 
 	dist += currV.distance(prevV);
 
-	hipSize = dist * 10;
+	hipSize = dist;
 
 	return hipSize;
 }
@@ -556,142 +623,179 @@ void HumanOBJ::setFeatures() {
 	float minZ = 1000, maxZ = -1000;
 	float minX = 1000, maxX = -1000; 
 	float minY = 1000, maxY = -1000;
-
-	for (int i = 0; i < segmentGroup.size(); i++) {
-		segmentHash[segmentGroup[i]].push_back(i); // push vertices ARRAY index
-	}
-
-	/********************** BUST **********************/
-	// Bust : max z val in segment 8
-	for (int i = 0; i < segmentHash[Segment_UpperTorso].size(); i++) {
-		if (vertices[segmentHash[Segment_UpperTorso][i]].z > maxZ) {
-			maxZ = vertices[segmentHash[Segment_UpperTorso][i]].z;
-			bustLevel = vertices[segmentHash[Segment_UpperTorso][i]].y;
+	vector<int> inds;
+	if (landmarks.size() == 0) {
+		for (int i = 0; i < segmentGroup.size(); i++) {
+			segmentHash[segmentGroup[i]].push_back(i); // push vertices ARRAY index
 		}
 
-		if (vertices[segmentHash[Segment_UpperTorso][i]].x < minX) {
-			minX = vertices[segmentHash[Segment_UpperTorso][i]].x;
-			shoulderRIndex = segmentHash[Segment_UpperTorso][i];
-		}
-
-		if (vertices[segmentHash[Segment_UpperTorso][i]].x > maxX) {
-			maxX = vertices[segmentHash[Segment_UpperTorso][i]].x;
-			shoulderLIndex = segmentHash[Segment_UpperTorso][i];
-		}
-	}
-	/*** Align verts near bust level ***/
-	vector<Vertex> nearBust; 
-	for (int i = 0; i < segmentHash[Segment_UpperTorso].size(); i++) {
-		if (abs(vertices[segmentHash[Segment_UpperTorso][i]].y - bustLevel) <= 0.5) {
-			Vertex v = vertices[segmentHash[Segment_UpperTorso][i]];
-			nearBust.push_back(Vertex(v.idx, v.x, bustLevel, v.z));
-		}
-	}
-	/*** Get convex hull***/
-	GrahamScan g = GrahamScan(nearBust);
-	vector<Vertex> bustConvex = g.GenerateConvexHull();
-	float dist = 0;
-	for (int i = 1; i < bustConvex.size(); i++) {
-		dist += bustConvex[i].distance(bustConvex[i - 1]);
-		bustConvexIndices.push_back(bustConvex[i].idx);
-	}
-	dist += bustConvex[bustConvex.size() - 1].distance(bustConvex[0]);
-	bustSize = dist * 10;
-	/**************************************************/
-
-	/********************** WAIST **********************/
-	// Waist : min X val around waist level in segment 8 and 9
-	minX = 1000;
-	minY = 1000;
-	Vertex waistJoint = joints[Joint_waist].getCoord();
-	vector<int> segment_torso;
-	segment_torso.insert(segment_torso.end(), segmentHash[Segment_UpperTorso].begin(), segmentHash[Segment_UpperTorso].end());
-	segment_torso.insert(segment_torso.end(), segmentHash[Segment_LowerTorso].begin(), segmentHash[Segment_LowerTorso].end());
-	for (int i = 0; i < segment_torso.size(); i++) {
-		if (vertices[segment_torso[i]].y < bustLevel && abs(vertices[segment_torso[i]].y - waistJoint.y) <= 0.2) {
-			if (vertices[segment_torso[i]].x > 0 && vertices[segment_torso[i]].x < minX) {
-				minX = vertices[segment_torso[i]].x;
-				waistLevel = vertices[segment_torso[i]].y;
+		/*** HEIGHT ***/
+		int topLevelIdx = 0;
+		for (int i = 0; i < segmentHash[Segment_Head].size(); i++) {
+			if (vertices[segmentHash[Segment_Head][i]].y > maxY) {
+				topMostLevel = vertices[segmentHash[Segment_Head][i]].y;
+				topLevelIdx = segmentHash[Segment_Head][i];
+				maxY = topMostLevel;
 			}
 		}
 
-	}
-	/*** Align verts near waist level ***/
-	vector<Vertex> nearWaist;
-	for (int i = 0; i < segment_torso.size(); i++) {
-		if (abs(vertices[segment_torso[i]].y - waistLevel) <= 0.5) {
-			Vertex v = vertices[segment_torso[i]];
-			nearWaist.push_back(Vertex(v.idx, v.x, waistLevel, v.z));
-		}
-	}
-	/*** Get convex hull***/
-	g = GrahamScan(nearWaist);
-	vector<Vertex> waistConvex = g.GenerateConvexHull();
-	dist = 0;
-	for (int i = 1; i < waistConvex.size(); i++) {
-		dist += waistConvex[i].distance(waistConvex[i - 1]);
-		waistConvexIndices.push_back(waistConvex[i].idx);
-	}
-	dist += waistConvex[waistConvex.size() - 1].distance(waistConvex[0]);
-	waistSize = dist * 10;
-	/***************************************************/
-
-	/********************** Hip **********************/
-	// Hip : min Z val around pelvisMid level in segment 9, 10 and 13
-	minZ = 1000;
-	Vertex pelvisJoint = joints[Joint_pelvisMid].getCoord();
-	vector<int> segment_legs;
-	segment_legs.insert(segment_legs.end(), segmentHash[Segment_LowerTorso].begin(), segmentHash[Segment_LowerTorso].end());
-	segment_legs.insert(segment_legs.end(), segmentHash[Segment_UpperLegR].begin(), segmentHash[Segment_UpperLegR].end());
-	segment_legs.insert(segment_legs.end(), segmentHash[Segment_UpperLegL].begin(), segmentHash[Segment_UpperLegL].end());
-	for (int i = 0; i < segment_legs.size(); i++) {
-		if (abs(vertices[segment_legs[i]].y - pelvisJoint.y) <= 1) {
-			if (vertices[segment_legs[i]].z < minZ) {
-				minZ = vertices[segment_legs[i]].z;
-				hipLevel = vertices[segment_legs[i]].y;
+		int bottomLevelIdx = 0;
+		vector<int> segment_lowLegs;
+		segment_lowLegs.insert(segment_lowLegs.end(), segmentHash[Segment_FootR].begin(), segmentHash[Segment_FootR].end());
+		segment_lowLegs.insert(segment_lowLegs.end(), segmentHash[Segment_FootL].begin(), segmentHash[Segment_FootL].end());
+		for (int i = 0; i < segment_lowLegs.size(); i++) {
+			if (vertices[segment_lowLegs[i]].y < minY) {
+				bottomMostLevel = vertices[segment_lowLegs[i]].y;
+				bottomLevelIdx = segment_lowLegs[i];
+				minY = bottomMostLevel;
 			}
 		}
-	}
-	/*** Align verts near hip level ***/
-	vector<Vertex> nearHip;
-	for (int i = 0; i < segment_legs.size(); i++) {
-		if (abs(vertices[segment_legs[i]].y - hipLevel) <= 0.5) {
-			Vertex v = vertices[segment_legs[i]];
-			nearHip.push_back(Vertex(v.idx, v.x, hipLevel, v.z));
+
+		height = (topMostLevel - bottomMostLevel);
+		inds.push_back(topLevelIdx + 1);
+		inds.push_back(bottomLevelIdx + 1);
+
+		landmarks.push_back(Landmark(_T("Height"), Length, height, inds));
+		inds.clear();
+
+		maxY = -1000;
+		minY = 1000;
+		/********************** BUST **********************/
+		// Bust : max z val in segment 8
+		for (int i = 0; i < segmentHash[Segment_UpperTorso].size(); i++) {
+			if (vertices[segmentHash[Segment_UpperTorso][i]].z > maxZ) {
+				maxZ = vertices[segmentHash[Segment_UpperTorso][i]].z;
+				bustLevel = vertices[segmentHash[Segment_UpperTorso][i]].y;
+			}
+
+			if (vertices[segmentHash[Segment_UpperTorso][i]].x < minX) {
+				minX = vertices[segmentHash[Segment_UpperTorso][i]].x;
+				shoulderRIndex = segmentHash[Segment_UpperTorso][i];
+			}
+
+			if (vertices[segmentHash[Segment_UpperTorso][i]].x > maxX) {
+				maxX = vertices[segmentHash[Segment_UpperTorso][i]].x;
+				shoulderLIndex = segmentHash[Segment_UpperTorso][i];
+			}
 		}
-	}
-	/*** Get convex hull***/
-	g = GrahamScan(nearHip);
-	vector<Vertex> hipConvex = g.GenerateConvexHull();
-	dist = 0;
-	for (int i = 1; i < hipConvex.size(); i++) {
-		dist += hipConvex[i].distance(hipConvex[i - 1]);
-		hipConvexIndices.push_back(hipConvex[i].idx);
-	}
-	dist += hipConvex[hipConvex.size() - 1].distance(hipConvex[0]);
-	hipSize = dist * 10;
-	/*************************************************/
-
-	// Get height
-	maxY = -1000;
-	for (int i = 0; i < segmentHash[Segment_Head].size(); i++) {
-		if (vertices[segmentHash[Segment_Head][i]].y > maxY) {
-			topMostLevel = vertices[segmentHash[Segment_Head][i]].y;
+		/*** Align verts near bust level ***/
+		vector<Vertex> nearBust;
+		for (int i = 0; i < segmentHash[Segment_UpperTorso].size(); i++) {
+			if (abs(vertices[segmentHash[Segment_UpperTorso][i]].y - bustLevel) <= 0.5) {
+				Vertex v = vertices[segmentHash[Segment_UpperTorso][i]];
+				nearBust.push_back(Vertex(v.idx, v.x, bustLevel, v.z));
+			}
 		}
-	}
-
-	minY = 1000;
-	vector<int> segment_lowLegs;
-	segment_lowLegs.insert(segment_lowLegs.end(), segmentHash[Segment_LowerLegR].begin(), segmentHash[Segment_LowerLegR].end());
-	segment_lowLegs.insert(segment_lowLegs.end(), segmentHash[Segment_LowerLegL].begin(), segmentHash[Segment_LowerLegL].end());
-	for (int i = 0; i < segment_lowLegs.size(); i++) {
-		if (vertices[segment_lowLegs[i]].y < minY) {
-			bottomMostLevel = vertices[segment_lowLegs[i]].y;
+		/*** Get convex hull***/
+		GrahamScan g = GrahamScan(nearBust);
+		vector<Vertex> bustConvex = g.GenerateConvexHull();
+		float dist = 0;
+		for (int i = 1; i < bustConvex.size(); i++) {
+			dist += bustConvex[i].distance(bustConvex[i - 1]);
+			bustConvexIndices.push_back(bustConvex[i].idx);
 		}
+		dist += bustConvex[bustConvex.size() - 1].distance(bustConvex[0]);
+		bustSize = dist;
+
+		inds.insert(inds.end(), bustConvexIndices.begin(), bustConvexIndices.end());
+
+		landmarks.push_back(Landmark(_T("Bust"), Girth, bustSize, bustLevel, inds));
+		/**************************************************/
+
+		/********************** WAIST **********************/
+		// Waist : min X val around waist level in segment 8 and 9
+		minX = 1000;
+		minY = 1000;
+		Vertex waistJoint = joints[Joint_waist].getCoord();
+		vector<int> segment_torso;
+		segment_torso.insert(segment_torso.end(), segmentHash[Segment_UpperTorso].begin(), segmentHash[Segment_UpperTorso].end());
+		segment_torso.insert(segment_torso.end(), segmentHash[Segment_LowerTorso].begin(), segmentHash[Segment_LowerTorso].end());
+		for (int i = 0; i < segment_torso.size(); i++) {
+			if (vertices[segment_torso[i]].y < bustLevel && abs(vertices[segment_torso[i]].y - waistJoint.y) <= 0.2) {
+				if (vertices[segment_torso[i]].x > 0 && vertices[segment_torso[i]].x < minX) {
+					minX = vertices[segment_torso[i]].x;
+					waistLevel = vertices[segment_torso[i]].y;
+				}
+			}
+
+		}
+		/*** Align verts near waist level ***/
+		vector<Vertex> nearWaist;
+		for (int i = 0; i < segment_torso.size(); i++) {
+			if (abs(vertices[segment_torso[i]].y - waistLevel) <= 0.5) {
+				Vertex v = vertices[segment_torso[i]];
+				nearWaist.push_back(Vertex(v.idx, v.x, waistLevel, v.z));
+			}
+		}
+		/*** Get convex hull***/
+		g = GrahamScan(nearWaist);
+		vector<Vertex> waistConvex = g.GenerateConvexHull();
+		dist = 0;
+		for (int i = 1; i < waistConvex.size(); i++) {
+			dist += waistConvex[i].distance(waistConvex[i - 1]);
+			waistConvexIndices.push_back(waistConvex[i].idx);
+		}
+		dist += waistConvex[waistConvex.size() - 1].distance(waistConvex[0]);
+		waistSize = dist;
+
+		inds.clear();
+		inds.insert(inds.end(), waistConvexIndices.begin(), waistConvexIndices.end());
+		landmarks.push_back(Landmark(_T("Waist"), Girth, waistSize, waistLevel, inds));
+		/***************************************************/
+
+		/********************** Hip **********************/
+		// Hip : min Z val around pelvisMid level in segment 9, 10 and 13
+		minZ = 1000;
+		Vertex pelvisJoint = joints[Joint_pelvisMid].getCoord();
+		vector<int> segment_legs;
+		segment_legs.insert(segment_legs.end(), segmentHash[Segment_LowerTorso].begin(), segmentHash[Segment_LowerTorso].end());
+		segment_legs.insert(segment_legs.end(), segmentHash[Segment_UpperLegR].begin(), segmentHash[Segment_UpperLegR].end());
+		segment_legs.insert(segment_legs.end(), segmentHash[Segment_UpperLegL].begin(), segmentHash[Segment_UpperLegL].end());
+		for (int i = 0; i < segment_legs.size(); i++) {
+			if (abs(vertices[segment_legs[i]].y - pelvisJoint.y) <= 1) {
+				if (vertices[segment_legs[i]].z < minZ) {
+					minZ = vertices[segment_legs[i]].z;
+					hipLevel = vertices[segment_legs[i]].y;
+				}
+			}
+		}
+		/*** Align verts near hip level ***/
+		vector<Vertex> nearHip;
+		for (int i = 0; i < segment_legs.size(); i++) {
+			if (abs(vertices[segment_legs[i]].y - hipLevel) <= 0.5) {
+				Vertex v = vertices[segment_legs[i]];
+				nearHip.push_back(Vertex(v.idx, v.x, hipLevel, v.z));
+			}
+		}
+		/*** Get convex hull***/
+		g = GrahamScan(nearHip);
+		vector<Vertex> hipConvex = g.GenerateConvexHull();
+		dist = 0;
+		for (int i = 1; i < hipConvex.size(); i++) {
+			dist += hipConvex[i].distance(hipConvex[i - 1]);
+			hipConvexIndices.push_back(hipConvex[i].idx);
+		}
+		dist += hipConvex[hipConvex.size() - 1].distance(hipConvex[0]);
+		hipSize = dist;
+
+		inds.clear();
+		inds.insert(inds.end(), hipConvexIndices.begin(), hipConvexIndices.end());
+		landmarks.push_back(Landmark(_T("Hip"), Girth, hipSize, hipLevel, inds));
+		/*************************************************/
 	}
+	else {
+		bustSize = landmarks[1].value;
+		bustLevel = landmarks[1].level;
+		bustConvexIndices.insert(bustConvexIndices.end(), landmarks[1].vertIdx.begin(), landmarks[1].vertIdx.end());
 
-	height = (topMostLevel - bottomMostLevel) * 10;
+		waistSize = landmarks[2].value;
+		waistLevel = landmarks[2].level;
+		waistConvexIndices.insert(waistConvexIndices.end(), landmarks[2].vertIdx.begin(), landmarks[2].vertIdx.end());
 
+		hipSize = landmarks[3].value;
+		hipLevel = landmarks[3].level;
+		hipConvexIndices.insert(hipConvexIndices.end(), landmarks[3].vertIdx.begin(), landmarks[3].vertIdx.end());
+	}
 }
 
 void HumanOBJ::bindRigs() {
@@ -712,12 +816,40 @@ void HumanOBJ::centering(float x, float y, float z) {
 }
 
 void HumanOBJ::jointExport() {
-	ofstream outfile("layers/humanJoints.txt");
+	ofstream outfile("joints.txt");
+	/*** Mirror joints ***/
+	vector<Joint> tmpJoints(18, Joint());
+	for (int i = 0; i < joints.size(); i++) {
+		tmpJoints[i] = Joint(i, joints[i].getCoord());
+	}
+	Vertex coord = joints[7].getCoord();
+	tmpJoints[11] = Joint(11, Vertex(-coord.x, coord.y, coord.z));
+
+	coord = joints[8].getCoord();
+	tmpJoints[12] = Joint(12, Vertex(-coord.x, coord.y, coord.z));
+
+	coord = joints[9].getCoord();
+	tmpJoints[13] = Joint(13, Vertex(-coord.x, coord.y, coord.z));
+
+	coord = joints[10].getCoord();
+	tmpJoints[14] = Joint(14, Vertex(-coord.x, coord.y, coord.z));
+
+	coord = joints[2].getCoord();
+	tmpJoints[15] = Joint(15, Vertex(-coord.x, coord.y, coord.z));
+
+	coord = joints[3].getCoord();
+	tmpJoints[16] = Joint(16, Vertex(-coord.x, coord.y, coord.z));
+
+	coord = joints[4].getCoord();
+	tmpJoints[17] = Joint(17, Vertex(-coord.x, coord.y, coord.z));
+
+	joints.clear();
+	joints.insert(joints.end(), tmpJoints.begin(), tmpJoints.end());
+
 	for (int i = 0; i < joints.size(); i++) {
 		Vertex v = joints[i].getCoord();
 		outfile << v.x << " " << v.y << " " << v.z << endl;
 	}
-	//cout << "Joints exported.\n" << endl;
 	AfxMessageBox(_T("Joints exported.\n"));
 	outfile.close();
 

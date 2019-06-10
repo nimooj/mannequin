@@ -33,8 +33,8 @@ public:
 	void setRelatedSegment(int);
 	vector<int>& getRelatedSegments();
 
-	void setRelatedVerts(int, Vertex*);
-	vector<Vertex*>& getRelatedVerts();
+	void setRelatedVerts(int, int);
+	vector<int>& getRelatedVerts();
 
 private:
 
@@ -44,5 +44,5 @@ private:
 	vector<Layer> layers;
 
 	vector<int> relatedSegments; 
-	vector<Vertex*> relatedVerts; // CCW : minZ -> minX -> maxZ -> maxX;
+	vector<int> relatedVerts; // CCW : minZ -> minX -> maxZ -> maxX;
 };
