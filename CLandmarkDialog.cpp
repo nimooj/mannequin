@@ -9,12 +9,17 @@ BEGIN_MESSAGE_MAP(CLandmarkDialog, CDialogEx)
 	ON_BN_CLICKED(IDC_LENGTH, &CLandmarkDialog::OnBnClickedLength)
 	ON_BN_CLICKED(IDC_GIRTH, &CLandmarkDialog::OnBnClickedGirth)
 	ON_BN_CLICKED(IDC_BUTTON1, &CLandmarkDialog::OnBnClickedButton1)
-//	ON_STN_CLICKED(IDC_LANDMARKFIELD, &CLandmarkDialog::OnStnClickedLandmarkfield)
-	ON_BN_CLICKED(IDC_CHECK_ALL, &CLandmarkDialog::OnBnClickedCheckAll)
-//	ON_STN_CLICKED(IDC_LANDMARKFIELD, &CLandmarkDialog::OnStnClickedLandmarkfield)
-ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_LANDMARKSLIDER, &CLandmarkDialog::OnNMReleasedcaptureLandmarkslider)
+	ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_LANDMARKSLIDER, &CLandmarkDialog::OnNMReleasedcaptureLandmarkslider)
+	ON_BN_CLICKED(IDC_FRONT, &CLandmarkDialog::OnBnClickedFront)
+	ON_BN_CLICKED(IDC_BACK, &CLandmarkDialog::OnBnClickedBack)
+	ON_BN_CLICKED(IDC_RIGHT, &CLandmarkDialog::OnBnClickedRight)
+	ON_BN_CLICKED(IDC_LEFT, &CLandmarkDialog::OnBnClickedLeft)
+	ON_BN_CLICKED(IDC_UP, &CLandmarkDialog::OnBnClickedUp)
+	ON_BN_CLICKED(IDC_MOVEUP, &CLandmarkDialog::OnBnClickedMoveup)
+	ON_BN_CLICKED(IDC_MOVEDOWN, &CLandmarkDialog::OnBnClickedMovedown)
+	ON_LBN_SELCHANGE(IDC_LANDMARKLIST, &CLandmarkDialog::OnLbnSelchangeLandmarklist)
+	ON_BN_CLICKED(IDC_REMOVE_BUTTON, &CLandmarkDialog::OnBnClickedRemoveButton)
 END_MESSAGE_MAP()
-
 
 CLandmarkDialog::CLandmarkDialog() {
 
@@ -28,7 +33,6 @@ CLandmarkDialog::CLandmarkDialog(CWnd* pParent)
 	: CDialogEx(IDD_LANDMARKDIALOG, pParent) 
 {
 }
-
 
 void CLandmarkDialog::DoDataExchange(CDataExchange* pDX)
 {
@@ -117,6 +121,8 @@ BOOL CLandmarkDialog::OnInitDialog()
 		colorArray.push_back(vec3(r, g, b));
 	}
 
+	Camera camera = Camera();
+
 	area.push_back(vec2(-100, 0));
 	area.push_back(vec2(100, 0));
 
@@ -143,7 +149,7 @@ void CLandmarkDialog::OnTimer(UINT_PTR nIDEvent)
 		glClear(GL_COLOR_BUFFER_BIT);// | GL_DEPTH_BUFFER_BIT);
 
 		projectionMatrix = ortho(-10.0f , 10.0f , -10.0f , 10.f , 0.0f, 100.0f);
-		viewMatrix = mat4(1.0f);
+		viewMatrix = lookAt(camera.cameraPosition, camera.cameraFront, camera.cameraUp);
 		modelMatrix = scaleMatrix * mat4(1.0f);
 
 		glUseProgram(shaderProgram);
@@ -156,12 +162,11 @@ void CLandmarkDialog::OnTimer(UINT_PTR nIDEvent)
 
 		glBindVertexArray(vao);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-		//glDrawArrays(GL_POINTS, 0, verts.size());
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glDrawElements(GL_TRIANGLES, inds.size(), GL_UNSIGNED_INT, 0);
 		glDisableVertexAttribArray(position_attribute);
 		glDisableVertexAttribArray(color_attribute);
 		glBindVertexArray(0);
-
 
 		for (int i = 0; i < variables->size(); i++) {
 			defineLandmarkVAO(i, landmark_vao);
@@ -174,8 +179,13 @@ void CLandmarkDialog::OnTimer(UINT_PTR nIDEvent)
 			modelID = glGetUniformLocation(landmarkShaderProgram, "model");
 			glUniformMatrix4fv(modelID, 1, GL_FALSE, &modelMatrix[0][0]);
 
+			if (i == selItem)
+				glLineWidth(3);
+			else
+				glLineWidth(1);
+
 			glBindVertexArray(landmark_vao);
-			glDrawArrays(GL_LINE_STRIP, 0, varPos.size());
+			glDrawArrays(GL_LINE_LOOP, 0, varPos.size());
 
 			glDisableVertexAttribArray(landmark_position_attribute);
 			glDisableVertexAttribArray(landmark_color_attribute);
@@ -195,6 +205,7 @@ void CLandmarkDialog::OnTimer(UINT_PTR nIDEvent)
 
 		glBindVertexArray(line_vao);
 		if (area.size() == 2) {
+			glLineWidth(1);
 			glDrawArrays(GL_LINES, 0, area.size());
 		}
 		else if (area.size() == 1) {
@@ -246,10 +257,12 @@ void CLandmarkDialog::defineVAO(GLuint& vao) {
 
 	shaderProgram = loadShaders("shaders/LandmarkVertexShader.vertexshader", "shaders/LandmarkFragmentShader.fragmentshader");
 
+	verts.clear();
+	inds.clear();
 	vector<vec3> color;
 
 	for (int i = 0; i < vertices->size(); i++) {
-		verts.push_back(vec2((*vertices)[i].x, (*vertices)[i].y));
+		verts.push_back(vec3((*vertices)[i].x, (*vertices)[i].y, (*vertices)[i].z));
 		color.push_back(vec3(0, 0, 0));
 	}
 
@@ -364,10 +377,10 @@ void CLandmarkDialog::defineVAO(GLuint& vao) {
 
 	glGenBuffers(1, &position_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, position_vbo);
-	glBufferData(GL_ARRAY_BUFFER, verts.size() * sizeof(vec2), &verts[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, verts.size() * sizeof(vec3), &verts[0], GL_STATIC_DRAW);
 
 	position_attribute = glGetAttribLocation(shaderProgram, "position");
-	glVertexAttribPointer(position_attribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(position_attribute, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(position_attribute);
 
 	// Color for different segment parts
@@ -386,16 +399,68 @@ void CLandmarkDialog::defineVAO(GLuint& vao) {
 	glBindVertexArray(0);
 }
 
+void CLandmarkDialog::defineLandmarkVAO(int idx, GLuint& vao) {
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
+	landmarkShaderProgram = loadShaders("shaders/GirthVertexShader.vertexshader", "shaders/GirthFragmentShader.fragmentshader");
+
+
+	varPos.clear();
+	vector<vec3> color;
+
+	for (int i = 0; i < (*variables)[idx].vertIdx.size(); i++) {
+		Vertex v;
+		if (idx == 0 || (*variables)[idx].type == Girth) // Height is Length type but has to go here
+			v = (*vertices)[(*variables)[idx].vertIdx[i] - 1];
+		else
+			v = (*joints)[(*variables)[idx].vertIdx[i]].getCoord();
+
+		// When height
+		if (idx == 0) {
+			varPos.push_back(vec3(leftMostOffset - 0.5, v.y, 0));
+		}
+		else {
+			if ((*variables)[idx].type == Girth) {
+				varPos.push_back(vec3(v.x, (*variables)[idx].level, v.z));
+			}
+			else if ((*variables)[idx].type == Length) {
+				varPos.push_back(vec3(v.x, v.y, v.z));
+			}
+		}
+
+		color.push_back(vec3(1, 0, 0));
+	}
+
+	glGenBuffers(1, &landmark_position_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, landmark_position_vbo);
+	glBufferData(GL_ARRAY_BUFFER, varPos.size() * sizeof(vec3), &varPos[0], GL_STATIC_DRAW);
+
+	landmark_position_attribute = glGetAttribLocation(landmarkShaderProgram, "position");
+	glVertexAttribPointer(landmark_position_attribute, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(landmark_position_attribute);
+
+	glGenBuffers(1, &landmark_color_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, landmark_color_vbo);
+	glBufferData(GL_ARRAY_BUFFER, color.size() * sizeof(vec3), &color[0], GL_STATIC_DRAW);
+
+	landmark_color_attribute = glGetAttribLocation(landmarkShaderProgram, "color");
+	glVertexAttribPointer(landmark_color_attribute, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(landmark_color_attribute);
+
+	glBindVertexArray(0);
+}
+
 void CLandmarkDialog::defineLineVAO(GLuint& vao) {
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
 	lineShaderProgram = loadShaders("shaders/LineVertexShader.vertexshader", "shaders/LineFragmentShader.fragmentshader");
 
+	//area.clear();
 	vector<vec3> color;
 	for (int i = 0; i < area.size(); i++) {
 		color.push_back(vec3(1, 0, 0));
-
 	}
 
 	glGenBuffers(1, &line_position_vbo);
@@ -413,52 +478,6 @@ void CLandmarkDialog::defineLineVAO(GLuint& vao) {
 	line_color_attribute = glGetAttribLocation(lineShaderProgram, "color");
 	glVertexAttribPointer(line_color_attribute, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(line_color_attribute);
-
-	glBindVertexArray(0);
-}
-
-void CLandmarkDialog::defineLandmarkVAO(int idx, GLuint& vao) {
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-
-	landmarkShaderProgram = loadShaders("shaders/GirthVertexShader.vertexshader", "shaders/GirthFragmentShader.fragmentshader");
-
-	vector<vec3> color;
-
-	varPos.clear();
-
-	for (int i = 0; i < (*variables)[idx].vertIdx.size(); i++) {
-		Vertex v = (*vertices)[(*variables)[idx].vertIdx[i] - 1];
-
-		if (v.z > 0) {
-			// When height
-			if (idx == 0) {
-				varPos.push_back(vec2(0, v.y));
-			}
-			else {
-				//varPos.push_back(vec2(v.x, v.y));
-				varPos.push_back(vec2(v.x, (*variables)[idx].level));
-			}
-
-			color.push_back(vec3(1, 0, 0));
-		}
-	}
-
-	glGenBuffers(1, &landmark_position_vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, landmark_position_vbo);
-	glBufferData(GL_ARRAY_BUFFER, varPos.size() * sizeof(vec2), &varPos[0], GL_STATIC_DRAW);
-
-	landmark_position_attribute = glGetAttribLocation(landmarkShaderProgram, "position");
-	glVertexAttribPointer(landmark_position_attribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(landmark_position_attribute);
-
-	glGenBuffers(1, &landmark_color_vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, landmark_color_vbo);
-	glBufferData(GL_ARRAY_BUFFER, color.size() * sizeof(vec3), &color[0], GL_STATIC_DRAW);
-
-	landmark_color_attribute = glGetAttribLocation(landmarkShaderProgram, "color");
-	glVertexAttribPointer(landmark_color_attribute, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(landmark_color_attribute);
 
 	glBindVertexArray(0);
 }
@@ -492,24 +511,40 @@ void CLandmarkDialog::OnNMReleasedcaptureLandmarkslider(NMHDR *pNMHDR, LRESULT *
 	}
 }
 
-void CLandmarkDialog::SetVariable(CString n, int segment, float h) {
+void CLandmarkDialog::SetGirthVariable(CString n, vector<int> segment, float h) {
 	Landmark* l = new Landmark(n, Girth);
 
-	if (segment == SegmentNum) {
-		vector<int> cv;
-		for (int i = 0; i < SegmentNum; i++) {
-			cv.insert(cv.end(), bodySegment[i].begin(), bodySegment[i].end());
-		}
-		l->SetGirthFeature(cv, *vertices, h);
+	vector<int> secs, cv;
+	for (int i = 0; i < segment.size(); i++) {
+		secs.push_back(segment[i]);
+		cv.insert(cv.end(), bodySegment[segment[i]].begin(), bodySegment[segment[i]].end());
+	}
+
+	bool result = l->SetGirthFeature(segment, cv, *vertices, h);
+	if (result) {
+		variables->push_back(*l);
+
+		/*** Reset variable field ***/
+		landmarkList.InsertString((*variables).size() - 1, (*variables)[(*variables).size() - 1].name);
 	}
 	else {
-		l->SetGirthFeature(bodySegment[segment], *vertices, h);
+		AfxMessageBox(_T("Unable to define landmark."));
 	}
+}
 
-	variables->push_back(*l);
+void CLandmarkDialog::SetLengthVariable(CString n, vector<int> segment, vector<Joint> relatedJoints) {
+	Landmark* l = new Landmark(n, Length);
 
-	/*** Reset variable field ***/
-	landmarkList.InsertString((*variables).size() - 1, (*variables)[(*variables).size() - 1].name);
+	bool result = l->SetLengthFeature(segment, relatedJoints);
+	if (result) {
+		variables->push_back(*l);
+
+		/*** Reset variable field ***/
+		landmarkList.InsertString((*variables).size() - 1, (*variables)[(*variables).size() - 1].name);
+	}
+	else {
+		AfxMessageBox(_T("Unable to define landmark."));
+	}
 }
 
 void CLandmarkDialog::OnBnClickedButton1()
@@ -521,68 +556,273 @@ void CLandmarkDialog::OnBnClickedButton1()
 		AfxMessageBox(_T("Insert name."));
 	}
 	else {
+		vector<int> secs;
 		if (showAllBodySegment.GetCheck()) {
-			if (girthType.GetCheck())
-				SetVariable(ctr, SegmentNum, area[0].y);
+			if (girthType.GetCheck()) {
+				for (int i = 0; i < SegmentNum; i++) {
+					secs.push_back(i);
+				}
+				SetGirthVariable(ctr, secs, area[0].y);
+			}
+			else if (lengthType.GetCheck()) { // Set Every Length
+				/*
+				for (int i = 0; i < SegmentNum; i++) {
+					secs.push_back(i);
+				}
+				SetLengthVariable(ctr, secs);
+				*/
+			}
+			showAllBodySegment.SetCheck(false);
 		}
 		else {
-			if (showHeadBodySegment.GetCheck()) {
-				SetVariable(ctr, Segment_Head, area[0].y);
+			if (girthType.GetCheck()) {
+				if (showHeadBodySegment.GetCheck()) {
+					secs.push_back(Segment_Head);
+					SetGirthVariable(ctr, secs, area[0].y);
+					secs.clear();
+					showHeadBodySegment.SetCheck(false);
+				}
+				if (showNeckBodySegment.GetCheck()) {
+					secs.push_back(Segment_Neck);
+					SetGirthVariable(ctr, secs, area[0].y);
+					secs.clear();
+					showNeckBodySegment.SetCheck(false);
+				}
+				if (showUpperTorsoBodySegment.GetCheck()) {
+					secs.push_back(Segment_UpperTorso);
+					SetGirthVariable(ctr, secs, area[0].y);
+					secs.clear();
+					showUpperTorsoBodySegment.SetCheck(false);
+				}
+				if (showLowerTorsoBodySegment.GetCheck()) {
+					secs.push_back(Segment_LowerTorso);
+					SetGirthVariable(ctr, secs, area[0].y);
+					secs.clear();
+					showLowerTorsoBodySegment.SetCheck(false);
+				}
+				if (showUpperLegRBodySegment.GetCheck()) {
+					secs.push_back(Segment_UpperLegR);
+					SetGirthVariable(ctr, secs, area[0].y);
+					secs.clear();
+					showUpperLegRBodySegment.SetCheck(false);
+				}
+				if (showLowerLegRBodySegment.GetCheck()) {
+					secs.push_back(Segment_LowerLegR);
+					SetGirthVariable(ctr, secs, area[0].y);
+					secs.clear();
+					showLowerLegRBodySegment.SetCheck(false);
+				}
+				if (showFootRBodySegment.GetCheck()) {
+					secs.push_back(Segment_FootR);
+					SetGirthVariable(ctr, secs, area[0].y);
+					secs.clear();
+					showFootRBodySegment.SetCheck(false);
+				}
+				if (showUpperLegLBodySegment.GetCheck()) {
+					secs.push_back(Segment_UpperLegL);
+					SetGirthVariable(ctr, secs, area[0].y);
+					secs.clear();
+					showUpperLegLBodySegment.SetCheck(false);
+				}
+				if (showLowerLegLBodySegment.GetCheck()) {
+					secs.push_back(Segment_LowerLegL);
+					SetGirthVariable(ctr, secs, area[0].y);
+					secs.clear();
+					showLowerLegLBodySegment.SetCheck(false);
+				}
+				if (showFootLBodySegment.GetCheck()) {
+					secs.push_back(Segment_FootL);
+					SetGirthVariable(ctr, secs, area[0].y);
+					secs.clear();
+					showFootLBodySegment.SetCheck(false);
+				}
+				if (showUpperArmRBodySegment.GetCheck()) {
+					secs.push_back(Segment_UpperArmR);
+					SetGirthVariable(ctr, secs, area[0].y);
+					secs.clear();
+					showUpperArmRBodySegment.SetCheck(false);
+				}
+				if (showLowerArmRBodySegment.GetCheck()) {
+					secs.push_back(Segment_LowerArmR);
+					SetGirthVariable(ctr, secs, area[0].y);
+					secs.clear();
+					showLowerArmRBodySegment.SetCheck(false);
+				}
+				if (showHandRBodySegment.GetCheck()) {
+					secs.push_back(Segment_HandR);
+					SetGirthVariable(ctr, secs, area[0].y);
+					secs.clear();
+					showHandRBodySegment.SetCheck(false);
+				}
+				if (showUpperArmLBodySegment.GetCheck()) {
+					secs.push_back(Segment_UpperArmL);
+					SetGirthVariable(ctr, secs, area[0].y);
+					secs.clear();
+					showUpperArmLBodySegment.SetCheck(false);
+				}
+				if (showLowerArmLBodySegment.GetCheck()) {
+					secs.push_back(Segment_LowerArmL);
+					SetGirthVariable(ctr, secs, area[0].y);
+					secs.clear();
+					showLowerArmLBodySegment.SetCheck(false);
+				}
+				if (showHandLBodySegment.GetCheck()) {
+					secs.push_back(Segment_HandL);
+					SetGirthVariable(ctr, secs, area[0].y);
+					secs.clear();
+					showHandLBodySegment.SetCheck(false);
+				}
 			}
-			if (showNeckBodySegment.GetCheck()) {
-				SetVariable(ctr, Segment_Neck, area[0].y);
-			}
-			if (showUpperTorsoBodySegment.GetCheck()) {
-				SetVariable(ctr, Segment_UpperTorso, area[0].y);
-			}
-			if (showLowerTorsoBodySegment.GetCheck()) {
-				SetVariable(ctr, Segment_LowerTorso, area[0].y);
-			}
-			if (showUpperLegRBodySegment.GetCheck()) {
-				SetVariable(ctr, Segment_UpperLegR, area[0].y);
-			}
-			if (showLowerLegRBodySegment.GetCheck()) {
-				SetVariable(ctr, Segment_LowerLegR, area[0].y);
-			}
-			if (showFootRBodySegment.GetCheck()) {
-				SetVariable(ctr, Segment_FootR, area[0].y);
-			}
-			if (showUpperLegLBodySegment.GetCheck()) {
-				SetVariable(ctr, Segment_UpperLegL, area[0].y);
-			}
-			if (showLowerLegLBodySegment.GetCheck()) {
-				SetVariable(ctr, Segment_LowerLegL, area[0].y);
-			}
-			if (showFootLBodySegment.GetCheck()) {
-				SetVariable(ctr, Segment_FootL, area[0].y);
-			}
-			if (showUpperArmRBodySegment.GetCheck()) {
-				SetVariable(ctr, Segment_UpperArmR, area[0].y);
-			}
-			if (showLowerArmRBodySegment.GetCheck()) {
-				SetVariable(ctr, Segment_LowerArmR, area[0].y);
-			}
-			if (showHandRBodySegment.GetCheck()) {
-				SetVariable(ctr, Segment_HandR, area[0].y);
-			}
-			if (showUpperArmLBodySegment.GetCheck()) {
-				SetVariable(ctr, Segment_UpperArmL, area[0].y);
-			}
-			if (showLowerArmLBodySegment.GetCheck()) {
-				SetVariable(ctr, Segment_LowerArmL, area[0].y);
-			}
-			if (showHandLBodySegment.GetCheck()) {
-				SetVariable(ctr, Segment_HandL, area[0].y);
+			else if (lengthType.GetCheck()) {
+				vector<Joint> rjoints;
+				if (showHeadBodySegment.GetCheck()) {
+					rjoints.clear();
+					secs.push_back(Segment_Head);
+					rjoints.push_back(Joint(-1, Vertex(0, topMostLevel, 0)));
+					rjoints.push_back((*joints)[Joint_neck]);
+					SetLengthVariable(ctr, secs, rjoints);
+					secs.clear();
+					showHeadBodySegment.SetCheck(false);
+				}
+				if (showNeckBodySegment.GetCheck()) {
+					rjoints.clear();
+					secs.push_back(Segment_Neck);
+					rjoints.push_back((*joints)[Joint_neck]);
+					rjoints.push_back((*joints)[Joint_shoulderMid]);
+					SetLengthVariable(ctr, secs, rjoints);
+					secs.clear();
+					showNeckBodySegment.SetCheck(false);
+				}
+				if (showUpperTorsoBodySegment.GetCheck()) {
+					rjoints.clear();
+					secs.push_back(Segment_UpperTorso);
+					rjoints.push_back((*joints)[Joint_shoulderMid]);
+					rjoints.push_back((*joints)[Joint_waist]);
+					SetLengthVariable(ctr, secs, rjoints);
+					secs.clear();
+					showUpperTorsoBodySegment.SetCheck(false);
+				}
+				if (showLowerTorsoBodySegment.GetCheck()) {
+					rjoints.clear();
+					secs.push_back(Segment_LowerTorso);
+					rjoints.push_back((*joints)[Joint_waist]);
+					rjoints.push_back((*joints)[Joint_pelvisMid]);
+					SetLengthVariable(ctr, secs, rjoints);
+					secs.clear();
+					showLowerTorsoBodySegment.SetCheck(false);
+				}
+				if (showUpperLegRBodySegment.GetCheck()) {
+					rjoints.clear();
+					secs.push_back(Segment_UpperLegR);
+					rjoints.push_back((*joints)[Joint_pelvisR]);
+					rjoints.push_back((*joints)[Joint_kneeR]);
+					SetLengthVariable(ctr, secs, rjoints);
+					secs.clear();
+					showUpperLegRBodySegment.SetCheck(false);
+				}
+				if (showLowerLegRBodySegment.GetCheck()) {
+					rjoints.clear();
+					secs.push_back(Segment_LowerLegR);
+					rjoints.push_back((*joints)[Joint_kneeR]);
+					rjoints.push_back((*joints)[Joint_ankleR]);
+					SetLengthVariable(ctr, secs, rjoints);
+					secs.clear();
+					showLowerLegRBodySegment.SetCheck(false);
+				}
+				if (showFootRBodySegment.GetCheck()) {
+					rjoints.clear();
+					secs.push_back(Segment_FootR);
+					rjoints.push_back((*joints)[Joint_ankleR]);
+					rjoints.push_back(Joint(-1, Vertex((*joints)[Joint_ankleR].getCoord().x, bottomMostLevel, 0)));
+					SetLengthVariable(ctr, secs, rjoints);
+					secs.clear();
+					showFootRBodySegment.SetCheck(false);
+				}
+				if (showUpperLegLBodySegment.GetCheck()) {
+					rjoints.clear();
+					secs.push_back(Segment_UpperLegL);
+					rjoints.push_back((*joints)[Joint_pelvisL]);
+					rjoints.push_back((*joints)[Joint_kneeL]);
+					SetLengthVariable(ctr, secs, rjoints);
+					secs.clear();
+					showUpperLegLBodySegment.SetCheck(false);
+				}
+				if (showLowerLegLBodySegment.GetCheck()) {
+					rjoints.clear();
+					secs.push_back(Segment_LowerLegL);
+					rjoints.push_back((*joints)[Joint_kneeL]);
+					rjoints.push_back((*joints)[Joint_ankleL]);
+					SetLengthVariable(ctr, secs, rjoints);
+					secs.clear();
+					showLowerLegLBodySegment.SetCheck(false);
+				}
+				if (showFootLBodySegment.GetCheck()) {
+					rjoints.clear();
+					secs.push_back(Segment_FootL);
+					rjoints.push_back((*joints)[Joint_ankleL]);
+					rjoints.push_back(Joint(-1, Vertex((*joints)[Joint_ankleL].getCoord().x, bottomMostLevel, 0)));
+					SetLengthVariable(ctr, secs, rjoints);
+					secs.clear();
+					showFootLBodySegment.SetCheck(false);
+				}
+				if (showUpperArmRBodySegment.GetCheck()) {
+					rjoints.clear();
+					secs.push_back(Segment_UpperArmR);
+					rjoints.push_back((*joints)[Joint_shoulderR]);
+					rjoints.push_back((*joints)[Joint_elbowR]);
+					SetLengthVariable(ctr, secs, rjoints);
+					secs.clear();
+					showUpperArmRBodySegment.SetCheck(false);
+				}
+				if (showLowerArmRBodySegment.GetCheck()) {
+					rjoints.clear();
+					secs.push_back(Segment_LowerArmR);
+					rjoints.push_back((*joints)[Joint_elbowR]);
+					rjoints.push_back((*joints)[Joint_wristR]);
+					SetLengthVariable(ctr, secs, rjoints);
+					secs.clear();
+					showLowerArmRBodySegment.SetCheck(false);
+				}
+				if (showHandRBodySegment.GetCheck()) {
+					rjoints.clear();
+					secs.push_back(Segment_HandR);
+					rjoints.push_back((*joints)[Joint_wristR]);
+					rjoints.push_back(Joint(-1, Vertex(leftMostOffset, leftMostLevel, 0)));
+					SetLengthVariable(ctr, secs, rjoints);
+					secs.clear();
+					showHandRBodySegment.SetCheck(false);
+				}
+				if (showUpperArmLBodySegment.GetCheck()) {
+					rjoints.clear();
+					secs.push_back(Segment_UpperArmL);
+					rjoints.push_back((*joints)[Joint_shoulderL]);
+					rjoints.push_back((*joints)[Joint_elbowL]);
+					SetLengthVariable(ctr, secs, rjoints);
+					secs.clear();
+					showUpperArmLBodySegment.SetCheck(false);
+				}
+				if (showLowerArmLBodySegment.GetCheck()) {
+					rjoints.clear();
+					secs.push_back(Segment_LowerArmL);
+					rjoints.push_back((*joints)[Joint_elbowL]);
+					rjoints.push_back((*joints)[Joint_wristL]);
+					SetLengthVariable(ctr, secs, rjoints);
+					secs.clear();
+					showLowerArmLBodySegment.SetCheck(false);
+				}
+				if (showHandLBodySegment.GetCheck()) {
+					rjoints.clear();
+					secs.push_back(Segment_HandL);
+					rjoints.push_back((*joints)[Joint_wristL]);
+					rjoints.push_back(Joint(-1, Vertex(rightMostOffset, rightMostLevel, 0)));
+					SetLengthVariable(ctr, secs, rjoints);
+					secs.clear();
+					showHandLBodySegment.SetCheck(false);
+				}
 			}
 		}
-
 	}
 	variableEdit.SetWindowTextW(_T(""));
-}
-
-void CLandmarkDialog::OnBnClickedCheckAll()
-{
-	// TODO: Add your control notification handler code here
 }
 
 GLuint CLandmarkDialog::loadShaders(const char* vertexFilePath, const char* fragmentFilePath) {
@@ -593,7 +833,7 @@ GLuint CLandmarkDialog::loadShaders(const char* vertexFilePath, const char* frag
 	// Read vertex shader from file
 	string vertexShaderSource;
 	ifstream vertexShaderStream(vertexFilePath, ios::in);
-	if (vertexShaderStream.is_open() ) {
+	if (vertexShaderStream.is_open()) {
 		stringstream sstr;
 		sstr << vertexShaderStream.rdbuf();
 		vertexShaderSource = sstr.str();
@@ -606,7 +846,7 @@ GLuint CLandmarkDialog::loadShaders(const char* vertexFilePath, const char* frag
 
 	string fragmentShaderSource;
 	ifstream fragmentShaderStream(fragmentFilePath, ios::in);
-	if (fragmentShaderStream.is_open() ) {
+	if (fragmentShaderStream.is_open()) {
 		stringstream sstr;
 		sstr << fragmentShaderStream.rdbuf();
 		fragmentShaderSource = sstr.str();
@@ -775,3 +1015,83 @@ BOOL CLandmarkDialog::GetOldStyleRenderingContext() {
 	return TRUE;
 }
 
+void CLandmarkDialog::OnBnClickedFront()
+{
+	// TODO: Add your control notification handler code here
+	camera.ViewFront();
+}
+
+void CLandmarkDialog::OnBnClickedBack()
+{
+	// TODO: Add your control notification handler code here
+	camera.ViewBack();
+}
+
+void CLandmarkDialog::OnBnClickedRight()
+{
+	camera.ViewRight();
+	// TODO: Add your control notification handler code here
+}
+
+void CLandmarkDialog::OnBnClickedLeft()
+{
+	// TODO: Add your control notification handler code here
+	camera.ViewLeft();
+}
+
+void CLandmarkDialog::OnBnClickedUp()
+{
+	// TODO: Add your control notification handler code here
+	camera.ViewUp();
+}
+
+void CLandmarkDialog::OnBnClickedMoveup()
+{
+	// TODO: Add your control notification handler code here
+	if ((*variables)[selItem].type == Girth) {
+		vector<int> secs, inds;
+		for (int i = 0; i < (*variables)[selItem].region.size(); i++) {
+			secs.push_back((*variables)[selItem].region[i]);
+		}
+		for (int i = 0; i < secs.size(); i++) {
+			inds.insert(inds.end(), bodySegment[secs[i]].begin(), bodySegment[secs[i]].end());
+		}
+
+		(*variables)[selItem].SetGirthFeature(secs, inds, *vertices, (*variables)[selItem].level + 0.2);
+	}
+}
+
+void CLandmarkDialog::OnBnClickedMovedown()
+{
+	// TODO: Add your control notification handler code here
+	if ((*variables)[selItem].type == Girth) {
+		vector<int> secs, inds;
+		for (int i = 0; i < (*variables)[selItem].region.size(); i++) {
+			secs.push_back((*variables)[selItem].region[i]);
+		}
+		for (int i = 0; i < secs.size(); i++) {
+			inds.insert(inds.end(), bodySegment[secs[i]].begin(), bodySegment[secs[i]].end());
+		}
+
+		(*variables)[selItem].SetGirthFeature(secs, inds, *vertices, (*variables)[selItem].level - 0.2);
+	}
+}
+
+void CLandmarkDialog::OnLbnSelchangeLandmarklist()
+{
+	// TODO: Add your control notification handler code here
+
+	CListBox * pList1 = (CListBox *)GetDlgItem(IDC_LANDMARKLIST);
+	selItem = pList1->GetCurSel();
+}
+
+void CLandmarkDialog::OnBnClickedRemoveButton()
+{
+	// TODO: Add your control notification handler code here
+	if (selItem < 4) {
+		AfxMessageBox(_T("Cannot delete default landmark feaure!"));
+	}
+	else {
+		variables->erase(variables->begin() + selItem);
+	}
+}

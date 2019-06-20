@@ -7,8 +7,6 @@ Joint::Joint() {
 	parent = -1;
 	hasParent = false;
 	hasChildren = false;
-	for (int i = 0; i < 4; i++)
-		relatedVerts.push_back(0);
 }
 
 Joint::Joint(int i, Vertex c) {
@@ -17,12 +15,16 @@ Joint::Joint(int i, Vertex c) {
 	parent = -1;
 	hasParent = false;
 	hasChildren = false;
-	for (int i = 0; i < 4; i++)
-		relatedVerts.push_back(0);
 }
 
 Joint::~Joint() {
 
+}
+
+void Joint::setCoord(float _x, float _y, float _z) {
+	coord.x = _x;
+	coord.y = _y;
+	coord.z = _z;
 }
 
 void Joint::setCoord(Vertex& v) {

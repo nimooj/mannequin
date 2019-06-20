@@ -9,15 +9,21 @@
 #include "Joint.h"
 #include "Bone.h"
 
+#define Axis_X 0
+#define Axis_Y 1
+#define Axis_Z 2
+
 class Skinning {
 public :
 	Skinning();
 	~Skinning();
 
+	int axis = 0;
+
 	void setHierarchy(vector<Joint>&);
 	void setBones(vector<Joint>&, vector<Bone>&);
 	void setSegments(vector<Vertex>&, vector<Joint>&, vector<int>&, vector<int>[], vector<float>[]);
-	void setBindings(vector<Vertex>&, vector<Joint>&, vector<int>&);
+	void setBindings(vector<Vertex>&, vector<Joint>&);
 	void paintWeights(int, vector<Vertex>&, vector<Joint>&);
 	void updateRigs(vector<Vertex>&, vector<Joint>&);
 

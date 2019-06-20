@@ -16,6 +16,7 @@ public:
 	bool hasChildren;
 
 	void setCoord(Vertex&);
+	void setCoord(float, float, float);
 	Vertex& getCoord();
 
 	void setParent(int);
@@ -36,13 +37,11 @@ public:
 	void setRelatedVerts(int, int);
 	vector<int>& getRelatedVerts();
 
-private:
-
 	int parent;
 	vector<int> children;
 
 	vector<Layer> layers;
 
 	vector<int> relatedSegments; 
-	vector<int> relatedVerts; // CCW : minZ -> minX -> maxZ -> maxX;
+	vector<int> relatedVerts; 
 };

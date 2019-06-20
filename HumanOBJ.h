@@ -31,9 +31,9 @@ public :
 	vector<float> weightValues;
 
 	Skinning skinning;
-	vector<int> segmentHash[16];
-	vector<int> weightHash[16];
-	vector<float> weightValueHash[16];
+	vector<int> segmentHash[SegmentNum];
+	vector<int> weightHash[WeightNum];
+	vector<float> weightValueHash[WeightNum];
 
 	vector<Vertex>& getVerts();
 	vector<Vertex>& getNormals();
@@ -46,20 +46,27 @@ public :
 	float getWaistSize();
 	float getHipSize();
 
+	void setHeight(float);
+	void setBustSize(float);
+	void setWaistSize(float);
+	void setHipSize(float);
+
+	void setSize(int, int, float, float);
 	void setSize(float, float, float, float);
+
 	float height; 
-	float topMostLevel, bottomMostLevel;
+	float topMostLevel, bottomMostLevel, leftMostLevel, rightMostLevel;
+	float leftMostOffset, rightMostOffset;
 	float bustLevel, waistLevel, hipLevel;
 	vector<int> bustConvexIndices, waistConvexIndices, hipConvexIndices;
 
 	void setJoint(int, float, float);
 	void setRigs();
-	void setSegments();
 	void setFeatures();
 	void setWeights();
 
-	void jointExport();
-	void writeToOBJ();
+	void jointExport(CString);
+	void writeToOBJ(CString);
 
 	vector<Vertex> vertices;
 	vector<Joint> joints;
@@ -87,7 +94,6 @@ private :
 	vector<Vertex*> highThighRPlane, highThighLPlane;
 	vector<Vertex*> kneeRPlane, kneeLPlane, ankleRPlane, ankleLPlane;
 
-	void bindRigs();
 	void updateRigs();
 
 	void centering(float, float, float);

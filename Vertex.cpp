@@ -241,3 +241,42 @@ Vertex Vertex::normalize() {
 
 	return *this;
 }
+
+float Vertex::length() {
+	return sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+}
+
+float Vertex::sum() {
+	return x + y + z;
+}
+
+void Vertex::rotate(int axis, float degree) {
+	float radian = degree * M_PI / 180;
+	float orig_x = 0, orig_y = 0, orig_z = 0;
+
+	switch (axis) {
+	case Axis_X :
+		orig_y = y;
+		orig_z = z;
+		y = cos(radian) * orig_y - sin(radian) * orig_z;
+		z = sin(radian) * orig_y + cos(radian) * orig_z;
+		break;
+
+	case Axis_Y :
+		orig_x = x;
+		orig_z = z;
+		x = cos(radian) * orig_x + sin(radian) * orig_z;
+		z = -sin(radian) * orig_x + cos(radian) * orig_z;
+		break;
+
+	case Axis_Z :
+		orig_x = x;
+		orig_y = y;
+		x = cos(radian) * orig_x - sin(radian) * orig_y;
+		y = sin(radian) * orig_x + cos(radian) * orig_y;
+		break;
+
+	default:
+		break;
+	}
+}

@@ -1,10 +1,16 @@
 #pragma once
 
-#include <math.h>
-#include <vector>
 #include <iostream>
+#include <vector>
+#include <cmath>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 //#include "Bone.h"
+
+#define Axis_X 0
+#define Axis_Y 1
+#define Axis_Z 2
 
 using namespace std;
 
@@ -45,10 +51,8 @@ public:
 
 	float distance(Vertex);
 	float distanceToLine(Vertex, Vertex);
-	float length();
 	Vertex closest(vector<Vertex>);
 	Vertex closest(float, float, float, float);
-	vector<Vertex> firstSecondClosest(vector<Vertex>);
 
 	Vertex subtract(Vertex);
 	Vertex add(Vertex);
@@ -58,6 +62,11 @@ public:
 	Vertex cross(Vertex);
 	Vertex dot(Vertex);
 	Vertex normalize();
+
+	float length();
+	float sum();
+
+	void rotate(int, float);
 
 private:
 	bool nullFlag;

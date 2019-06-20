@@ -24,23 +24,21 @@ using namespace glm;
 
 using namespace std;
 
+#include "Camera.h"
 #include "Vertex.h"
 #include "Joint.h"
 #include "BodySegments.h"
+#include "JointDefinition.h"
 #include "Landmark.h"
 
-struct line {
-	Vertex first;
-	Vertex second;
-};
 
 class CLandmarkDialog : public CDialogEx {
 // Construction
 public:
-	enum { IDD = IDD_LANDMARKDIALOG };
 	CLandmarkDialog();
 	~CLandmarkDialog();
 	CLandmarkDialog(CWnd* pParent);
+	enum { IDD = IDD_LANDMARKDIALOG };
 
 	DECLARE_MESSAGE_MAP()
 
@@ -58,14 +56,18 @@ public:
 	HGLRC m_hRC; // rendering context -- OpenGL
 	CDC* m_pDC; // device context 0 -- windows
 
+	Camera camera;
+
+	float topMostLevel = 0, bottomMostLevel = 0, leftMostLevel = 0, rightMostLevel = 0, leftMostOffset = 0, rightMostOffset = 0;
+
 	vector<Vertex>* vertices;
 	vector<int>* indices;
 	vector<Joint>* joints;
 
 	vector<Landmark>* variables;
-	vector<vec2> varPos;
+	vector<vec3> varPos;
 
-	vector<vec2> verts;
+	vector<vec3> verts;
 	vector<int> inds;
 
 	vector<int> bodySegment[SegmentNum];
@@ -93,6 +95,8 @@ public:
 	GLuint ebo;
 	GLuint shaderProgram, lineShaderProgram, landmarkShaderProgram;
 
+	int selItem = -1;
+
 	void defineVAO(GLuint&);
 	void defineLineVAO(GLuint&);
 	void defineLandmarkVAO(int, GLuint&);
@@ -116,7 +120,8 @@ private :
 	GLfloat winX, winY, winZ;
 	GLdouble posX, posY, posZ;
 
-	void SetVariable(CString, int, float);
+	void SetGirthVariable(CString, vector<int>, float);
+	void SetLengthVariable(CString, vector<int>, vector<Joint>);
 public:
 	CButton showAllBodySegment;
 	CButton showHeadBodySegment;
@@ -135,7 +140,15 @@ public:
 	CButton showUpperLegLBodySegment;
 	CButton showLowerLegLBodySegment;
 	CButton showFootLBodySegment;
-	afx_msg void OnBnClickedCheckAll();
 	CSliderCtrl landmarkSlider;
 	afx_msg void OnNMReleasedcaptureLandmarkslider(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnBnClickedFront();
+	afx_msg void OnBnClickedBack();
+	afx_msg void OnBnClickedRight();
+	afx_msg void OnBnClickedLeft();
+	afx_msg void OnBnClickedUp();
+	afx_msg void OnBnClickedMoveup();
+	afx_msg void OnBnClickedMovedown();
+	afx_msg void OnLbnSelchangeLandmarklist();
+	afx_msg void OnBnClickedRemoveButton();
 };

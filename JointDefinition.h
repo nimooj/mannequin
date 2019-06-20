@@ -1,5 +1,6 @@
 #pragma once
 
+#define WeightNum 18
 #define JointNum 18
 #define Joint_neck 0
 #define Joint_shoulderMid 1

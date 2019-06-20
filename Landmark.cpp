@@ -32,43 +32,59 @@ Landmark::Landmark(CString ctr, float t, float val, float h, vector<int> inds) {
 	vertIdx.insert(vertIdx.end(), inds.begin(), inds.end());
 }
 
+Landmark::Landmark(CString ctr, vector<int> s, float t, float val, float h, vector<int> inds) {
+	name = ctr;
+	type = t;
+	value = val;
+	level = h;
+	region = s;
+	vertIdx.insert(vertIdx.end(), inds.begin(), inds.end());
+}
+
 Landmark::~Landmark() {
 
 }
 
-void Landmark::SetGirthFeature(vector<int>& inds, vector<Vertex>& verts, float h) {
+bool Landmark::SetGirthFeature(vector<int>& secs, vector<int>& inds, vector<Vertex>& verts, float h) {
+	region.clear();
+	vertIdx.clear();
+	
 	float ys = 0;
 	float dist = 0;
 	vector<Vertex> girth;
 	GrahamScan g;
+
+	region = secs;
 	
 	/*** Limit relevants ***/
 	int trial = 0;
 	float range = 0.5;
-	while (trial <= 10) {
-		if ( girth.size() >= 10 )
-			break;
-
+	while (trial <= 10 && girth.size() < 12) {
 		girth.clear();
+		ys = 0;
 
 		for (int i = 0; i < inds.size(); i++) {
 			if (abs(verts[inds[i] - 1].y - h) <= range) {
 				Vertex v = verts[inds[i] - 1];
-				girth.push_back(v);
+				girth.push_back(Vertex(v.idx, v.x, h, v.z));
 				ys += v.y;
 			}
 		}
 
 		trial++;
-		range += 0.5;
+		range += 0.2;
+	}
+
+	if (girth.empty()) {
+		return false;
 	}
 
 	/*** Unify offset ***/
 	for (int i = 0; i < girth.size(); i++) {
-		girth[i].y = ys / girth.size();
+		girth[i].y = h;
 	}
 
-	level = girth[0].y;
+	level = h;
 
 	/*** Get Convex Hull  ***/
 	g = GrahamScan(girth);
@@ -79,6 +95,37 @@ void Landmark::SetGirthFeature(vector<int>& inds, vector<Vertex>& verts, float h
 		vertIdx.push_back(convex[i].idx);
 	}
 	dist += convex[convex.size() - 1].distance(convex[0]);
-
 	value = dist;
+
+	return true;
+}
+
+bool Landmark::SetLengthFeature(vector<int>& secs, vector<Joint>& joints) {
+	region.clear();
+	vertIdx.clear();
+
+	region = secs;
+
+	level = -1;
+	if (joints.size() > 2) {
+		return false;
+	}
+	/*** Assuming joints.size() == 2 ***/
+	/*** Size has to be 2 for now ***/
+	vertIdx.push_back(joints[0].id);
+	vertIdx.push_back(joints[1].id);
+
+	for (int i = 1; i < joints.size(); i++) {
+		Vertex joint_1 = joints[i - 1].getCoord();
+		Vertex joint_2 = joints[i].getCoord();
+
+		// Use float joint distance
+		//joint_1.z = 0;
+		//joint_2.z = 0;
+
+		value += joint_1.distance(joint_2);
+	}
+
+	/***********************************/
+	return true;
 }
