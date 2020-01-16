@@ -13,6 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\Utils">
+      <UniqueIdentifier>{a8fac569-d0e4-42a1-964c-170fde9ff221}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utils\headers">
+      <UniqueIdentifier>{0e9a0ac2-e1d5-4620-bc08-8c10ec9a1e49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utils\shaders">
+      <UniqueIdentifier>{80bd69d8-66b9-4d4a-93ce-a1e7bfcd6e39}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mannequin.h">
@@ -30,6 +39,78 @@
     <ClInclude Include="Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>Source Files\Utils\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Source Files\Utils\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Layer.h">
+      <Filter>Source Files\Utils\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Source Files\Utils\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Joint.h">
+      <Filter>Source Files\Utils\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="BodyProxies.h">
+      <Filter>Source Files\Utils\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="JointTree.h">
+      <Filter>Source Files\Utils\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="LinkedList.h">
+      <Filter>Source Files\Utils\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Pose.h">
+      <Filter>Source Files\Utils\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="LayerTree.h">
+      <Filter>Source Files\Utils\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="BodyLayerDefinition.h">
+      <Filter>Source Files\Utils\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="JointDefinition.h">
+      <Filter>Source Files\Utils\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Size.h">
+      <Filter>Source Files\Utils\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="HumanOBJ.h">
+      <Filter>Source Files\Utils\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="iglBody.h">
+      <Filter>Source Files\Utils\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Skinning.h">
+      <Filter>Source Files\Utils\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="BodySegments.h">
+      <Filter>Source Files\Utils\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="GrahamScan.h">
+      <Filter>Source Files\Utils\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Bone.h">
+      <Filter>Source Files\Utils\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CLandmarkDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Landmark.h">
+      <Filter>Source Files\Utils\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CEditLandmarkDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CDefaultSizesDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CJointDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="mannequin.cpp">
@@ -41,6 +122,60 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Vertex.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Layer.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Joint.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="BodyProxies.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Pose.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Size.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="HumanOBJ.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="iglBody.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Skinning.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="GrahamScan.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Bone.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="CLandmarkDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Landmark.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="CEditLandmarkDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CDefaultSizesDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CJointDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="mannequin.rc">
@@ -50,6 +185,42 @@
   <ItemGroup>
     <None Include="res\mannequin.rc2">
       <Filter>Resource Files</Filter>
+    </None>
+    <None Include="shaders\MannequinFragmentShader.fragmentshader">
+      <Filter>Source Files\Utils\shaders</Filter>
+    </None>
+    <None Include="shaders\MannequinVertexShader.vertexshader">
+      <Filter>Source Files\Utils\shaders</Filter>
+    </None>
+    <None Include="shaders\LightFragmentShader.fragmentshader">
+      <Filter>Source Files\Utils\shaders</Filter>
+    </None>
+    <None Include="shaders\LightVertexShader.vertexshader">
+      <Filter>Source Files\Utils\shaders</Filter>
+    </None>
+    <None Include="shaders\JointFragmentShader.fragmentshader">
+      <Filter>Source Files\Utils\shaders</Filter>
+    </None>
+    <None Include="shaders\JointVertexShader.vertexshader">
+      <Filter>Source Files\Utils\shaders</Filter>
+    </None>
+    <None Include="shaders\LandmarkVertexShader.vertexshader">
+      <Filter>Source Files\Utils\shaders</Filter>
+    </None>
+    <None Include="shaders\LandmarkFragmentShader.fragmentshader">
+      <Filter>Source Files\Utils\shaders</Filter>
+    </None>
+    <None Include="shaders\GirthFragmentShader.fragmentshader">
+      <Filter>Source Files\Utils\shaders</Filter>
+    </None>
+    <None Include="shaders\GirthVertexShader.vertexshader">
+      <Filter>Source Files\Utils\shaders</Filter>
+    </None>
+    <None Include="shaders\LineFragmentShader.fragmentshader">
+      <Filter>Source Files\Utils\shaders</Filter>
+    </None>
+    <None Include="shaders\LineVertexShader.vertexshader">
+      <Filter>Source Files\Utils\shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

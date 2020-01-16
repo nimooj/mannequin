@@ -1,0 +1,5 @@
+newmtl Alesia_body
+Kd 1 0.95 0.85
+Ks 0.02745 0.02745 0.02745
+d 0
+map_Kd textures\Body.jpg

@@ -92,10 +92,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\ParametricMannequin\mannequin\mannequin\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
+      <AdditionalLibraryDirectories>E:\ParametricMannequin\mannequin\mannequin\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -118,6 +121,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -144,6 +148,8 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>E:\ParametricMannequin\mannequin\mannequin\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -170,6 +176,7 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -183,27 +190,81 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BodyLayerDefinition.h" />
+    <ClInclude Include="BodyProxies.h" />
+    <ClInclude Include="BodySegments.h" />
+    <ClInclude Include="Bone.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="CDefaultSizesDialog.h" />
+    <ClInclude Include="CEditLandmarkDialog.h" />
+    <ClInclude Include="CJointDialog.h" />
+    <ClInclude Include="CLandmarkDialog.h" />
+    <ClInclude Include="GrahamScan.h" />
+    <ClInclude Include="HumanOBJ.h" />
+    <ClInclude Include="iglBody.h" />
+    <ClInclude Include="JointDefinition.h" />
+    <ClInclude Include="JointTree.h" />
+    <ClInclude Include="Joint.h" />
+    <ClInclude Include="Landmark.h" />
+    <ClInclude Include="Layer.h" />
+    <ClInclude Include="LayerTree.h" />
+    <ClInclude Include="LinkedList.h" />
     <ClInclude Include="mannequin.h" />
     <ClInclude Include="mannequinDlg.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Pose.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="Skinning.h" />
+    <ClInclude Include="Size.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BodyProxies.cpp" />
+    <ClCompile Include="Bone.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CDefaultSizesDialog.cpp" />
+    <ClCompile Include="CEditLandmarkDialog.cpp" />
+    <ClCompile Include="CJointDialog.cpp" />
+    <ClCompile Include="CLandmarkDialog.cpp" />
+    <ClCompile Include="GrahamScan.cpp" />
+    <ClCompile Include="HumanOBJ.cpp" />
+    <ClCompile Include="iglBody.cpp" />
+    <ClCompile Include="Joint.cpp" />
+    <ClCompile Include="Landmark.cpp" />
+    <ClCompile Include="Layer.cpp" />
     <ClCompile Include="mannequin.cpp" />
     <ClCompile Include="mannequinDlg.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Pose.cpp" />
+    <ClCompile Include="Skinning.cpp" />
+    <ClCompile Include="Size.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Vertex.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="mannequin.rc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\mannequin.rc2" />
+    <None Include="shaders\GirthFragmentShader.fragmentshader" />
+    <None Include="shaders\GirthVertexShader.vertexshader" />
+    <None Include="shaders\JointFragmentShader.fragmentshader" />
+    <None Include="shaders\JointVertexShader.vertexshader" />
+    <None Include="shaders\LandmarkFragmentShader.fragmentshader" />
+    <None Include="shaders\LandmarkVertexShader.vertexshader" />
+    <None Include="shaders\LightFragmentShader.fragmentshader" />
+    <None Include="shaders\LightVertexShader.vertexshader" />
+    <None Include="shaders\LineFragmentShader.fragmentshader" />
+    <None Include="shaders\LineVertexShader.vertexshader" />
+    <None Include="shaders\MannequinFragmentShader.fragmentshader" />
+    <None Include="shaders\MannequinVertexShader.vertexshader" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\mannequin.ico" />
