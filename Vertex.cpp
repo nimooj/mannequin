@@ -158,7 +158,7 @@ float Vertex::distanceToLine(Vertex line0, Vertex line1) {
 }
 
 Vertex Vertex::closest(vector<Vertex> v) {
-	float min = 100;
+	float min = 1000000000;
 	Vertex closestV;
 	for (vector<Vertex>::iterator i = v.begin(); i != v.end(); i++) {
 		Vertex v = (*i);

@@ -17,7 +17,7 @@ public:
 	Vertex v1, v2, v3, v4;
 	Vertex center;
 	Vertex normal;
-
+	float d;
 
 	bool has(Vertex);
 	bool has(int);

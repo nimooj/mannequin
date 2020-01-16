@@ -45,6 +45,7 @@ Mesh::Mesh(Vertex _v1, Vertex _v2, Vertex _v3) {
 	Vertex v = (v3 - v1);
 	Vertex vv = (v2 - v1);
 	normal = vv.cross(v).normalize();
+	d = -(normal.x*v1.x + normal.y*v1.y + normal.z*v1.z);
 }
 
 Mesh::Mesh(Vertex _v1, Vertex _v2, Vertex _v3, Vertex _v4) {
@@ -59,6 +60,11 @@ Mesh::Mesh(Vertex _v1, Vertex _v2, Vertex _v3, Vertex _v4) {
 	index4 = v4.idx;
 
 	center = v1.add(v2).add(v3).add(v4).divide(4);
+
+	Vertex v = (v3 - v1);
+	Vertex vv = (v2 - v1);
+	normal = vv.cross(v).normalize();
+	d = -(normal.x*v1.x + normal.y*v1.y + normal.z*v1.z);
 }
 
 Mesh::Mesh(int _i1, int _i2, int _i3, Vertex _v1, Vertex _v2, Vertex _v3) {
@@ -74,8 +80,8 @@ Mesh::Mesh(int _i1, int _i2, int _i3, Vertex _v1, Vertex _v2, Vertex _v3) {
 	Vertex v = (v3 - v1);
 	Vertex vv = (v2 - v1);
 	normal = vv.cross(v).normalize();
+	d = -(normal.x*v1.x + normal.y*v1.y + normal.z*v1.z);
 }
-
 
 Mesh::~Mesh() {
 

@@ -3,13 +3,17 @@
 
 
 Pose::Pose() {
-	body = &BodyProxies();
-	joints = &JointTree();
 }
 
-Pose::Pose(BodyProxies* bodyproxy) {
-	body = bodyproxy;
-	joints = &(body->getJointTree());
+Pose::Pose(HumanOBJ* body) {
+	human = body;
+	vertices = &(body->getVerts());
+	joints = &(body->joints);
+	segmentGroup = &(body->segmentGroup);
+
+	for (int i = 0; i < segmentGroup->size(); i++) {
+		segmentHash[(*segmentGroup)[i]].push_back((*vertices)[i].idx);
+	}
 }
 
 Pose::~Pose() {
@@ -17,6 +21,7 @@ Pose::~Pose() {
 }
 
 void Pose::translate(int jointId, float x, float y, float z) {
+	/*
 	Joint *js = &(joints->at(jointId));
 	Vertex *jv = &js->getCoord();
 
@@ -40,71 +45,38 @@ void Pose::translate(int jointId, float x, float y, float z) {
 			(*verts)[(*layerVerts)[i].idx - 1].z = (*initV)[(*layerVerts)[i].idx - 1].z - z;
 		}
 	}
+	*/
 }
 
-void Pose::rotate(int jointId, int axis, float degree) {
-	Joint * js = &(joints->at(jointId));
-	vector<int>* jointChildrenIndices;
-	vector<Layer>* layerChildren;
+void Pose::rotate(int jointId, int axis, int side, float degree) {
+	float thisRad = -2 * M_PI / 180;
 
-	vector<Vertex>* initV = &body->getInitVert();
-	vector<Vertex>* verts = &body->getVerts();
-	Vertex* jointCoord = &js->getCoord();
-
-	vector<Joint> initJs = body->getJoints();
-
-	// Rotate from init pos of 90 degrees
-	//float radian = -abs(90 - degree) * M_PI / 180;
 	float radian = degree * M_PI / 180;
 
-	switch (axis) {
-	case axisX:
-		break;
-	case axisY:
-		break;
-	case axisZ:
-		jointChildrenIndices = &(js->getChildren());
-		layerChildren = &(js->getLayers());
+	/*
+	for (int i = 0; i < armRSegment.size(); i++) {
+		Vertex* v = &(*vertices)[armRSegment[i]];
 
-		for (vector<int>::iterator ji = jointChildrenIndices->begin(); ji != jointChildrenIndices->end(); ji++) {
-			Joint *jc = &(joints->at(*ji));
+		float x = v->x;
+		float y = v->y;
 
-			Vertex initJ = initJs.at(*ji).getCoord();
+		float tmp_x = 0, tmp_y = 0;
+		for (int j = 0; j < v->jointsRelated.size(); j++) {
+			Vertex jt = (*joints)[v->jointsRelated[j]];
 
-			Vertex *jv = &jc->getCoord();
-
-			jv->x -= jointCoord->x;
-			jv->y -= jointCoord->y;
-
-			float newX = initJ.x - jointCoord->x;
-			float newY = initJ.y - jointCoord->y;
-
-			jv->x = cos(radian) * newX - sin(radian) * newY;
-			jv->y = sin(radian) * newX + cos(radian) * newY;
-
-			jv->x += jointCoord->x;
-			jv->y += jointCoord->y;
-		}
-
-		for (vector<Layer>::iterator lc = layerChildren->begin(); lc != layerChildren->end(); lc++) {
-			vector<Vertex>* layerVerts = &lc->getVerts();
-			Vertex jt = js->getCoord();
-
-			for (int i = 0; i < layerVerts->size(); i++) {
-				(*verts)[(*layerVerts)[i].idx - 1].x -= jt.x;
-				(*verts)[(*layerVerts)[i].idx - 1].y -= jt.y;
-
-				float x = (*initV)[(*layerVerts)[i].idx - 1].x - jt.x;
-				float y = (*initV)[(*layerVerts)[i].idx - 1].y - jt.y;
-
-				(*verts)[(*layerVerts)[i].idx - 1].x = cos(radian) * x - sin(radian) * y;
-				(*verts)[(*layerVerts)[i].idx - 1].y = sin(radian) * x + cos(radian) * y;
-
-				(*verts)[(*layerVerts)[i].idx - 1].x += jt.x;
-				(*verts)[(*layerVerts)[i].idx - 1].y += jt.y;
+			if (v->jointsRelated[j] == 1) { // Shoulder Mid -> no rotation
+				tmp_x += v->jointWeights[j] * (cos(thisRad) * (x - jt.x) - sin(thisRad) * (y - jt.y));
+				tmp_y += v->jointWeights[j] * (sin(thisRad) * (x - jt.x) + cos(thisRad)  * (y - jt.y));
 			}
+			else if (v->jointsRelated[j] == 2) { // Shoulder R -> use rotation Matrix
+				tmp_x += v->jointWeights[j] * (cos(thisRad + radian) * (x - jt.x) - sin(thisRad + radian) * (y - jt.y));
+				tmp_y += v->jointWeights[j] * (sin(thisRad + radian) * (x - jt.x) + cos(thisRad + radian) * (y - jt.y));
+			}
+
 		}
 
-		break;
+		v->x = tmp_x + (*joints)[Joint_shoulderR].x;
+		v->y = tmp_y + (*joints)[Joint_shoulderR].y;
 	}
+	*/
 }

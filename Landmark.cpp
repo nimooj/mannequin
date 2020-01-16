@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "Landmark.h"
 
 Landmark::Landmark() {
@@ -45,7 +44,7 @@ Landmark::~Landmark() {
 
 }
 
-bool Landmark::SetGirthFeature(vector<int>& secs, vector<int>& inds, vector<Vertex>& verts, float h) {
+bool Landmark::SetGirthFeature(float scale, vector<int>& secs, vector<int>& inds, vector<Vertex>& verts, float h) {
 	region.clear();
 	vertIdx.clear();
 	
@@ -58,7 +57,7 @@ bool Landmark::SetGirthFeature(vector<int>& secs, vector<int>& inds, vector<Vert
 	
 	/*** Limit relevants ***/
 	int trial = 0;
-	float range = 0.5;
+	float range = 0.5 * 1/scale;
 	while (trial <= 10 && girth.size() < 12) {
 		girth.clear();
 		ys = 0;
@@ -72,7 +71,7 @@ bool Landmark::SetGirthFeature(vector<int>& secs, vector<int>& inds, vector<Vert
 		}
 
 		trial++;
-		range += 0.2;
+		range += range/8;
 	}
 
 	if (girth.empty()) {
@@ -118,10 +117,6 @@ bool Landmark::SetLengthFeature(vector<int>& secs, vector<Joint>& joints) {
 	for (int i = 1; i < joints.size(); i++) {
 		Vertex joint_1 = joints[i - 1].getCoord();
 		Vertex joint_2 = joints[i].getCoord();
-
-		// Use float joint distance
-		//joint_1.z = 0;
-		//joint_2.z = 0;
 
 		value += joint_1.distance(joint_2);
 	}

@@ -84,7 +84,6 @@ void CLandmarkDialog::OnDestroy()
 	glDeleteBuffers(1, &landmark_position_vbo);
 	glDeleteBuffers(1, &landmark_color_vbo);
 
-
 	// TODO: Add your message handler code here
 	if (FALSE == ::wglDeleteContext(m_hRC)) {
 		AfxMessageBox(CString("wglDeleteContext failed"));
@@ -143,10 +142,10 @@ void CLandmarkDialog::OnTimer(UINT_PTR nIDEvent)
 
 	CDialogEx::OnTimer(nIDEvent);
 	if (nIDEvent == 0) {
-		defineVAO(vao);
-
 		glClearColor(1, 1, 1, 0);
 		glClear(GL_COLOR_BUFFER_BIT);// | GL_DEPTH_BUFFER_BIT);
+
+		defineVAO(vao);
 
 		projectionMatrix = ortho(-10.0f , 10.0f , -10.0f , 10.f , 0.0f, 100.0f);
 		viewMatrix = lookAt(camera.cameraPosition, camera.cameraFront, camera.cameraUp);
@@ -163,7 +162,7 @@ void CLandmarkDialog::OnTimer(UINT_PTR nIDEvent)
 		glBindVertexArray(vao);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		glDrawElements(GL_TRIANGLES, inds.size(), GL_UNSIGNED_INT, 0);
+		//glDrawElements(GL_TRIANGLES, inds.size(), GL_UNSIGNED_INT, 0);
 		glDisableVertexAttribArray(position_attribute);
 		glDisableVertexAttribArray(color_attribute);
 		glBindVertexArray(0);
@@ -216,22 +215,6 @@ void CLandmarkDialog::OnTimer(UINT_PTR nIDEvent)
 		glDisableVertexAttribArray(line_position_attribute);
 		glDisableVertexAttribArray(line_color_attribute);
 		glBindVertexArray(0);
-
-		glDeleteProgram(shaderProgram);
-		glDeleteVertexArrays(1, &vao);
-		glDeleteBuffers(1, &position_vbo);
-		glDeleteBuffers(1, &color_vbo);
-		glDeleteBuffers(1, &ebo);
-
-		glDeleteProgram(lineShaderProgram);
-		glDeleteVertexArrays(1, &line_vao);
-		glDeleteBuffers(1, &line_position_vbo);
-		glDeleteBuffers(1, &line_color_vbo);
-
-		glDeleteProgram(landmarkShaderProgram);
-		glDeleteVertexArrays(1, &landmark_vao);
-		glDeleteBuffers(1, &landmark_position_vbo);
-		glDeleteBuffers(1, &landmark_color_vbo);
 
 		SwapBuffers(m_pDC->GetSafeHdc());
 	}
@@ -405,7 +388,6 @@ void CLandmarkDialog::defineLandmarkVAO(int idx, GLuint& vao) {
 
 	landmarkShaderProgram = loadShaders("shaders/GirthVertexShader.vertexshader", "shaders/GirthFragmentShader.fragmentshader");
 
-
 	varPos.clear();
 	vector<vec3> color;
 
@@ -520,7 +502,7 @@ void CLandmarkDialog::SetGirthVariable(CString n, vector<int> segment, float h) 
 		cv.insert(cv.end(), bodySegment[segment[i]].begin(), bodySegment[segment[i]].end());
 	}
 
-	bool result = l->SetGirthFeature(segment, cv, *vertices, h);
+	bool result = l->SetGirthFeature(scaleF, segment, cv, *vertices, h);
 	if (result) {
 		variables->push_back(*l);
 
@@ -1057,7 +1039,7 @@ void CLandmarkDialog::OnBnClickedMoveup()
 			inds.insert(inds.end(), bodySegment[secs[i]].begin(), bodySegment[secs[i]].end());
 		}
 
-		(*variables)[selItem].SetGirthFeature(secs, inds, *vertices, (*variables)[selItem].level + 0.2);
+		(*variables)[selItem].SetGirthFeature(scaleF, secs, inds, *vertices, (*variables)[selItem].level + 0.2);
 	}
 }
 
@@ -1073,7 +1055,7 @@ void CLandmarkDialog::OnBnClickedMovedown()
 			inds.insert(inds.end(), bodySegment[secs[i]].begin(), bodySegment[secs[i]].end());
 		}
 
-		(*variables)[selItem].SetGirthFeature(secs, inds, *vertices, (*variables)[selItem].level - 0.2);
+		(*variables)[selItem].SetGirthFeature(scaleF, secs, inds, *vertices, (*variables)[selItem].level - 0.2);
 	}
 }
 

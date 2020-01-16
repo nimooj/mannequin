@@ -72,6 +72,7 @@ public:
 
 	vector<int> bodySegment[SegmentNum];
 
+	float scaleF = 1;
 	mat4 scaleMatrix = mat4(1.0f);
 
 	virtual BOOL OnInitDialog();

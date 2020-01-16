@@ -9,6 +9,7 @@
 
 #define Girth 0
 #define Length 1
+#define Mark 2
 
 class Landmark {
 public:
@@ -20,7 +21,7 @@ public:
 	Landmark(CString, vector<int>, float, float, float, vector<int>);
 	~Landmark();
 
-	bool SetGirthFeature(vector<int>&, vector<int>&, vector<Vertex>&, float);
+	bool SetGirthFeature(float, vector<int>&, vector<int>&, vector<Vertex>&, float);
 	bool SetLengthFeature(vector<int>&, vector<Joint>&);
 
 	CString name;
