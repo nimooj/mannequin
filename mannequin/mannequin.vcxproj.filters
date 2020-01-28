@@ -81,9 +81,6 @@
     <ClInclude Include="HumanOBJ.h">
       <Filter>Source Files\Utils\headers</Filter>
     </ClInclude>
-    <ClInclude Include="iglBody.h">
-      <Filter>Source Files\Utils\headers</Filter>
-    </ClInclude>
     <ClInclude Include="Skinning.h">
       <Filter>Source Files\Utils\headers</Filter>
     </ClInclude>
@@ -147,9 +144,6 @@
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
     <ClCompile Include="HumanOBJ.cpp">
-      <Filter>Source Files\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="iglBody.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
     <ClCompile Include="Skinning.cpp">

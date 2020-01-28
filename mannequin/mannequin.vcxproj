@@ -93,12 +93,13 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>E:\ParametricMannequin\mannequin\mannequin\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>${ProjectDir}\include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>E:\ParametricMannequin\mannequin\mannequin\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>E:\ParametricMannequin\mannequin\mannequin\lib;$(ProjectDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LargeAddressAware>true</LargeAddressAware>
+      <AdditionalDependencies>glew32s.lib; glfw3.lib; glut32.lib;</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -143,13 +144,15 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>${ProjectDir}\include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>E:\ParametricMannequin\mannequin\mannequin\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>E:\ParametricMannequin\mannequin\mannequin\lib;$(ProjectDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LargeAddressAware>true</LargeAddressAware>
+      <AdditionalDependencies>glew32s.lib; glfw3.lib; glut32.lib;</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -201,7 +204,6 @@
     <ClInclude Include="CLandmarkDialog.h" />
     <ClInclude Include="GrahamScan.h" />
     <ClInclude Include="HumanOBJ.h" />
-    <ClInclude Include="iglBody.h" />
     <ClInclude Include="JointDefinition.h" />
     <ClInclude Include="JointTree.h" />
     <ClInclude Include="Joint.h" />
@@ -230,7 +232,6 @@
     <ClCompile Include="CLandmarkDialog.cpp" />
     <ClCompile Include="GrahamScan.cpp" />
     <ClCompile Include="HumanOBJ.cpp" />
-    <ClCompile Include="iglBody.cpp" />
     <ClCompile Include="Joint.cpp" />
     <ClCompile Include="Landmark.cpp" />
     <ClCompile Include="Layer.cpp" />
