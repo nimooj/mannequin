@@ -928,22 +928,9 @@ void BodyProxies::setPosing() {
 	joints[Joint_pelvisMid].setParent(Joint_waist);
 	joints[Joint_pelvisMid].setChildren(Joint_pelvisR, Joint_pelvisL);
 
-	joints[Joint_pelvisR].setParent(Joint_pelvisMid);
-	joints[Joint_pelvisR].setChildren(Joint_highLegR, Joint_kneeR, Joint_ankleR);
-
-	joints[Joint_highLegR].setParent(Joint_pelvisR);
-	joints[Joint_highLegR].setChildren(Joint_kneeR, Joint_ankleR);
-
-	joints[Joint_kneeR].setParent(Joint_highLegR);
 	joints[Joint_kneeR].setChild(Joint_ankleR);
 
 	joints[Joint_ankleR].setParent(Joint_kneeR);
-
-	joints[Joint_pelvisL].setParent(Joint_pelvisMid);
-	joints[Joint_pelvisL].setChildren(Joint_highLegL, Joint_kneeL, Joint_ankleL);
-
-	joints[Joint_highLegL].setParent(Joint_pelvisL);
-	joints[Joint_highLegL].setChildren(Joint_kneeL, Joint_ankleL);
 
 	joints[Joint_kneeL].setParent(Joint_pelvisL);
 	joints[Joint_kneeL].setChild(Joint_ankleL);

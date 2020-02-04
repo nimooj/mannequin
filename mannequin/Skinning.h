@@ -29,8 +29,6 @@ public :
 	int axis = 0;
 
 	void setPose(string);
-	void setHierarchy(vector<Joint>&);
-	void setBones(vector<Joint>&, vector<Bone>&);
 	void setSegments(vector<Vertex>&, vector<Joint>&, vector<int>&, vector<int>[], vector<float>[]);
 	void setBindings(vector<Vertex>&, vector<Joint>&);
 	void paintWeights(int, vector<Vertex>&, vector<Joint>&);

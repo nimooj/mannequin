@@ -111,6 +111,7 @@ public :
 	vector<int> ankleRConvexIndices, ankleLConvexIndices;
 
 	void setJoint(float, int, float, float);
+	void expandJoint();
 	void undoJoint();
 	void setRigs(float);
 	void setFeatures(float);
