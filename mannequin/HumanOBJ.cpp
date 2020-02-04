@@ -651,8 +651,13 @@ void HumanOBJ::setJoint(float s, int jointIdx, float x, float y) {
 	}
 }
 
+/*** Invoked when join export ***/
 void HumanOBJ::expandJoint() {
+	int jointIdx = JointNum;
 
+
+	Vertex* joint = new Joint(jointIdx, );
+	joints.push_back(*joint);
 }
 
 float HumanOBJ::getBustSize() {
