@@ -583,7 +583,7 @@ void HumanOBJ::setJoint(float s, int jointIdx, float x, float y) {
 	int trial = 0;
 	float range = 1/s;
 
-	if (joints.size() < 18) {
+	if (joints.size() < JointNum) {
 		Vertex l = Vertex(x, y, 1000/s);
 		Vertex l_norm = Vertex(0, 0, -1);
 
@@ -649,6 +649,10 @@ void HumanOBJ::setJoint(float s, int jointIdx, float x, float y) {
 	else {
 		AfxMessageBox(_T("Cannot declare a new joint!"));
 	}
+}
+
+void HumanOBJ::expandJoint() {
+
 }
 
 float HumanOBJ::getBustSize() {
@@ -960,11 +964,9 @@ void HumanOBJ::setHipSize(float s, float h) {
 	vertIdx.insert(vertIdx.end(), segmentHash[Segment_FootL].begin(), segmentHash[Segment_FootL].end());
 
 	relatedJoints.push_back(Joint_pelvisR);
-	relatedJoints.push_back(Joint_highLegR);
 	relatedJoints.push_back(Joint_kneeR);
 	relatedJoints.push_back(Joint_ankleR);
 	relatedJoints.push_back(Joint_pelvisL);
-	relatedJoints.push_back(Joint_highLegL);
 	relatedJoints.push_back(Joint_kneeL);
 	relatedJoints.push_back(Joint_ankleL);
 
@@ -1418,9 +1420,6 @@ void HumanOBJ::getSizePathPos(int idx, float* coord) {
 }
 
 void HumanOBJ::setRigs(float s) {
-	skinning.setHierarchy(joints);
-	skinning.setBones(joints, bones);
-
 	skinning.setSegments(vertices, joints, segmentGroup, weightHash, weightValueHash);
 	skinning.setBindings(vertices, joints);
 	setFeatures(s);  //... Segment 다 나누면 다시 활성화 필요 for Sizing
@@ -2473,172 +2472,6 @@ int HumanOBJ::getBodyPartNum(char* name) {
 	}
 
 	return -1;
-}
-
-void HumanOBJ::getBodyPartOrigin(int part, float* coord) {
-	if (part == Segment_Head) {
-		coord[0] = vertices[topMostIndex].x;
-		coord[1] = vertices[topMostIndex].y;
-		coord[2] = vertices[topMostIndex].z;
-	}
-	else if (part == Segment_Neck) {
-		coord[0] = joints[Joint_neck].getCoord().x;
-		coord[1] = joints[Joint_neck].getCoord().y;
-		coord[2] = joints[Joint_neck].getCoord().z;
-	}
-	else if (part == Segment_UpperTorso) {
-		coord[0] = joints[Joint_shoulderMid].getCoord().x;
-		coord[1] = joints[Joint_shoulderMid].getCoord().y;
-		coord[2] = joints[Joint_shoulderMid].getCoord().z;
-	}
-	else if (part == Segment_LowerTorso) {
-		coord[0] = joints[Joint_waist].getCoord().x;
-		coord[1] = joints[Joint_waist].getCoord().y;
-		coord[2] = joints[Joint_waist].getCoord().z;
-	}
-	else if (part == Segment_UpperArmR) {
-		coord[0] = joints[Joint_shoulderR].getCoord().x;
-		coord[1] = joints[Joint_shoulderR].getCoord().y;
-		coord[2] = joints[Joint_shoulderR].getCoord().z;
-	}
-	else if (part == Segment_LowerArmR) {
-		coord[0] = joints[Joint_elbowR].getCoord().x;
-		coord[1] = joints[Joint_elbowR].getCoord().y;
-		coord[2] = joints[Joint_elbowR].getCoord().z;
-	}
-	else if (part == Segment_HandR) {
-		coord[0] = joints[Joint_wristR].getCoord().x;
-		coord[1] = joints[Joint_wristR].getCoord().y;
-		coord[2] = joints[Joint_wristR].getCoord().z;
-	}
-	else if (part == Segment_UpperArmL) {
-		coord[0] = joints[Joint_shoulderL].getCoord().x;
-		coord[1] = joints[Joint_shoulderL].getCoord().y;
-		coord[2] = joints[Joint_shoulderL].getCoord().z;
-	}
-	else if (part == Segment_LowerArmL) {
-		coord[0] = joints[Joint_elbowL].getCoord().x;
-		coord[1] = joints[Joint_elbowL].getCoord().y;
-		coord[2] = joints[Joint_elbowL].getCoord().z;
-	}
-	else if (part == Segment_HandL) {
-		coord[0] = joints[Joint_wristL].getCoord().x;
-		coord[1] = joints[Joint_wristL].getCoord().y;
-		coord[2] = joints[Joint_wristL].getCoord().z;
-	}
-	else if (part == Segment_UpperLegR) {
-		coord[0] = joints[Joint_highLegR].getCoord().x;
-		coord[1] = joints[Joint_highLegR].getCoord().y;
-		coord[2] = joints[Joint_highLegR].getCoord().z;
-	}
-	else if (part == Segment_LowerLegR) {
-		coord[0] = joints[Joint_kneeR].getCoord().x;
-		coord[1] = joints[Joint_kneeR].getCoord().y;
-		coord[2] = joints[Joint_kneeR].getCoord().z;
-	}
-	else if (part == Segment_FootR) {
-		coord[0] = joints[Joint_ankleR].getCoord().x;
-		coord[1] = joints[Joint_ankleR].getCoord().y;
-		coord[2] = joints[Joint_ankleR].getCoord().z;
-	}
-	else if (part == Segment_UpperLegL) {
-		coord[0] = joints[Joint_highLegL].getCoord().x;
-		coord[1] = joints[Joint_highLegL].getCoord().y;
-		coord[2] = joints[Joint_highLegL].getCoord().z;
-	}
-	else if (part == Segment_LowerLegL) {
-		coord[0] = joints[Joint_kneeL].getCoord().x;
-		coord[1] = joints[Joint_kneeL].getCoord().y;
-		coord[2] = joints[Joint_kneeL].getCoord().z;
-	}
-	else if (part == Segment_FootL) {
-		coord[0] = joints[Joint_ankleL].getCoord().x;
-		coord[1] = joints[Joint_ankleL].getCoord().y;
-		coord[2] = joints[Joint_ankleL].getCoord().z;
-	}
-}
-
-void HumanOBJ::getBodyPartDirection(int part, float* coord) {
-	if (part == Segment_Head) {
-		coord[0] = joints[Joint_neck].getCoord().x;
-		coord[1] = joints[Joint_neck].getCoord().y;
-		coord[2] = joints[Joint_neck].getCoord().z;
-	}
-	else if (part == Segment_Neck) {
-		coord[0] = joints[Joint_shoulderMid].getCoord().x;
-		coord[1] = joints[Joint_shoulderMid].getCoord().y;
-		coord[2] = joints[Joint_shoulderMid].getCoord().z;
-	}
-	else if (part == Segment_UpperTorso) {
-		coord[0] = joints[Joint_waist].getCoord().x;
-		coord[1] = joints[Joint_waist].getCoord().y;
-		coord[2] = joints[Joint_waist].getCoord().z;
-	}
-	else if (part == Segment_LowerTorso) {
-		coord[0] = joints[Joint_pelvisMid].getCoord().x;
-		coord[1] = joints[Joint_pelvisMid].getCoord().y;
-		coord[2] = joints[Joint_pelvisMid].getCoord().z;
-	}
-	else if (part == Segment_UpperArmR) {
-		coord[0] = joints[Joint_elbowR].getCoord().x;
-		coord[1] = joints[Joint_elbowR].getCoord().y;
-		coord[2] = joints[Joint_elbowR].getCoord().z;
-	}
-	else if (part == Segment_LowerArmR) {
-		coord[0] = joints[Joint_wristR].getCoord().x;
-		coord[1] = joints[Joint_wristR].getCoord().y;
-		coord[2] = joints[Joint_wristR].getCoord().z;
-	}
-	else if (part == Segment_HandR) {
-		coord[0] = vertices[rightMostIndex].x;
-		coord[1] = vertices[rightMostIndex].y;
-		coord[2] = vertices[rightMostIndex].z;
-	}
-	else if (part == Segment_UpperArmL) {
-		coord[0] = joints[Joint_elbowL].getCoord().x;
-		coord[1] = joints[Joint_elbowL].getCoord().y;
-		coord[2] = joints[Joint_elbowL].getCoord().z;
-	}
-	else if (part == Segment_LowerArmL) {
-		coord[0] = joints[Joint_wristL].getCoord().x;
-		coord[1] = joints[Joint_wristL].getCoord().y;
-		coord[2] = joints[Joint_wristL].getCoord().z;
-	}
-	else if (part == Segment_HandL) {
-		coord[0] = vertices[leftMostIndex].x;
-		coord[1] = vertices[leftMostIndex].y;
-		coord[2] = vertices[leftMostIndex].z;
-	}
-	else if (part == Segment_UpperLegR) {
-		coord[0] = joints[Joint_kneeR].getCoord().x;
-		coord[1] = joints[Joint_kneeR].getCoord().y;
-		coord[2] = joints[Joint_kneeR].getCoord().z;
-	}
-	else if (part == Segment_LowerLegR) {
-		coord[0] = joints[Joint_ankleR].getCoord().x;
-		coord[1] = joints[Joint_ankleR].getCoord().y;
-		coord[2] = joints[Joint_ankleR].getCoord().z;
-	}
-	else if (part == Segment_FootR) {
-		coord[0] = joints[Joint_ankleR].getCoord().x;
-		coord[1] = vertices[bottomMostIndex].y;
-		coord[2] = vertices[bottomMostIndex].z;
-	}
-	else if (part == Segment_UpperLegL) {
-		coord[0] = joints[Joint_kneeL].getCoord().x;
-		coord[1] = joints[Joint_kneeL].getCoord().y;
-		coord[2] = joints[Joint_kneeL].getCoord().z;
-	}
-	else if (part == Segment_LowerLegL) {
-		coord[0] = joints[Joint_ankleL].getCoord().x;
-		coord[1] = joints[Joint_ankleL].getCoord().y;
-		coord[2] = joints[Joint_ankleL].getCoord().z;
-	}
-	else if (part == Segment_FootL) {
-		coord[0] = joints[Joint_ankleL].getCoord().x;
-		coord[1] = vertices[bottomMostIndex].y;
-		coord[2] = vertices[bottomMostIndex].z;
-	}
 }
 
 int HumanOBJ::getBodyPartPointNum(int part) {
