@@ -62,7 +62,7 @@ public :
 	void rotateKneeR(int, float, vector<Vertex>&, vector<Joint>&);
 	void rotateKneeL(int, float, vector<Vertex>&, vector<Joint>&);
 
-	void deform(float, vector<int>&, vector<Bone>&, vector<int>[], vector<float>[], vector<Vertex>&, vector<Joint>&);
+	void deform(int, float, vector<int>&, vector<Bone>&, vector<int>[], vector<float>[], vector<Vertex>&, vector<Joint>&);
 
 private:
 	vector<int> weightIndices;

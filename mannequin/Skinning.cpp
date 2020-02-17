@@ -1687,7 +1687,7 @@ void Skinning::rotateKneeL(int part, float degree, vector<Vertex>& vertices, vec
 	}
 }
 
-void Skinning::deform(float degree, vector<int>& currBones, vector<Bone>& bones,  vector<int> boneSegment[], vector<float> boneWeight[], vector<Vertex>& vertices, vector<Joint>& joints) {
+void Skinning::deform(int pivotIndex, float degree, vector<int>& currBones, vector<Bone>& bones,  vector<int> boneSegment[], vector<float> boneWeight[], vector<Vertex>& vertices, vector<Joint>& joints) {
 	float radian = degree * M_PI / 180;
 
 	/*** SORT OUT duplicates ***/
@@ -1712,7 +1712,7 @@ void Skinning::deform(float degree, vector<int>& currBones, vector<Bone>& bones,
 	vertIndices.clear();
 	vertIndices.insert(vertIndices.end(), copyVertIndices.begin(), copyVertIndices.end());
 
-	Vertex pivotJoint = joints[Joint_shoulderR].getCoord();
+	Vertex pivotJoint = joints[pivotIndex].getCoord();
 
 	for (int i = 0; i < vertIndices.size(); i++) {
 		int vertIdx = vertIndices[i];
@@ -1723,7 +1723,7 @@ void Skinning::deform(float degree, vector<int>& currBones, vector<Bone>& bones,
 		float x = currVert->x - pivotJoint.x;
 		float y = currVert->y - pivotJoint.y;
 		float z = currVert->z - pivotJoint.z;
-
+		
 		for (int j = 0; j < vertices[vertIdx].refBone.size(); j++) {
 			int currBone = vertices[vertIdx].refBone[j];
 			float currWeight = vertices[vertIdx].refWeight[j];

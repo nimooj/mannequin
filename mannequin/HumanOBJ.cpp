@@ -2573,16 +2573,6 @@ void HumanOBJ::importWeights() {
 }
 
 void HumanOBJ::defineBones() {
-	// Set boneSegment of hands and feet
-	for (int i = 0; i < bodySegment[Segment_HandR].size(); i++) {
-		Vertex* currVert = &vertices[bodySegment[Segment_HandR][i]];
-
-		if (currVert->refBone.size() == 0) {
-			currVert->refBone.push_back(Bone_lowerArm2R);
-			currVert->refWeight.push_back(1);
-		}
-	}
-
 	/*** set bone segment and weights ***/
 	for (int i = 0; i < vertices.size(); i++) {
 		for (int j = 0; j < vertices[i].refBone.size(); j++) {
