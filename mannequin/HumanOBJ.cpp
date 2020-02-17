@@ -260,6 +260,8 @@ HumanOBJ::HumanOBJ(string dir) {
 		*(neighbor[id3] + id2) = 1;
 		*(neighbor[id3] + id3) = 1;
 	}
+	
+	importWeights();
 }
 
 HumanOBJ::~HumanOBJ() {
@@ -330,42 +332,15 @@ vector<Joint>& HumanOBJ::getJoints(string dir) {
 	ifstream infile(dir);
 	string s;
 	int idx = 0;
-	int line = 0;
 	Joint joint;
 
 	while (getline(infile, s)) {
-		if (s == "") {
-			line = -1;
-		}
-		if (line == 0) {
-			istringstream iss(s);
-			float x, y, z;
-			iss >> x >> y >> z;
-			joint = Joint(idx, Vertex(x, y, z));
-			idx++;
-			joints.push_back(joint);
-		}
-		/*
-		else if (line == 1) {
-			string delimiter1 = " ";
-			size_t pos = 0;
-			string token;
-			vector<string> ss;
-
-			while( (pos = s.find(delimiter1)) != string::npos ) {
-				token = s.substr(0, pos);
-				ss.push_back(token);
-				s.erase(0, pos + delimiter1.length());
-			}
-
-			for (int i = 0; i < ss.size(); i++) {
-				joint.relatedVerts.push_back(atoi(ss[i].c_str()));
-			}
-			joints.push_back(joint);
-		}
-		*/
-
-		line++;
+		istringstream iss(s);
+		float x, y, z;
+		iss >> x >> y >> z;
+		joint = Joint(idx, Vertex(x, y, z));
+		idx++;
+		joints.push_back(joint);
 	}
 	infile.close();
 
@@ -416,8 +391,6 @@ void HumanOBJ::loadJoints(char* dir) {
 		line++;
 	}
 	infile.close();
-
-
 }
 
 void HumanOBJ::loadLandmarks(char* dir) {
@@ -651,15 +624,6 @@ void HumanOBJ::setJoint(float s, int jointIdx, float x, float y) {
 	}
 }
 
-/*** Invoked when join export ***/
-void HumanOBJ::expandJoint() {
-	int jointIdx = JointNum;
-
-
-	Vertex* joint = new Joint(jointIdx, );
-	joints.push_back(*joint);
-}
-
 float HumanOBJ::getBustSize() {
 	float dist = 0;
 	Vertex prevV, currV;
@@ -746,24 +710,24 @@ void HumanOBJ::setHeight(float h) {
 
 	vector<int> vertIdx;
 
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_UpperArmR].begin(), segmentHash[Segment_UpperArmR].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_LowerArmR].begin(), segmentHash[Segment_LowerArmR].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_HandR].begin(), segmentHash[Segment_HandR].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_UpperArmR].begin(), bodySegment[Segment_UpperArmR].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_LowerArmR].begin(), bodySegment[Segment_LowerArmR].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_HandR].begin(), bodySegment[Segment_HandR].end());
 
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_UpperArmL].begin(), segmentHash[Segment_UpperArmL].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_LowerArmL].begin(), segmentHash[Segment_LowerArmL].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_HandL].begin(), segmentHash[Segment_HandL].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_UpperArmL].begin(), bodySegment[Segment_UpperArmL].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_LowerArmL].begin(), bodySegment[Segment_LowerArmL].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_HandL].begin(), bodySegment[Segment_HandL].end());
 
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_Head].begin(), segmentHash[Segment_Head].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_Neck].begin(), segmentHash[Segment_Neck].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_UpperTorso].begin(), segmentHash[Segment_UpperTorso].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_LowerTorso].begin(), segmentHash[Segment_LowerTorso].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_UpperLegR].begin(), segmentHash[Segment_UpperLegR].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_LowerLegR].begin(), segmentHash[Segment_LowerLegR].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_FootR].begin(), segmentHash[Segment_FootR].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_UpperLegL].begin(), segmentHash[Segment_UpperLegL].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_LowerLegL].begin(), segmentHash[Segment_LowerLegL].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_FootL].begin(), segmentHash[Segment_FootL].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_Head].begin(), bodySegment[Segment_Head].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_Neck].begin(), bodySegment[Segment_Neck].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_UpperTorso].begin(), bodySegment[Segment_UpperTorso].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_LowerTorso].begin(), bodySegment[Segment_LowerTorso].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_UpperLegR].begin(), bodySegment[Segment_UpperLegR].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_LowerLegR].begin(), bodySegment[Segment_LowerLegR].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_FootR].begin(), bodySegment[Segment_FootR].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_UpperLegL].begin(), bodySegment[Segment_UpperLegL].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_LowerLegL].begin(), bodySegment[Segment_LowerLegL].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_FootL].begin(), bodySegment[Segment_FootL].end());
 
 	for (int i = 0; i < vertIdx.size(); i++) {
 		int idx = vertIdx[i];
@@ -800,17 +764,17 @@ void HumanOBJ::setBustSize(float s, float b) {
 	vector<int> relatedJointsR;
 	vector<int> relatedJointsL;
 
-	armRIdx.insert(armRIdx.end(), segmentHash[Segment_UpperArmR].begin(), segmentHash[Segment_UpperArmR].end());
-	armRIdx.insert(armRIdx.end(), segmentHash[Segment_LowerArmR].begin(), segmentHash[Segment_LowerArmR].end());
-	armRIdx.insert(armRIdx.end(), segmentHash[Segment_HandR].begin(), segmentHash[Segment_HandR].end());
+	armRIdx.insert(armRIdx.end(), bodySegment[Segment_UpperArmR].begin(), bodySegment[Segment_UpperArmR].end());
+	armRIdx.insert(armRIdx.end(), bodySegment[Segment_LowerArmR].begin(), bodySegment[Segment_LowerArmR].end());
+	armRIdx.insert(armRIdx.end(), bodySegment[Segment_HandR].begin(), bodySegment[Segment_HandR].end());
 
-	armLIdx.insert(armLIdx.end(), segmentHash[Segment_UpperArmL].begin(), segmentHash[Segment_UpperArmL].end());
-	armLIdx.insert(armLIdx.end(), segmentHash[Segment_LowerArmL].begin(), segmentHash[Segment_LowerArmL].end());
-	armLIdx.insert(armLIdx.end(), segmentHash[Segment_HandL].begin(), segmentHash[Segment_HandL].end());
+	armLIdx.insert(armLIdx.end(), bodySegment[Segment_UpperArmL].begin(), bodySegment[Segment_UpperArmL].end());
+	armLIdx.insert(armLIdx.end(), bodySegment[Segment_LowerArmL].begin(), bodySegment[Segment_LowerArmL].end());
+	armLIdx.insert(armLIdx.end(), bodySegment[Segment_HandL].begin(), bodySegment[Segment_HandL].end());
 
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_Head].begin(), segmentHash[Segment_Head].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_Neck].begin(), segmentHash[Segment_Neck].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_UpperTorso].begin(), segmentHash[Segment_UpperTorso].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_Head].begin(), bodySegment[Segment_Head].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_Neck].begin(), bodySegment[Segment_Neck].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_UpperTorso].begin(), bodySegment[Segment_UpperTorso].end());
 
 	relatedJointsR.push_back(Joint_shoulderR);
 	relatedJointsR.push_back(Joint_elbowR);
@@ -897,12 +861,12 @@ void HumanOBJ::setWaistSize(float s, float w) {
 	float hipScale = 1;
 
 	vector<int> vertIdx;
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_Head].begin(), segmentHash[Segment_Head].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_Neck].begin(), segmentHash[Segment_Neck].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_UpperTorso].begin(), segmentHash[Segment_UpperTorso].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_LowerTorso].begin(), segmentHash[Segment_LowerTorso].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_UpperLegR].begin(), segmentHash[Segment_UpperLegR].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_LowerLegR].begin(), segmentHash[Segment_LowerLegR].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_Head].begin(), bodySegment[Segment_Head].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_Neck].begin(), bodySegment[Segment_Neck].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_UpperTorso].begin(), bodySegment[Segment_UpperTorso].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_LowerTorso].begin(), bodySegment[Segment_LowerTorso].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_UpperLegR].begin(), bodySegment[Segment_UpperLegR].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_LowerLegR].begin(), bodySegment[Segment_LowerLegR].end());
 
 	float range = 1/(s*8);
 	for (int i = 0; i < vertIdx.size(); i++) {
@@ -959,14 +923,14 @@ void HumanOBJ::setHipSize(float s, float h) {
 	vector<int> vertIdx;
 	vector<int> relatedJoints;
 
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_UpperTorso].begin(), segmentHash[Segment_UpperTorso].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_LowerTorso].begin(), segmentHash[Segment_LowerTorso].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_UpperLegR].begin(), segmentHash[Segment_UpperLegR].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_LowerLegR].begin(), segmentHash[Segment_LowerLegR].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_FootR].begin(), segmentHash[Segment_FootR].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_UpperLegL].begin(), segmentHash[Segment_UpperLegL].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_LowerLegL].begin(), segmentHash[Segment_LowerLegL].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_FootL].begin(), segmentHash[Segment_FootL].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_UpperTorso].begin(), bodySegment[Segment_UpperTorso].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_LowerTorso].begin(), bodySegment[Segment_LowerTorso].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_UpperLegR].begin(), bodySegment[Segment_UpperLegR].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_LowerLegR].begin(), bodySegment[Segment_LowerLegR].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_FootR].begin(), bodySegment[Segment_FootR].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_UpperLegL].begin(), bodySegment[Segment_UpperLegL].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_LowerLegL].begin(), bodySegment[Segment_LowerLegL].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_FootL].begin(), bodySegment[Segment_FootL].end());
 
 	relatedJoints.push_back(Joint_pelvisR);
 	relatedJoints.push_back(Joint_kneeR);
@@ -1092,8 +1056,8 @@ void HumanOBJ::setSize(float s, int type, int index, float oldSize, float newSiz
 			rangeVs.clear();
 
 			for (int i = 0; i < sections.size(); i++) {
-				for (int j = 0; j < segmentHash[sections[i]].size(); j++) {
-					int idx = segmentHash[sections[i]][j];
+				for (int j = 0; j < bodySegment[sections[i]].size(); j++) {
+					int idx = bodySegment[sections[i]][j];
 
 					if (abs(vertices[idx].y - level) < range) {
 						rangeVs.push_back(idx);
@@ -1106,8 +1070,8 @@ void HumanOBJ::setSize(float s, int type, int index, float oldSize, float newSiz
 		}
 
 		for (int i = 0; i < sections.size(); i++) {
-			for (int j = 0; j < segmentHash[sections[i]].size(); j++) {
-				int idx = segmentHash[sections[i]][j];
+			for (int j = 0; j < bodySegment[sections[i]].size(); j++) {
+				int idx = bodySegment[sections[i]][j];
 
 				if (abs(vertices[idx].y - level) < range) {
 					vertices[idx].x *= scale;
@@ -1152,8 +1116,8 @@ void HumanOBJ::setSize(float s, int type, int index, float oldSize, float newSiz
 		/*** TODO :: Deformations of length type landmarks other than Upper/Lower Torso ***/
 
 		for (int i = 0; i < sections.size(); i++) {
-			for (int j = 0; j < segmentHash[sections[i]].size(); j++) {
-				int idx = segmentHash[sections[i]][j];
+			for (int j = 0; j < bodySegment[sections[i]].size(); j++) {
+				int idx = bodySegment[sections[i]][j];
 
 				if (sections[i] == Segment_UpperTorso) {
 					upperTorsoFlag = 1;
@@ -1193,8 +1157,8 @@ void HumanOBJ::setSize(float s, int type, int index, float oldSize, float newSiz
 
 	if (upperTorsoFlag) {
 		float jointDiff = joints[Joint_waist].getCoord().y*scale - joints[Joint_waist].getCoord().y;
-		for (int i = 0; i < segmentHash[Segment_LowerTorso].size(); i++) {
-			int idx = segmentHash[Segment_LowerTorso][i];
+		for (int i = 0; i < bodySegment[Segment_LowerTorso].size(); i++) {
+			int idx = bodySegment[Segment_LowerTorso][i];
 			Vertex waist = joints[Joint_waist].getCoord();
 			Vertex pelvisMid = joints[Joint_pelvisMid].getCoord();
 
@@ -1209,8 +1173,8 @@ void HumanOBJ::setSize(float s, int type, int index, float oldSize, float newSiz
 	}
 	if (lowerTorsoFlag) {
 		float jointDiff = joints[Joint_waist].getCoord().y*scale - joints[Joint_waist].getCoord().y;
-		for (int i = 0; i < segmentHash[Segment_UpperTorso].size(); i++) {
-			int idx = segmentHash[Segment_UpperTorso][i];
+		for (int i = 0; i < bodySegment[Segment_UpperTorso].size(); i++) {
+			int idx = bodySegment[Segment_UpperTorso][i];
 			Vertex shoulderMid = joints[Joint_shoulderMid].getCoord();
 			Vertex waist = joints[Joint_waist].getCoord();
 
@@ -1239,24 +1203,24 @@ void HumanOBJ::setSize(float s, float _height, float b, float w, float h) {
 	vector<int> armRIdx;
 	vector<int> armLIdx;
 	vector<int> vertIdx;
-	armRIdx.insert(armRIdx.end(), segmentHash[Segment_UpperArmR].begin(), segmentHash[Segment_UpperArmR].end());
-	armRIdx.insert(armRIdx.end(), segmentHash[Segment_LowerArmR].begin(), segmentHash[Segment_LowerArmR].end());
-	armRIdx.insert(armRIdx.end(), segmentHash[Segment_HandR].begin(), segmentHash[Segment_HandR].end());
+	armRIdx.insert(armRIdx.end(), bodySegment[Segment_UpperArmR].begin(), bodySegment[Segment_UpperArmR].end());
+	armRIdx.insert(armRIdx.end(), bodySegment[Segment_LowerArmR].begin(), bodySegment[Segment_LowerArmR].end());
+	armRIdx.insert(armRIdx.end(), bodySegment[Segment_HandR].begin(), bodySegment[Segment_HandR].end());
 
-	armLIdx.insert(armLIdx.end(), segmentHash[Segment_UpperArmL].begin(), segmentHash[Segment_UpperArmL].end());
-	armLIdx.insert(armLIdx.end(), segmentHash[Segment_LowerArmL].begin(), segmentHash[Segment_LowerArmL].end());
-	armLIdx.insert(armLIdx.end(), segmentHash[Segment_HandL].begin(), segmentHash[Segment_HandL].end());
+	armLIdx.insert(armLIdx.end(), bodySegment[Segment_UpperArmL].begin(), bodySegment[Segment_UpperArmL].end());
+	armLIdx.insert(armLIdx.end(), bodySegment[Segment_LowerArmL].begin(), bodySegment[Segment_LowerArmL].end());
+	armLIdx.insert(armLIdx.end(), bodySegment[Segment_HandL].begin(), bodySegment[Segment_HandL].end());
 
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_Head].begin(), segmentHash[Segment_Head].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_Neck].begin(), segmentHash[Segment_Neck].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_UpperTorso].begin(), segmentHash[Segment_UpperTorso].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_LowerTorso].begin(), segmentHash[Segment_LowerTorso].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_UpperLegR].begin(), segmentHash[Segment_UpperLegR].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_LowerLegR].begin(), segmentHash[Segment_LowerLegR].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_FootR].begin(), segmentHash[Segment_FootR].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_UpperLegL].begin(), segmentHash[Segment_UpperLegL].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_LowerLegL].begin(), segmentHash[Segment_LowerLegL].end());
-	vertIdx.insert(vertIdx.end(), segmentHash[Segment_FootL].begin(), segmentHash[Segment_FootL].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_Head].begin(), bodySegment[Segment_Head].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_Neck].begin(), bodySegment[Segment_Neck].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_UpperTorso].begin(), bodySegment[Segment_UpperTorso].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_LowerTorso].begin(), bodySegment[Segment_LowerTorso].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_UpperLegR].begin(), bodySegment[Segment_UpperLegR].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_LowerLegR].begin(), bodySegment[Segment_LowerLegR].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_FootR].begin(), bodySegment[Segment_FootR].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_UpperLegL].begin(), bodySegment[Segment_UpperLegL].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_LowerLegL].begin(), bodySegment[Segment_LowerLegL].end());
+	vertIdx.insert(vertIdx.end(), bodySegment[Segment_FootL].begin(), bodySegment[Segment_FootL].end());
 
 	float range = 1/(s*8);
 	for (int i = 0; i < vertIdx.size(); i++) {
@@ -1425,9 +1389,12 @@ void HumanOBJ::getSizePathPos(int idx, float* coord) {
 }
 
 void HumanOBJ::setRigs(float s) {
-	skinning.setSegments(vertices, joints, segmentGroup, weightHash, weightValueHash);
+	skinning.setSegments(vertices, joints, segmentGroup, weightHash, weightValueHash); // Set bodySegment and weightSegment
 	skinning.setBindings(vertices, joints);
 	setFeatures(s);  //... Segment 다 나누면 다시 활성화 필요 for Sizing
+
+	if (bones.size() == 0)
+		defineBones(); // Set boneSegment
 }
 
 void HumanOBJ::setFeatures(float s) {
@@ -1438,23 +1405,23 @@ void HumanOBJ::setFeatures(float s) {
 	vector<int> secs;
 	if (landmarks.size() == 0) {
 		for (int i = 0; i < segmentGroup.size(); i++) {
-			segmentHash[segmentGroup[i]].push_back(i); // push vertices ARRAY index
+			bodySegment[segmentGroup[i]].push_back(i); // push vertices ARRAY index
 		}
 
 		/*** HEIGHT ***/
 		int topLevelIdx = 0;
-		for (int i = 0; i < segmentHash[Segment_Head].size(); i++) {
-			if (vertices[segmentHash[Segment_Head][i]].y > maxY) {
-				topMostLevel = vertices[segmentHash[Segment_Head][i]].y;
-				topLevelIdx = segmentHash[Segment_Head][i];
+		for (int i = 0; i < bodySegment[Segment_Head].size(); i++) {
+			if (vertices[bodySegment[Segment_Head][i]].y > maxY) {
+				topMostLevel = vertices[bodySegment[Segment_Head][i]].y;
+				topLevelIdx = bodySegment[Segment_Head][i];
 				maxY = topMostLevel;
 			}
 		}
 
 		int bottomLevelIdx = 0;
 		vector<int> segment_lowLegs;
-		segment_lowLegs.insert(segment_lowLegs.end(), segmentHash[Segment_FootR].begin(), segmentHash[Segment_FootR].end());
-		segment_lowLegs.insert(segment_lowLegs.end(), segmentHash[Segment_FootL].begin(), segmentHash[Segment_FootL].end());
+		segment_lowLegs.insert(segment_lowLegs.end(), bodySegment[Segment_FootR].begin(), bodySegment[Segment_FootR].end());
+		segment_lowLegs.insert(segment_lowLegs.end(), bodySegment[Segment_FootL].begin(), bodySegment[Segment_FootL].end());
 		for (int i = 0; i < segment_lowLegs.size(); i++) {
 			if (vertices[segment_lowLegs[i]].y < minY) {
 				bottomMostLevel = vertices[segment_lowLegs[i]].y;
@@ -1477,21 +1444,21 @@ void HumanOBJ::setFeatures(float s) {
 		maxY = -1000/s;
 		minY = 1000/s;
 		// Bust : max z val in segment 8
-		for (int i = 0; i < segmentHash[Segment_UpperTorso].size(); i++) {
-			if (vertices[segmentHash[Segment_UpperTorso][i]].z > maxZ && vertices[segmentHash[Segment_UpperTorso][i]].y > joints[Joint_waist].getCoord().y) {
-				maxZ = vertices[segmentHash[Segment_UpperTorso][i]].z;
-				bustLevel = vertices[segmentHash[Segment_UpperTorso][i]].y;
+		for (int i = 0; i < bodySegment[Segment_UpperTorso].size(); i++) {
+			if (vertices[bodySegment[Segment_UpperTorso][i]].z > maxZ && vertices[bodySegment[Segment_UpperTorso][i]].y > joints[Joint_waist].getCoord().y) {
+				maxZ = vertices[bodySegment[Segment_UpperTorso][i]].z;
+				bustLevel = vertices[bodySegment[Segment_UpperTorso][i]].y;
 			}
 
 			/*** Get Shoulder Index ***/
-			if (vertices[segmentHash[Segment_UpperTorso][i]].x < minX) {
-				minX = vertices[segmentHash[Segment_UpperTorso][i]].x;
-				shoulderRIndex = segmentHash[Segment_UpperTorso][i];
+			if (vertices[bodySegment[Segment_UpperTorso][i]].x < minX) {
+				minX = vertices[bodySegment[Segment_UpperTorso][i]].x;
+				shoulderRIndex = bodySegment[Segment_UpperTorso][i];
 			}
 
-			if (vertices[segmentHash[Segment_UpperTorso][i]].x > maxX) {
-				maxX = vertices[segmentHash[Segment_UpperTorso][i]].x;
-				shoulderLIndex = segmentHash[Segment_UpperTorso][i];
+			if (vertices[bodySegment[Segment_UpperTorso][i]].x > maxX) {
+				maxX = vertices[bodySegment[Segment_UpperTorso][i]].x;
+				shoulderLIndex = bodySegment[Segment_UpperTorso][i];
 			}
 			/**************************/
 		}
@@ -1511,9 +1478,9 @@ void HumanOBJ::setFeatures(float s) {
 		while (nearBust.size() < 12 && trial < 20) {
 			nearBust.clear();
 
-			for (int i = 0; i < segmentHash[Segment_UpperTorso].size(); i++) {
-				if (abs(vertices[segmentHash[Segment_UpperTorso][i]].y - bustLevel) <= range) {
-					Vertex v = vertices[segmentHash[Segment_UpperTorso][i]];
+			for (int i = 0; i < bodySegment[Segment_UpperTorso].size(); i++) {
+				if (abs(vertices[bodySegment[Segment_UpperTorso][i]].y - bustLevel) <= range) {
+					Vertex v = vertices[bodySegment[Segment_UpperTorso][i]];
 					nearBust.push_back(Vertex(v.idx, v.x, bustLevel, v.z));
 				}
 			}
@@ -1545,8 +1512,8 @@ void HumanOBJ::setFeatures(float s) {
 		minY = 1000/s;
 		Vertex waistJoint = joints[Joint_waist].getCoord();
 		vector<int> segment_torso;
-		//segment_torso.insert(segment_torso.end(), segmentHash[Segment_UpperTorso].begin(), segmentHash[Segment_UpperTorso].end());
-		segment_torso.insert(segment_torso.end(), segmentHash[Segment_LowerTorso].begin(), segmentHash[Segment_LowerTorso].end());
+		//segment_torso.insert(segment_torso.end(), bodySegment[Segment_UpperTorso].begin(), bodySegment[Segment_UpperTorso].end());
+		segment_torso.insert(segment_torso.end(), bodySegment[Segment_LowerTorso].begin(), bodySegment[Segment_LowerTorso].end());
 		for (int i = 0; i < segment_torso.size(); i++) {
 			if (vertices[segment_torso[i]].y < bustLevel) {
 				if (abs(vertices[segment_torso[i]].x) < minX && abs(vertices[segment_torso[i]].y - joints[Joint_waist].getCoord().y) < range) {
@@ -1595,9 +1562,9 @@ void HumanOBJ::setFeatures(float s) {
 		minZ = 1000/s;
 		Vertex pelvisJoint = joints[Joint_pelvisMid].getCoord();
 		vector<int> segment_legs;
-		segment_legs.insert(segment_legs.end(), segmentHash[Segment_LowerTorso].begin(), segmentHash[Segment_LowerTorso].end());
-		segment_legs.insert(segment_legs.end(), segmentHash[Segment_UpperLegR].begin(), segmentHash[Segment_UpperLegR].end());
-		segment_legs.insert(segment_legs.end(), segmentHash[Segment_UpperLegL].begin(), segmentHash[Segment_UpperLegL].end());
+		segment_legs.insert(segment_legs.end(), bodySegment[Segment_LowerTorso].begin(), bodySegment[Segment_LowerTorso].end());
+		segment_legs.insert(segment_legs.end(), bodySegment[Segment_UpperLegR].begin(), bodySegment[Segment_UpperLegR].end());
+		segment_legs.insert(segment_legs.end(), bodySegment[Segment_UpperLegL].begin(), bodySegment[Segment_UpperLegL].end());
 		for (int i = 0; i < segment_legs.size(); i++) {
 			if (abs(vertices[segment_legs[i]].y - pelvisJoint.y) <= 1) {
 				if (vertices[segment_legs[i]].z < minZ) {
@@ -1677,13 +1644,6 @@ void HumanOBJ::jointExport(CString path) {
 	for (int i = 0; i < joints.size(); i++) {
 		Vertex v = joints[i].getCoord();
 		outfile << v.x << " " << v.y << " " << v.z << endl;
-
-		/*
-		for (int j = 0; j < joints[i].relatedVerts.size(); j++) {
-			outfile << joints[i].relatedVerts[j] << " ";
-		}
-		*/
-		outfile << endl << endl;
 	}
 	AfxMessageBox(_T("Joints exported.\n"));
 	outfile.close();
@@ -1913,8 +1873,7 @@ void HumanOBJ::loadOBJ(string dir) {
 	leftMostOffset -= (minX + maxX) / 2;
 	rightMostOffset -= (minX + maxX) / 2;
 
-	cout << vertices.size() << endl;
-
+	importWeights();
 	skinning = Skinning();
 }
 
@@ -2142,7 +2101,7 @@ void HumanOBJ::loadOBJ(char* dir) {
 	leftMostOffset -= (minX + maxX) / 2;
 	rightMostOffset -= (minX + maxX) / 2;
 
-	cout << vertices.size() << endl;
+	importWeights();
 	skinning = Skinning();
 }
 
@@ -2358,11 +2317,11 @@ void HumanOBJ::writeDressForm(int type, CString path, vector<int> bodyParts) {
 	vector<int> meshCount(meshes.size(), 0);
 
 	int newIdx = 0;
-	float height = vertices[segmentHash[bodyParts[0]][0]].y;
+	float height = vertices[bodySegment[bodyParts[0]][0]].y;
 
 	for (int i = 0; i < bodyParts.size(); i++) {
-		for (int j = 0; j < segmentHash[bodyParts[i]].size(); j++) {
-			Vertex v = vertices[segmentHash[bodyParts[i]][j]];
+		for (int j = 0; j < bodySegment[bodyParts[i]].size(); j++) {
+			Vertex v = vertices[bodySegment[bodyParts[i]][j]];
 
 			if (abs(v.y - height) < 1 / scaleFactor) {
 				layers.push_back(v);
@@ -2480,21 +2439,239 @@ int HumanOBJ::getBodyPartNum(char* name) {
 }
 
 int HumanOBJ::getBodyPartPointNum(int part) {
-	return segmentHash[part].size();
+	return bodySegment[part].size();
 }
 
 void HumanOBJ::getBodyPartPointIndex(int part, int* nums) {
 	int j = 0;
-	for (int i = 0; i < segmentHash[part].size(); i++) {
-		nums[j++] = segmentHash[part][i];
+	for (int i = 0; i < bodySegment[part].size(); i++) {
+		nums[j++] = bodySegment[part][i];
 	}
 }
 
 void HumanOBJ::getBodyPartPointPos(int part, float* coords) {
 	int j = 0;
-	for (int i = 0; i < segmentHash[part].size(); i++) {
-		coords[j++] = vertices[segmentHash[part][i]].x;
-		coords[j++] = vertices[segmentHash[part][i]].y;
-		coords[j++] = vertices[segmentHash[part][i]].z;
+	for (int i = 0; i < bodySegment[part].size(); i++) {
+		coords[j++] = vertices[bodySegment[part][i]].x;
+		coords[j++] = vertices[bodySegment[part][i]].y;
+		coords[j++] = vertices[bodySegment[part][i]].z;
 	}
+}
+
+/*** Invoked when (join export && Expand), then define Bones HERE ***/
+void HumanOBJ::expandJoint() {
+	Vertex neck = joints[Joint_neck].getCoord();
+	Vertex shoulderMid = joints[Joint_shoulderMid].getCoord();
+	Vertex shoulderR = joints[Joint_shoulderR].getCoord();
+	Vertex elbowR = joints[Joint_elbowR].getCoord();
+	Vertex wristR = joints[Joint_wristR].getCoord();
+	Vertex shoulderL = joints[Joint_shoulderL].getCoord();
+	Vertex elbowL = joints[Joint_elbowL].getCoord();
+	Vertex wristL = joints[Joint_wristL].getCoord();
+	Vertex waist = joints[Joint_waist].getCoord();
+	Vertex pelvisR = joints[Joint_pelvisR].getCoord();
+	Vertex kneeR = joints[Joint_kneeR].getCoord();
+	Vertex ankleR = joints[Joint_ankleR].getCoord();
+	Vertex pelvisL = joints[Joint_pelvisL].getCoord();
+	Vertex kneeL = joints[Joint_kneeL].getCoord();
+	Vertex ankleL = joints[Joint_ankleL].getCoord();
+
+	Vertex spine3 = Vertex((shoulderMid.x * 4 + waist.x) / 5, (shoulderMid.y * 4 + waist.y * 4) / 5, (shoulderMid.z * 4 + waist.z) / 5);
+	Vertex spine2 = Vertex((shoulderMid.x * 3 + waist.x * 2) / 5, (shoulderMid.y * 3 + waist.y * 2)/ 5, (shoulderMid.z * 3 + waist.z * 2)/5);
+	Vertex spine1 = Vertex((shoulderMid.x * 2 + waist.x * 3) / 5, (shoulderMid.y * 2 + waist.y * 3) / 5, (shoulderMid.z * 2 + waist.z * 3) / 5);
+	Vertex spine = Vertex((shoulderMid.x + waist.x * 4) / 5, (shoulderMid.y + waist.y * 4) / 5, (shoulderMid.z + waist.z * 4) / 5);
+	Vertex ribR = Vertex((shoulderR.x + spine2.x) / 2, (shoulderR.y + spine2.y) / 2, (shoulderR.z + spine2.z) / 2);
+	Vertex ribL = Vertex((shoulderL.x + spine2.x) / 2, (shoulderL.y + spine2.y) / 2, (shoulderL.z + spine2.z) / 2);
+
+	Vertex collarboneR = Vertex((shoulderMid.x * 2 + shoulderR.x) / 3, (shoulderMid.y * 2 + shoulderR.y) / 3, (shoulderMid.z * 2 + shoulderR.z) / 3 );
+	Vertex shoulderTwistR = Vertex((shoulderR.x + elbowR.x) / 2, (shoulderR.y + elbowR.y) / 2, (shoulderR.z + elbowR.z) / 2);
+	Vertex elbowTwistR = Vertex((elbowR.x * 2 + wristR.x) / 3, (elbowR.y * 2 + wristR.y) / 3, (elbowR.z * 2 + wristR.z) / 3);
+	Vertex elbowTwist1R = Vertex((elbowR.x + wristR.x * 2) / 3, (elbowR.y + wristR.y * 2) / 3, (elbowR.z + wristR.z * 2) / 3);
+
+	Vertex collarboneL = Vertex((shoulderMid.x * 2 + shoulderL.x) / 3, (shoulderMid.y * 2 + shoulderL.y) / 3, (shoulderMid.z * 2 + shoulderL.z) / 3);
+	Vertex shoulderTwistL = Vertex((shoulderL.x + elbowL.x) / 2, (shoulderL.y + elbowL.y) / 2, (shoulderL.z + elbowL.z) / 2);
+	Vertex elbowTwistL = Vertex((elbowL.x * 2 + wristL.x) / 3, (elbowL.y * 2 + wristL.y) / 3, (elbowL.z * 2 + wristL.z) / 3);
+	Vertex elbowTwist1L = Vertex((elbowL.x + wristL.x * 2) / 3, (elbowL.y + wristL.y * 2) / 3, (elbowL.z + wristL.z * 2) / 3);
+
+	Vertex hipR = Vertex((pelvisR.x * 5 + kneeR.x) / 6, (pelvisR.y * 5 + kneeR.y) / 6, (pelvisR.z * 5 + kneeR.z) / 6);
+	Vertex hipTwistR = Vertex((pelvisR.x * 4 + kneeR.x * 2) / 6, (pelvisR.y * 4 + kneeR.y * 2) / 6, (pelvisR.z * 4 + kneeR.z * 2) / 6);
+
+	Vertex hipL = Vertex((pelvisL.x * 5 + kneeL.x) / 6, (pelvisL.y * 5 + kneeL.y) / 6, (pelvisL.z * 5 + kneeL.z) / 6);
+	Vertex hipTwistL = Vertex((pelvisL.x * 4 + kneeL.x * 2) / 6, (pelvisL.y * 4 + kneeL.y * 2) / 6, (pelvisL.z * 4 + kneeL.z * 2) / 6);
+
+
+	Joint jspine = Joint(Joint_spine, spine);
+	Joint jspine1 = Joint(Joint_spine1, spine1);
+	Joint jspine2 = Joint(Joint_spine2, spine2);
+	Joint jspine3 = Joint(Joint_spine3, spine3);
+
+	Joint jribR = Joint(Joint_ribR, ribR);
+	Joint jcollarboneR = Joint(Joint_collarboneR, collarboneR);
+	Joint jshoulderTwistR = Joint(Joint_shoulderTwistR, shoulderTwistR);
+	Joint jelbowTwistR = Joint(Joint_elbowTwistR, elbowTwistR);
+	Joint jelbowTwist1R = Joint(Joint_elbowTwist1R, elbowTwist1R);
+
+	Joint jribL = Joint(Joint_ribL, ribL);
+	Joint jcollarboneL = Joint(Joint_collarboneL, collarboneL);
+	Joint jshoulderTwistL = Joint(Joint_shoulderTwistL, shoulderTwistL);
+	Joint jelbowTwistL = Joint(Joint_elbowTwistL, elbowTwistL);
+	Joint jelbowTwist1L = Joint(Joint_elbowTwist1L, elbowTwist1L);
+
+	Joint jhipR = Joint(Joint_hipR, hipR);
+	Joint jhipTwistR = Joint(Joint_hipTwistR, hipTwistR);
+	Joint jhipL = Joint(Joint_hipL, hipL);
+	Joint jhipTwistL = Joint(Joint_hipTwistL, hipTwistL);
+
+	joints.push_back(jspine);
+	joints.push_back(jspine1);
+	joints.push_back(jspine2);
+	joints.push_back(jspine3);
+	joints.push_back(jribR);
+	joints.push_back(jcollarboneR);
+	joints.push_back(jshoulderTwistR);
+	joints.push_back(jelbowTwistR);
+	joints.push_back(jelbowTwist1R);
+	joints.push_back(jribL);
+	joints.push_back(jcollarboneL);
+	joints.push_back(jshoulderTwistL);
+	joints.push_back(jelbowTwistL);
+	joints.push_back(jelbowTwist1L);
+	joints.push_back(jhipR);
+	joints.push_back(jhipTwistR);
+	joints.push_back(jhipL);
+	joints.push_back(jhipTwistL);
+
+	defineBones();
+}
+
+void HumanOBJ::importWeights() {
+	string line;
+	ifstream boneFile("avatar_man_bone_mapped.boneInfo");
+	//ifstream boneFile("avatar_woman_bone_mapped.boneInfo");
+
+	int vertIdx = 0;
+	while (getline(boneFile, line)) {
+		istringstream iss(line);
+		string f;
+		int b0, b1, b2, b3;
+		float w0, w1, w2, w3;
+
+		iss >> b0 >> b1 >> b2 >> b3 >> w0 >> w1 >> w2 >> w3;
+
+		vertices[vertIdx].refBone.push_back(b0);
+		vertices[vertIdx].refBone.push_back(b1);
+		vertices[vertIdx].refBone.push_back(b2);
+		vertices[vertIdx].refBone.push_back(b3);
+
+		vertices[vertIdx].refWeight.push_back(w0);
+		vertices[vertIdx].refWeight.push_back(w1);
+		vertices[vertIdx].refWeight.push_back(w2);
+		vertices[vertIdx].refWeight.push_back(w3);
+
+		vertIdx++;
+	}
+}
+
+void HumanOBJ::defineBones() {
+	// Set boneSegment of hands and feet
+	for (int i = 0; i < bodySegment[Segment_HandR].size(); i++) {
+		Vertex* currVert = &vertices[bodySegment[Segment_HandR][i]];
+
+		if (currVert->refBone.size() == 0) {
+			currVert->refBone.push_back(Bone_lowerArm2R);
+			currVert->refWeight.push_back(1);
+		}
+	}
+
+	/*** set bone segment and weights ***/
+	for (int i = 0; i < vertices.size(); i++) {
+		for (int j = 0; j < vertices[i].refBone.size(); j++) {
+			int boneIndex = vertices[i].refBone[j];
+			float crspndWeight = vertices[i].refWeight[j];
+
+			boneSegment[boneIndex].push_back(i);
+			boneWeight[boneIndex].push_back(crspndWeight);
+		}
+	}
+
+	bones.clear();
+
+	/*** set bone hiearchy ***/
+	Bone neck = Bone(Joint_neck, Joint_shoulderMid);
+	Bone spine3 = Bone(Joint_shoulderMid, Joint_spine3);
+	Bone spine2 = Bone(Joint_spine3, Joint_spine2);
+	Bone spine1 = Bone(Joint_spine2, Joint_spine1);
+	Bone spine = Bone(Joint_spine1, Joint_spine);
+	Bone waist = Bone(Joint_spine, Joint_waist);
+	Bone pelvis = Bone(Joint_waist, Joint_pelvisMid);
+
+	Bone collarboneR = Bone(Joint_spine3, Joint_collarboneR);
+	Bone shoulderR = Bone(Joint_collarboneR, Joint_shoulderR);
+	Bone upperArmR = Bone(Joint_shoulderR, Joint_shoulderTwistR);
+	Bone upperArm1R = Bone(Joint_shoulderTwistR, Joint_elbowR);
+	Bone lowerArmR = Bone(Joint_elbowR, Joint_elbowTwistR);
+	Bone lowerArm1R = Bone(Joint_elbowTwistR, Joint_elbowTwist1R);
+	Bone lowerArm2R = Bone(Joint_elbowTwist1R, Joint_wristR);
+
+	Bone collarboneL = Bone(Joint_shoulderMid, Joint_shoulderL);
+	Bone shoulderL = Bone(Joint_collarboneL, Joint_shoulderL);
+	Bone upperArmL = Bone(Joint_shoulderL, Joint_shoulderTwistL);
+	Bone upperArm1L = Bone(Joint_shoulderTwistL, Joint_elbowL);
+	Bone lowerArmL = Bone(Joint_elbowL, Joint_elbowTwistL);
+	Bone lowerArm1L = Bone(Joint_elbowTwistL, Joint_elbowTwist1L);
+	Bone lowerArm2L = Bone(Joint_elbowTwist1L, Joint_wristL);
+
+	Bone pelvisR = Bone(Joint_pelvisMid, Joint_pelvisR);
+	Bone hipR = Bone(Joint_pelvisR, Joint_hipR);
+	Bone upperLegR = Bone(Joint_hipR, Joint_hipTwistR);
+	Bone upperLeg1R = Bone(Joint_hipTwistR, Joint_kneeR);
+	Bone lowerLegR = Bone(Joint_kneeR, Joint_ankleR);
+
+	Bone pelvisL = Bone(Joint_pelvisMid, Joint_pelvisL);
+	Bone hipL = Bone(Joint_pelvisL, Joint_hipL);
+	Bone upperLegL = Bone(Joint_hipL, Joint_hipTwistL);
+	Bone upperLeg1L = Bone(Joint_hipTwistL, Joint_kneeL);
+	Bone lowerLegL = Bone(Joint_kneeL, Joint_ankleL);
+
+	Bone ribR = Bone(Joint_spine3, Joint_ribR);
+	Bone ribL = Bone(Joint_spine3, Joint_ribL);
+
+	bones.push_back(neck);
+	bones.push_back(spine3);
+	bones.push_back(spine2);
+	bones.push_back(spine1);
+	bones.push_back(spine);
+	bones.push_back(waist);
+	bones.push_back(pelvis);
+
+	bones.push_back(collarboneR);
+	bones.push_back(shoulderR);
+	bones.push_back(upperArmR);
+	bones.push_back(upperArm1R);
+	bones.push_back(lowerArmR);
+	bones.push_back(lowerArm1R);
+	bones.push_back(lowerArm2R);
+
+	bones.push_back(collarboneL);
+	bones.push_back(shoulderL);
+	bones.push_back(upperArmL);
+	bones.push_back(upperArm1L);
+	bones.push_back(lowerArmL);
+	bones.push_back(lowerArm1L);
+	bones.push_back(lowerArm2L);
+
+	bones.push_back(pelvisR);
+	bones.push_back(hipR);
+	bones.push_back(upperLegR);
+	bones.push_back(upperLeg1R);
+	bones.push_back(lowerLegR);
+
+	bones.push_back(pelvisL);
+	bones.push_back(hipL);
+	bones.push_back(upperLegL);
+	bones.push_back(upperLeg1L);
+	bones.push_back(lowerLegL);
+
+	bones.push_back(ribR);
+	bones.push_back(ribL);
 }

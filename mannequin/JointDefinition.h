@@ -19,21 +19,21 @@
 #define Joint_elbowL 14
 #define Joint_wristL 15
 
-#define ExpandedJointNum 35
+#define ExpandedJointNum 34
 #define Joint_spine 16
 #define Joint_spine1 17
 #define Joint_spine2 18
 #define Joint_spine3 19
 #define Joint_ribR 20
-#define Joint_collarBoneR 21
+#define Joint_collarboneR 21
 #define Joint_shoulderTwistR 22
 #define Joint_elbowTwistR 23
 #define Joint_elbowTwist1R 24
 #define Joint_ribL 25
-#define Joint_collarBoneL 26
+#define Joint_collarboneL 26
 #define Joint_shoulderTwistL 27
 #define Joint_elbowTwistL 28
-#define Joint_ebowTwist1L 29
+#define Joint_elbowTwist1L 29
 #define Joint_hipR 30
 #define Joint_hipTwistR 31
 #define Joint_hipL 32

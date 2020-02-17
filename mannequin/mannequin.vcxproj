@@ -197,6 +197,7 @@
     <ClInclude Include="BodyProxies.h" />
     <ClInclude Include="BodySegments.h" />
     <ClInclude Include="Bone.h" />
+    <ClInclude Include="BoneDefinition.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CDefaultSizesDialog.h" />
     <ClInclude Include="CEditLandmarkDialog.h" />

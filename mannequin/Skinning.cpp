@@ -958,8 +958,8 @@ void Skinning::rotateArmR(int part, float degree, vector<Vertex>& vertices, vect
 					tmp_z += v->jointWeights[j] * (-sin(thisRad) * x + cos(thisRad) * z + pivotJoint.z);
 				}
 				else if (axis == Axis_Z) {
-					tmp_x += v->jointWeights[j] * (cos(thisRad) * (x)-sin(thisRad) * (y)+pivotJoint.x);
-					tmp_y += v->jointWeights[j] * (sin(thisRad) * (x)+cos(thisRad)  * (y)+pivotJoint.y);
+					tmp_x += v->jointWeights[j] * (cos(thisRad) * x - sin(thisRad) * y + pivotJoint.x);
+					tmp_y += v->jointWeights[j] * (sin(thisRad) * x + cos(thisRad) * y + pivotJoint.y);
 					tmp_z = v->z;
 				}
 			}
@@ -1684,6 +1684,88 @@ void Skinning::rotateKneeL(int part, float degree, vector<Vertex>& vertices, vec
 		float y = ankleL->y - kneeL.y;
 		ankleL->x = cos(radian) * x - sin(radian) * y + kneeL.x;
 		ankleL->y = sin(radian) * x + cos(radian) * y + kneeL.y;
+	}
+}
+
+void Skinning::deform(float degree, vector<int>& currBones, vector<Bone>& bones,  vector<int> boneSegment[], vector<float> boneWeight[], vector<Vertex>& vertices, vector<Joint>& joints) {
+	float radian = degree * M_PI / 180;
+
+	/*** SORT OUT duplicates ***/
+	vector<int> vertIndices;
+	vector<int> copyVertIndices;
+	for (int i = 0; i < currBones.size(); i++) {
+		for (int j = 0; j < boneSegment[currBones[i]].size(); j++) {
+			vertIndices.push_back(boneSegment[currBones[i]][j]);
+		}
+	}
+	
+	sort(vertIndices.begin(), vertIndices.end());
+
+	for (int i = 0; i < vertIndices.size(); i++) {
+		if (copyVertIndices.size() > 1) {
+			if (copyVertIndices[copyVertIndices.size() - 1] == vertIndices[i])
+				continue;
+		}
+		copyVertIndices.push_back(vertIndices[i]);
+	}
+
+	vertIndices.clear();
+	vertIndices.insert(vertIndices.end(), copyVertIndices.begin(), copyVertIndices.end());
+
+	Vertex pivotJoint = joints[Joint_shoulderR].getCoord();
+
+	for (int i = 0; i < vertIndices.size(); i++) {
+		int vertIdx = vertIndices[i];
+		Vertex* currVert = &vertices[vertIdx];
+
+		float weight = 0;
+		float new_x = 0, new_y = 0, new_z = 0;
+		float x = currVert->x - pivotJoint.x;
+		float y = currVert->y - pivotJoint.y;
+		float z = currVert->z - pivotJoint.z;
+
+		for (int j = 0; j < vertices[vertIdx].refBone.size(); j++) {
+			int currBone = vertices[vertIdx].refBone[j];
+			float currWeight = vertices[vertIdx].refWeight[j];
+
+			if (currBone == -1)
+				continue;
+
+			//Vertex pivotJoint = joints[bones[currBone].upperJoint].getCoord();
+			for (int k = 0; k < currBones.size(); k++) {
+				if (currBones[k] == currBone) { // Effected only by those participating in deformation
+
+					if (axis == Axis_Z) {
+						new_x += currWeight * (cos(radian) * x - sin(radian) * y + pivotJoint.x);
+						new_y += currWeight * (sin(radian) * x + cos(radian) * y + pivotJoint.y);
+					}
+					weight += currWeight;
+				}
+			}
+		}
+
+		if (axis == Axis_Z) {
+			new_x += (1 - weight) * (x + pivotJoint.x);
+			new_y += (1 - weight) * (y + pivotJoint.y);
+		}
+
+		if (axis == Axis_Z) {
+			currVert->x = new_x;
+			currVert->y = new_y;
+		}
+	}
+
+	for (int i = 0; i < currBones.size(); i++) {
+		int currBone = currBones[i];
+		//Vertex pivotJoint = joints[bones[currBone].upperJoint].getCoord();
+		Vertex* lowerJoint = &joints[bones[currBone].lowerJoint].getCoord();
+		float x = lowerJoint->x - pivotJoint.x;
+		float y = lowerJoint->y - pivotJoint.y;
+
+		if (axis == Axis_Z) {
+			lowerJoint->x = cos(radian) * x - sin(radian) * y + pivotJoint.x;
+			lowerJoint->y = sin(radian) * x + cos(radian) * y + pivotJoint.y;
+		}
 	}
 }
 

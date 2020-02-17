@@ -108,6 +108,9 @@
     <ClInclude Include="CJointDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="BoneDefinition.h">
+      <Filter>Source Files\Utils\headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="mannequin.cpp">

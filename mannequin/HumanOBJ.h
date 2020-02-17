@@ -14,6 +14,7 @@ using namespace std;
 #include "Skinning.h"
 #include "GrahamScan.h"
 #include "Landmark.h"
+#include "BoneDefinition.h"
 
 #define TIGHTS 0
 #define DRESS 1
@@ -44,7 +45,7 @@ public :
 	vector<float> weightValues;
 
 	Skinning skinning;
-	vector<int> segmentHash[SegmentNum]; // vert indices
+	vector<int> bodySegment[SegmentNum]; // vert indices
 	vector<int> weightHash[WeightNum]; // vert indices
 	vector<float> weightValueHash[WeightNum]; // vert indices
 
@@ -55,7 +56,6 @@ public :
 	vector<Vertex>& getNormals();
 	vector<Joint>& getJoints(string);
 	void loadJoints(char*); // DLL
-
 
 	void getMesh(int, int*); // DLL
 	void getIndices(int*); // DLL
@@ -111,7 +111,6 @@ public :
 	vector<int> ankleRConvexIndices, ankleLConvexIndices;
 
 	void setJoint(float, int, float, float);
-	void expandJoint();
 	void undoJoint();
 	void setRigs(float);
 	void setFeatures(float);
@@ -134,21 +133,24 @@ public :
 
 	/*** Boudning Surface ***/
 	int getBodyPartNum(char*); // DLL
-	void getBodyPartOrigin(int, float*); // DLL
-	void getBodyPartDirection(int, float*); // DLL
 	int getBodyPartPointNum(int); // DLL
 	void getBodyPartPointIndex(int, int*); // DLL
 	void getBodyPartPointPos(int, float*); // DLL
 
-	/*** Pose ***/
-	//vector<float[10]> poseHistory; // embedding array-type to a vector is not allowed
+	/*** Weight from dummies ***/
+	vector<Bone> bones;
+	vector<int> boneSegment[BoneNum];
+	vector<float> boneWeight[BoneNum];
+
+	void expandJoint();
+	void importWeights();
+	void defineBones();
 
 private :
 	vector<Mesh> faces;
 	vector<int> indices; // Always Tri
 
 	JointTree jointTree;
-	vector<Bone> bones;
 
 	float bustSize, waistSize, hipSize;
 
