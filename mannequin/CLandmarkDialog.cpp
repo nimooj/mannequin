@@ -162,7 +162,7 @@ void CLandmarkDialog::OnTimer(UINT_PTR nIDEvent)
 		glBindVertexArray(vao);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		//glDrawElements(GL_TRIANGLES, inds.size(), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, inds.size(), GL_UNSIGNED_INT, 0);
 		glDisableVertexAttribArray(position_attribute);
 		glDisableVertexAttribArray(color_attribute);
 		glBindVertexArray(0);
