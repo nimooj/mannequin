@@ -146,6 +146,9 @@ public :
 	void importWeights();
 	void defineBones();
 
+	vector<Vertex> origVertices;
+	void writeToHuman(CString);
+
 private :
 	vector<Mesh> faces;
 	vector<int> indices; // Always Tri

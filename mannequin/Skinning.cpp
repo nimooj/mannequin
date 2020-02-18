@@ -31,7 +31,7 @@ void Skinning::setPose(string dir) {
 
 void Skinning::setSegments(vector<Vertex>& vertices, vector<Joint>& joints, vector<int>& segmentResult, vector<int> weightResult[], vector<float> weightValues[]) {
 	vector<Vertex> jointGroup;
-	for (int j = 0; j < joints.size(); j++) {
+	for (int j = 0; j < JointNum; j++) {
 		Vertex v = joints[j].getCoord();
 		v.idx = j; // store joint id in vertex id
 		jointGroup.push_back(v);

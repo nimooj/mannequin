@@ -2665,3 +2665,93 @@ void HumanOBJ::defineBones() {
 	bones.push_back(ribR);
 	bones.push_back(ribL);
 }
+
+void HumanOBJ::writeToHuman(CString path) {
+	CString fullPath(path);
+
+	fullPath = path + _T(".PBody");
+	ofstream outfile(fullPath);
+
+	if (origVertices.size() == 0) {
+		origVertices.insert(origVertices.end(), vertices.begin(), vertices.end());
+	}
+	outfile << "### Default" << endl;
+	for (int i = 0; i < origVertices.size(); i++) {
+		outfile << origVertices[i].x << " " << origVertices[i].y << " " << origVertices[i].z << endl;
+	}
+
+	outfile << "\n### Human" << endl;
+	for (int i = 0; i < vertices.size(); i++) {
+		if (joints.size() == ExpandedJointNum) {
+			outfile << "v " << vertices[i].x << " " << vertices[i].y << " " << vertices[i].z << " ";
+
+			for (int j = 0; j < vertices[i].refBone.size(); j++) {
+				outfile << vertices[i].refBone[j] << " ";
+			}
+			for (int j = 0; j < vertices[i].refWeight.size(); j++) {
+				outfile << vertices[i].refWeight[j] << " ";
+			}
+			outfile << endl;
+		}
+		else {
+			outfile << "v " << vertices[i].x << " " << vertices[i].y << " " << vertices[i].z << endl;
+		}
+	}
+
+	for (int i = 0; i < indices.size(); i+=3) {
+		int i1 = indices[i];
+		int i2 = indices[i + 1];
+		int i3 = indices[i + 2];
+		outfile << "f " << i1 << " " << i2 << " " << i3 << endl;
+	}
+
+	outfile << "\n### Joint" << endl;
+	for (int i = 0; i < joints.size(); i++) {
+		Vertex j = joints[i].getCoord();
+		outfile << j.x << " " << j.y << " " << j.z << endl;
+	}
+
+	outfile << "\n### Landmark" << endl;
+	for (int i = 0; i < landmarks.size(); i++) {
+		Landmark l = landmarks[i];
+		CString n = l.name;
+		CT2CA pszConvertedAnsiString(n);
+		string name(pszConvertedAnsiString);
+
+		outfile << name << endl;
+		outfile << l.type << endl;
+		outfile << l.level << endl;
+		outfile << l.value << endl;
+
+		for (int j = 0; j < l.region.size(); j++) {
+			outfile << l.region[j] << " ";
+		}
+		outfile << endl;
+
+		for (int j = 0; j < l.vertIdx.size(); j++) {
+			outfile << l.vertIdx[j] << " ";
+		}
+		outfile << endl << endl;
+	}
+
+	outfile << "\n### Segments" << endl;
+	for (int i = 0; i < SegmentNum; i++) {
+		for (int j = 0; j < bodySegment[i].size(); j++) {
+			outfile << bodySegment[i][j] << " ";
+		}
+		outfile << endl;
+	}
+
+	outfile << "\n### Tpose" << endl;
+	outfile << "2 2 -20" << endl;
+	outfile << "2 2 -8" << endl;
+	outfile << "2 2 -11" << endl;
+	outfile << "15 2 25" << endl;
+	outfile << "15 2 15" << endl;
+	outfile << "7 2 5" << endl;
+	outfile << "11 2 -5" << endl;
+
+	outfile.close();
+
+	AfxMessageBox(CString("Exported Human!"));
+}
