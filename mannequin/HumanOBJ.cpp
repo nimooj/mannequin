@@ -57,7 +57,7 @@ HumanOBJ::HumanOBJ(string dir) {
 			segmentGroup.push_back(0);
 		}
 		else if (f == "vt") {
-			tmptextures.push_back(Vertex(x, y , z));
+			tmptextures.push_back(Vertex(x, y, 0));
 		}
 		else if (f == "vn") {
 			tmpnormals.push_back(Vertex(x, y, z));
@@ -1395,6 +1395,8 @@ void HumanOBJ::setRigs(float s) {
 
 	if (bones.size() == 0)
 		defineBones(); // Set boneSegment
+
+	skinning.refineSegments(vertices, joints, bodySegment);
 }
 
 void HumanOBJ::setFeatures(float s) {
@@ -2546,7 +2548,7 @@ void HumanOBJ::expandJoint() {
 
 void HumanOBJ::importWeights() {
 	string line;
-	ifstream boneFile("avatar_man_bone_mapped.boneInfo");
+	ifstream boneFile("avatar_woman_bone_mapped.boneInfo");
 	//ifstream boneFile("avatar_woman_bone_mapped.boneInfo");
 
 	int vertIdx = 0;
@@ -2741,15 +2743,6 @@ void HumanOBJ::writeToHuman(CString path) {
 		}
 		outfile << endl;
 	}
-
-	outfile << "\n### Tpose" << endl;
-	outfile << "2 2 -20" << endl;
-	outfile << "2 2 -8" << endl;
-	outfile << "2 2 -11" << endl;
-	outfile << "15 2 25" << endl;
-	outfile << "15 2 15" << endl;
-	outfile << "7 2 5" << endl;
-	outfile << "11 2 -5" << endl;
 
 	outfile.close();
 

@@ -509,6 +509,47 @@ void Skinning::setSegments(vector<Vertex>& vertices, vector<Joint>& joints, vect
 	}
 }
 
+void Skinning::refineSegments(vector<Vertex>& vertices, vector<Joint>& joints, vector<int> bs[]) {
+	// Body Segment in trouble ... upper torso and upper arms
+	Vertex shoulderR = joints[Joint_shoulderR].getCoord();
+	Vertex shoulderL = joints[Joint_shoulderL].getCoord();
+
+	vector<int> newUpperTorso, newUpperArmR, newUpperArmL;
+	newUpperTorso.insert(newUpperTorso.end(), bs[Segment_UpperTorso].begin(), bs[Segment_UpperTorso].end());
+
+	for (int i = 0; i < bs[Segment_UpperArmR].size(); i++) {
+		int index = bs[Segment_UpperArmR][i];
+
+		if (vertices[index].x > shoulderR.x) {
+			newUpperTorso.push_back(index);
+		}
+		else {
+			newUpperArmR.push_back(index);
+		}
+	}
+
+	for (int i = 0; i < bs[Segment_UpperArmL].size(); i++) {
+		int index = bs[Segment_UpperArmL][i];
+
+		if (vertices[index].x < shoulderL.x) {
+			newUpperTorso.push_back(index);
+		}
+		else {
+			newUpperArmL.push_back(index);
+		}
+	}
+
+
+	bs[Segment_UpperTorso].clear();
+	bs[Segment_UpperTorso].insert(bs[Segment_UpperTorso].end(), newUpperTorso.begin(), newUpperTorso.end());
+
+	bs[Segment_UpperArmR].clear();
+	bs[Segment_UpperArmR].insert(bs[Segment_UpperArmR].end(), newUpperArmR.begin(), newUpperArmR.end());
+
+	bs[Segment_UpperArmL].clear();
+	bs[Segment_UpperArmL].insert(bs[Segment_UpperArmL].end(), newUpperArmL.begin(), newUpperArmL.end());
+}
+
 void Skinning::setBindings(vector<Vertex>& vertices, vector<Joint>& joints) {
 }
 
@@ -1712,8 +1753,8 @@ void Skinning::deform(int pivotIndex, float degree, vector<int>& currBones, vect
 	vertIndices.clear();
 	vertIndices.insert(vertIndices.end(), copyVertIndices.begin(), copyVertIndices.end());
 
+	/*** Perform deformation ***/
 	Vertex pivotJoint = joints[pivotIndex].getCoord();
-
 	for (int i = 0; i < vertIndices.size(); i++) {
 		int vertIdx = vertIndices[i];
 		Vertex* currVert = &vertices[vertIdx];
@@ -1765,6 +1806,213 @@ void Skinning::deform(int pivotIndex, float degree, vector<int>& currBones, vect
 		if (axis == Axis_Z) {
 			lowerJoint->x = cos(radian) * x - sin(radian) * y + pivotJoint.x;
 			lowerJoint->y = sin(radian) * x + cos(radian) * y + pivotJoint.y;
+		}
+	}
+}
+
+void Skinning::deformDQS(int pivotIndex, float degree, vector<int>& currBones, vector<Bone>& bones, vector<int> boneSegment[], vector<float> boneWeight[], vector<Vertex>& vertices, vector<Joint>& joints) {
+	float radian = degree * M_PI / 180;
+	/*** Copyright GAIA : from gmath.cpp SetFromMatrix(double *mat, bool isGL) ***/
+	double q[4];
+	double tr, s;
+	int i, j, k;
+	int nxt[3] = { 1, 2, 0 };
+
+	double mat[16]; // 4x4 matrix
+	float x, y, z, w;
+
+	if (axis == Axis_Z) {
+		mat[0] = cos(radian);
+		mat[1] = -sin(radian);
+		mat[2] = 0;
+		mat[3] = 0;
+
+		mat[4] = sin(radian);
+		mat[5] = cos(radian);
+		mat[6] = 0;
+		mat[7] = 0;
+
+		mat[8] = 0;
+		mat[9] = 0;
+		mat[10] = 1;
+		mat[11] = 0;
+
+		mat[12] = 0;
+		mat[13] = 0;
+		mat[14] = 0;
+		mat[15] = 1;
+	}
+	
+	tr = mat[0] + mat[5] + mat[10];
+	if (tr > 0.0) {
+		s = sqrt(tr + 1.0);
+		w = s * 0.5; 
+		s = 0.5 / s; 
+		x = (mat[9] - mat[6]) * s; 
+		y = (mat[2] - mat[8]) * s; 
+		z = (mat[4] - mat[1]) * s; 
+	}
+	else {
+		i = 0;
+		if (mat[5] > mat[0]) {
+			i = 1;
+		}
+		if (mat[10] > mat[i * 4 + i]) {
+			i = 2;
+		}
+		j = nxt[i];
+		k = nxt[j];
+		s = sqrt((mat[i * 4 + i] - (mat[j * 4 + j] + mat[k * 4 + k])) + 1.0);
+		q[i] = s * 0.5;
+		s = 0.5 / s;
+		w = (mat[k * 4 + j] - mat[j * 4 + k]) * s;
+		q[j] = (mat[j * 4 + i] + mat[i * 4 + j]) * s;
+		q[k] = (mat[k * 4 + i] + mat[i * 4 + k]) * s;
+		x = q[0];
+		y = q[1];
+		z = q[2];
+	}
+
+	double bq[4];
+	double btr, bs;
+	int bi, bj, bk;
+	nxt[0] = 1; nxt[1] = 2; nxt[2] = 0;
+	double bmat[16];
+	float bx, by, bz, bw;
+	if (axis == Axis_Z) {
+		bmat[0] = 1;
+		bmat[1] = 0;
+		bmat[2] = 0;
+		bmat[3] = 0;
+
+		bmat[4] = 0;
+		bmat[5] = 1;
+		bmat[6] = 0;
+		bmat[7] = 0;
+
+		bmat[8] = 0;
+		bmat[9] = 0;
+		bmat[10] = 1;
+		bmat[11] = 0;
+
+		bmat[12] = 0;
+		bmat[13] = 0;
+		bmat[14] = 0;
+		bmat[15] = 1;
+	}
+	
+	btr = bmat[0] + bmat[5] + bmat[10];
+	if (btr > 0.0) {
+		bs = sqrt(btr + 1.0);
+		bw = bs * 0.5; 
+		bs = 0.5 / bs; 
+		bx = (bmat[9] - bmat[6]) * bs; 
+		by = (bmat[2] - bmat[8]) * bs; 
+		bz = (bmat[4] - bmat[1]) * bs; 
+	}
+	else {
+		bi = 0;
+		if (bmat[5] > bmat[0]) {
+			bi = 1;
+		}
+		if (bmat[10] > bmat[bi * 4 + bi]) {
+			bi = 2;
+		}
+		bj = nxt[bi];
+		bk = nxt[bj];
+		bs = sqrt((bmat[bi * 4 + bi] - (bmat[bj * 4 + bj] + bmat[bk * 4 + bk])) + 1.0);
+		bq[i] = bs * 0.5;
+		bs = 0.5 / bs;
+		bw = (bmat[bk * 4 + bj] - mat[bj * 4 + bk]) * bs;
+		bq[bj] = (bmat[bj * 4 + bi] + bmat[bi * 4 + bj]) * bs;
+		bq[bk] = (bmat[bk * 4 + bi] + bmat[bi * 4 + bk]) * bs;
+		bx = bq[0];
+		by = bq[1];
+		bz = bq[2];
+	}
+
+	// conjugate
+
+	/*** SORT OUT duplicates ***/
+	vector<int> vertIndices; vector<int> copyVertIndices;
+	for (int i = 0; i < currBones.size(); i++) {
+		for (int j = 0; j < boneSegment[currBones[i]].size(); j++) {
+			vertIndices.push_back(boneSegment[currBones[i]][j]);
+		}
+	}
+	sort(vertIndices.begin(), vertIndices.end());
+	for (int i = 0; i < vertIndices.size(); i++) {
+		if (copyVertIndices.size() > 1) {
+			if (copyVertIndices[copyVertIndices.size() - 1] == vertIndices[i])
+				continue;
+		}
+		copyVertIndices.push_back(vertIndices[i]);
+	}
+	vertIndices.clear(); vertIndices.insert(vertIndices.end(), copyVertIndices.begin(), copyVertIndices.end());
+
+	/*** Perform deformation ***/
+	Vertex pivotJoint = joints[pivotIndex].getCoord();
+	for (int i = 0; i < vertIndices.size(); i++) {
+		int vertIdx = vertIndices[i];
+		Vertex* currVert = &vertices[vertIdx];
+
+		float weight = 0; 
+		float new_x = 0, new_y = 0, new_z = 0;
+		float vx = currVert->x - pivotJoint.x; 
+		float vy = currVert->y - pivotJoint.y; 
+		float vz = currVert->z - pivotJoint.z;
+		float q_hat[4] = { 0, 0, 0, 0 }; float cq_hat[4] = { 0, 0, 0, 0 }; // q = (w, x, y, z)
+		
+		for (int j = 0; j < vertices[vertIdx].refBone.size(); j++) {
+			int currBone = vertices[vertIdx].refBone[j];
+			float currWeight = vertices[vertIdx].refWeight[j];
+			if (currBone == -1) continue;
+			for (int k = 0; k < currBones.size(); k++) {
+				if (currBones[k] == currBone) { // Effected only by those participating in deformation
+					if (axis == Axis_Z) {
+						if (currBone == currBones[0] || currBone == Bone_ribR || currBone == Bone_ribL) {
+							q_hat[0] += currWeight * bw;
+							q_hat[1] += currWeight * bx;
+							q_hat[2] += currWeight * by;
+							q_hat[3] += currWeight * bz;
+
+							continue;
+						}
+						q_hat[0] += currWeight * w; 
+						q_hat[1] += currWeight * x; 
+						q_hat[2] += currWeight * y; 
+						q_hat[3] += currWeight * z;
+					}
+					weight += currWeight;
+				}
+			}
+		}
+
+		float qsize = sqrt(pow(q_hat[0], 2) + pow(q_hat[1], 2) + pow(q_hat[2], 2) + pow(q_hat[3], 2));
+		q_hat[0] /= qsize;
+		q_hat[1] /= qsize;
+		q_hat[2] /= qsize;
+		q_hat[3] /= qsize;
+
+		/*
+		cq_hat[0] = (1 - weight) * w;
+		cq_hat[1] = (1 - weight) * x;
+		cq_hat[2] = (1 - weight) * y;
+		cq_hat[3] = (1 - weight) * z;
+		*/
+		float cqsize = sqrt(pow(cq_hat[0], 2) + pow(cq_hat[1], 2) + pow(cq_hat[2], 2) + pow(cq_hat[3], 2));
+		cq_hat[0] /= cqsize;
+		cq_hat[1] /= cqsize;
+		cq_hat[2] /= cqsize;
+		cq_hat[3] /= cqsize;
+
+		// float cqsize = sqrt(pow(cq_hat[0], 2) + pow(cq_hat[1], 2) + pow(cq_hat[2], 2) + pow(cq_hat[3], 2));
+		// cq_hat[0] /= cqsize; cq_hat[1] /= cqsize; cq_hat[2] /= cqsize; cq_hat[3] /= cqsize;
+
+		if (axis == Axis_Z) {
+			currVert->x = (pow(q_hat[1], 2) + pow(q_hat[0], 2) - pow(q_hat[2], 2) - pow(q_hat[3], 2)) * vx + (2 * q_hat[1] * q_hat[2] - 2 * q_hat[0] * q_hat[3]) * vy + (2 * q_hat[1] * q_hat[3] + 2 * q_hat[0] * q_hat[2]) * vz + pivotJoint.x;
+			currVert->y = (2 * q_hat[1] * q_hat[2] + 2 * q_hat[0] * q_hat[3]) * vx + (pow(q_hat[2], 2) + pow(q_hat[0], 2) - pow(q_hat[1], 2) - pow(q_hat[3], 2)) * vy + (2 * q_hat[2] * q_hat[3] - 2 * q_hat[0] * q_hat[1]) * vz + pivotJoint.y;
+			currVert->z = (2 * q_hat[1] * q_hat[3] - 2 * q_hat[0] * q_hat[2]) * vx + (2 * q_hat[2] * q_hat[3] + 2 * q_hat[0] * q_hat[1]) * vy + (pow(q_hat[0], 2) + pow(q_hat[3], 2) - pow(q_hat[1], 2) - pow(q_hat[2], 2)) * vz + pivotJoint.z;
 		}
 	}
 }

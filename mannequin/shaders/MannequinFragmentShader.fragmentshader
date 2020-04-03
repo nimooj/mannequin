@@ -2,7 +2,7 @@
 
 in vec3 fi_pos;
 in vec3 fi_normal;
-in vec3 fi_texture;
+in vec2 fi_texture;
 
 in vec3 objColor;
 
@@ -35,7 +35,7 @@ void main() {
 	vec3 result = (ambient + diffuse + specular) * objColor;
 
 	float alpha = 1.0f;
-	//o_color = vec4(result, alpha) * texture(tex, fi_texture);
-	//o_color = texture(tex, fi_texture);
-	o_color = vec4(result, alpha);
+	o_color = texture(tex, fi_texture) * vec4(result, alpha);
+	// o_color = texture(tex, fi_texture);
+	// o_color = vec4(result, alpha);
 }

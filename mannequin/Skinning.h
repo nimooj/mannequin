@@ -32,6 +32,8 @@ public :
 
 	void setPose(string);
 	void setSegments(vector<Vertex>&, vector<Joint>&, vector<int>&, vector<int>[], vector<float>[]);
+	void refineSegments(vector<Vertex>&, vector<Joint>&, vector<int>[]);
+
 	void setBindings(vector<Vertex>&, vector<Joint>&);
 	void paintWeights(int, vector<Vertex>&, vector<Joint>&);
 	void updateRigs(vector<Vertex>&, vector<Joint>&);
@@ -63,8 +65,9 @@ public :
 	void rotateKneeL(int, float, vector<Vertex>&, vector<Joint>&);
 
 	void deform(int, float, vector<int>&, vector<Bone>&, vector<int>[], vector<float>[], vector<Vertex>&, vector<Joint>&);
+	void deformDQS(int, float, vector<int>&, vector<Bone>&, vector<int>[], vector<float>[], vector<Vertex>&, vector<Joint>&);
 
 private:
 	vector<int> weightIndices;
-	vector<int> weightSegment[18];
+	vector<int> weightSegment[JointNum];
 };

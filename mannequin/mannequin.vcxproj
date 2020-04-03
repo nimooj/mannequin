@@ -99,7 +99,7 @@
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>E:\ParametricMannequin\mannequin\mannequin\lib;$(ProjectDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LargeAddressAware>true</LargeAddressAware>
-      <AdditionalDependencies>glew32s.lib; glfw3.lib; glut32.lib;</AdditionalDependencies>
+      <AdditionalDependencies>glew32s.lib; glfw3.lib; glut32.lib; FreeImage.lib; SOIL.lib;</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
