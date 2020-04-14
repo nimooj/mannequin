@@ -43,11 +43,13 @@ BOOL CEditLandmarkDialog::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	nameEdit.SetWindowTextW(name);
+	// nameEdit.SetWindowTextW(name);
+	nameEdit.SetWindowTextA(name);
 
 	CString ctr;
 	ctr.Format(_T("%.3f"), value);
-	valueEdit.SetWindowTextW(ctr);
+	// valueEdit.SetWindowTextW(ctr);
+	valueEdit.SetWindowTextA(ctr);
 
 	// TODO:  Add extra initialization here
 
@@ -61,9 +63,11 @@ void CEditLandmarkDialog::OnBnClickedOk()
 	// TODO: Add your control notification handler code here
 	CDialogEx::OnOK();
 
-	nameEdit.GetWindowTextW(name);
+	// nameEdit.GetWindowTextW(name);
+	nameEdit.GetWindowTextA(name);
 
 	CString ctr;
-	valueEdit.GetWindowTextW(ctr);
+	// valueEdit.GetWindowTextW(ctr);
+	valueEdit.GetWindowTextA(ctr);
 	value = _ttof(ctr);
 }

@@ -2,7 +2,8 @@
 
 in vec3 fi_pos;
 in vec3 fi_normal;
-in vec2 fi_texture;
+
+in vec2 fTexCoord;
 
 in vec3 objColor;
 
@@ -12,7 +13,7 @@ uniform vec3 lightPos;
 uniform vec3 cameraPos;
 uniform vec3 lightColor;
 
-uniform sampler2D tex;
+uniform sampler2D texture;
 
 void main() {
 	// ambient
@@ -35,7 +36,7 @@ void main() {
 	vec3 result = (ambient + diffuse + specular) * objColor;
 
 	float alpha = 1.0f;
-	o_color = texture(tex, fi_texture) * vec4(result, alpha);
-	// o_color = texture(tex, fi_texture);
-	// o_color = vec4(result, alpha);
+	// o_color = texture(tex, fTexCoord) * vec4(result, alpha);
+	// o_color = texture(texture, fTexCoord);
+	o_color = vec4(result, alpha);
 }

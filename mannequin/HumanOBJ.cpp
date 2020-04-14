@@ -1011,6 +1011,7 @@ void HumanOBJ::setSize(float s, int type, int index, float oldSize, float newSiz
 	float movement = 0;
 
 	int upperTorsoFlag = 0, lowerTorsoFlag = 0;
+	int upperArmRFlag = 0, upperArmLFlag = 0;
 
 	if (index == 0 || type == Girth) { // Handle height here
 		float level = landmarks[index].level;
@@ -1148,11 +1149,19 @@ void HumanOBJ::setSize(float s, int type, int index, float oldSize, float newSiz
 
 					vertices[idx].y = ((y_start - jointDiff)* db + y_end * da) / (da + db);
 				}
+				else if (sections[i] == Segment_UpperArmR) {
+					upperArmRFlag = 1;
+				}
+				else if (sections[i] == Segment_LowerArmR) {
+					cout << "lower arm" << endl;
+					vertices[idx].x *= scale;
+				}
 				else {
 					vertices[idx].y *= scale;
 				}
 			}
 		}
+
 	}
 
 	if (upperTorsoFlag) {
@@ -1185,6 +1194,55 @@ void HumanOBJ::setSize(float s, int type, int index, float oldSize, float newSiz
 			float db = vertices[idx].y - y_end;
 
 			vertices[idx].y = (y_start * db + (y_end - jointDiff) * da) / (da + db);
+		}
+	}
+
+	/*
+	if (upperArmRFlag == 1) {
+		Vertex shoulderR = joints[Joint_shoulderR].getCoord();
+		Vertex elbowR = joints[Joint_elbowR].getCoord();
+		Vertex direction = Vertex((elbowR.x - shoulderR.x) * scale / 2, (elbowR.y - shoulderR.y) * scale / 2, (elbowR.z - shoulderR.z) * scale / 2);
+
+		for (int i = 0; i < bodySegment[Segment_LowerArmR].size(); i++) {
+			vertices[bodySegment[Segment_LowerArmR][i]].x += direction.x;
+			vertices[bodySegment[Segment_LowerArmR][i]].y += direction.y;
+			vertices[bodySegment[Segment_LowerArmR][i]].z += direction.z;
+		}
+		for (int i = 0; i < bodySegment[Segment_HandR].size(); i++) {
+			vertices[bodySegment[Segment_HandR][i]].x += direction.x;
+			vertices[bodySegment[Segment_HandR][i]].y += direction.y;
+			vertices[bodySegment[Segment_HandR][i]].z += direction.z;
+		}
+	}
+	*/
+
+	Vertex shoulderR = joints[Joint_shoulderR].getCoord();
+	Vertex elbowR = joints[Joint_elbowR].getCoord();
+	Vertex wristR = joints[Joint_wristR].getCoord();
+	Vertex direction = Vertex((wristR.x - shoulderR.x), (wristR.y - shoulderR.y), (wristR.z - shoulderR.z));
+	direction.normalize();
+	Vertex m = Vertex(direction.x * scale, direction.y * scale, direction.z * scale);
+
+	/*
+	Vertex direction = Vertex((elbowR.x - shoulderR.x)* scale/2, (elbowR.y - shoulderR.y) * scale/2, (elbowR.z - shoulderR.z) * scale/2);
+	vertices[idx].x += direction.x;
+	vertices[idx].y += direction.y;
+	vertices[idx].z += direction.z;
+	*/
+
+	cout << "scale: " << scale << endl;
+	vector<int> segments;
+	segments.push_back(Segment_UpperArmR);
+	segments.push_back(Segment_LowerArmR);
+	segments.push_back(Segment_HandR);
+	if (upperArmRFlag == 1) {
+		for (int k = 0; k < segments.size(); k++) {
+			for (int l = 0; l < bodySegment[segments[k]].size(); l++) {
+				int nidx = bodySegment[segments[k]][l];
+				vertices[nidx].x += m.x;
+				vertices[nidx].y += m.y;
+				vertices[nidx].z += m.z;
+			}
 		}
 	}
 

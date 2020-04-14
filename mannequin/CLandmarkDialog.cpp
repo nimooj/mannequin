@@ -517,7 +517,7 @@ void CLandmarkDialog::SetGirthVariable(CString n, vector<int> segment, float h) 
 void CLandmarkDialog::SetLengthVariable(CString n, vector<int> segment, vector<Joint> relatedJoints) {
 	Landmark* l = new Landmark(n, Length);
 
-	bool result = l->SetLengthFeature(segment, relatedJoints);
+	bool result = l->SetLengthFeature(segment, relatedJoints);;
 	if (result) {
 		variables->push_back(*l);
 
@@ -533,7 +533,8 @@ void CLandmarkDialog::OnBnClickedButton1()
 {
 	// TODO: Add your control notification handler code here
 	CString ctr;
-	variableEdit.GetWindowTextW(ctr);
+	variableEdit.GetWindowTextA(ctr);
+	// variableEdit.GetWindowTextW(ctr);
 	if (ctr == "") {
 		AfxMessageBox(_T("Insert name."));
 	}
@@ -804,7 +805,8 @@ void CLandmarkDialog::OnBnClickedButton1()
 			}
 		}
 	}
-	variableEdit.SetWindowTextW(_T(""));
+	// variableEdit.SetWindowTextW(_T(""));
+	variableEdit.SetWindowTextA(_T(""));
 }
 
 GLuint CLandmarkDialog::loadShaders(const char* vertexFilePath, const char* fragmentFilePath) {
@@ -1075,5 +1077,6 @@ void CLandmarkDialog::OnBnClickedRemoveButton()
 	}
 	else {
 		variables->erase(variables->begin() + selItem);
+		landmarkList.DeleteString(selItem);
 	}
 }

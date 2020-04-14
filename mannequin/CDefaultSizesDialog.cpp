@@ -34,21 +34,29 @@ BOOL CDefaultSizesDialog::OnInitDialog()
 
 	// TODO:  Add extra initialization here
 	CString ctr;
-	showHeightName.SetWindowTextW(heightName);
+	// showHeightName.SetWindowTextW(heightName);
+	showHeightName.SetWindowTextA(heightName);
 	ctr.Format(_T("%.3f"), heightVal);
-	showHeightValue.SetWindowTextW(ctr);
+	// showHeightValue.SetWindowTextW(ctr);
+	showHeightValue.SetWindowTextA(ctr);
 
-	showBustName.SetWindowTextW(bustName);
+	// showBustName.SetWindowTextW(bustName);
+	showBustName.SetWindowTextA(bustName);
 	ctr.Format(_T("%.3f"), bustVal);
-	showBustValue.SetWindowTextW(ctr);
+	// showBustValue.SetWindowTextW(ctr);
+	showBustValue.SetWindowTextA(ctr);
 
-	showWaistName.SetWindowTextW(waistName);
+	// showWaistName.SetWindowTextW(waistName);
+	showWaistName.SetWindowTextA(waistName);
 	ctr.Format(_T("%.3f"), waistVal);
-	showWaistValue.SetWindowTextW(ctr);
+	// showWaistValue.SetWindowTextW(ctr);
+	showWaistValue.SetWindowTextA(ctr);
 
-	showHipName.SetWindowTextW(hipName);
+	// showHipName.SetWindowTextW(hipName);
+	showHipName.SetWindowTextA(hipName);
 	ctr.Format(_T("%.3f"), hipVal);
-	showHipValue.SetWindowTextW(ctr);
+	// showHipValue.SetWindowTextW(ctr);
+	showHipValue.SetWindowTextA(ctr);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // EXCEPTION: OCX Property Pages should return FALSE
@@ -76,15 +84,19 @@ void CDefaultSizesDialog::OnBnClickedOk()
 	CDialogEx::OnOK();
 
 	CString ctr;
-	showHeightValue.GetWindowTextW(ctr);
+	// showHeightValue.GetWindowTextW(ctr);
+	showHeightValue.GetWindowTextA(ctr);
 	heightVal = _ttof(ctr);
 
-	showBustValue.GetWindowTextW(ctr);
+	// showBustValue.GetWindowTextW(ctr);
+	showBustValue.GetWindowTextA(ctr);
 	bustVal = _ttof(ctr);
 
-	showWaistValue.GetWindowTextW(ctr);
+	// showWaistValue.GetWindowTextW(ctr);
+	showWaistValue.GetWindowTextA(ctr);
 	waistVal = _ttof(ctr);
 
-	showHipValue.GetWindowTextW(ctr);
+	// showHipValue.GetWindowTextW(ctr);
+	showHipValue.GetWindowTextA(ctr);
 	hipVal = _ttof(ctr);
 }
