@@ -1005,6 +1005,60 @@ void HumanOBJ::setHipSize(float s, float h) {
 	updateRigs();
 }
 
+void HumanOBJ::setArmLength(int side, float v) {
+	// side == 4 (right), side == 5 (left)
+	float scale = v / landmarks[side].value;
+	vector<int> sections(landmarks[side].region);
+
+	Vertex shoulder, elbow, wrist;
+	if (side == 4) {
+		shoulder = joints[Joint_shoulderR].getCoord();
+		elbow = joints[Joint_elbowR].getCoord();
+		wrist = joints[Joint_wristR].getCoord();
+	}
+	else if (side == 5) {
+		shoulder = joints[Joint_shoulderL].getCoord();
+		elbow = joints[Joint_elbowL].getCoord();
+		wrist = joints[Joint_wristL].getCoord();
+	}
+
+	//Vertex upperDir = Vertex((elbow.x - shoulder.x), (elbow.y - shoulder.y), (elbow.z - shoulder.z));
+	Vertex upperDir = Vertex((shoulder.x - elbow.x), (shoulder.y - elbow.y), (shoulder.z - elbow.z));
+	upperDir.normalize();
+	// upperDir.multiply(scale);
+	upperDir.x *= scale;
+	upperDir.y *= scale;
+	upperDir.z *= scale;
+
+	Vertex lowerDir = Vertex((wrist.x - elbow.x), (wrist.y - elbow.y), (wrist.z - elbow.z));
+	lowerDir.normalize();
+	// lowerDir.multiply(scale);
+	lowerDir.x *= scale;
+	lowerDir.y *= scale;
+	lowerDir.z *= scale;
+	
+	for (int i = 0; i < sections.size(); i++) {
+		if (sections[i] == Segment_UpperArmR || sections[i] == Segment_UpperArmL) {
+			cout << "uu" << endl;
+			for (int j = 0; j < bodySegment[sections[i]].size(); j++) {
+				int idx = bodySegment[sections[i]][j];
+				vertices[idx].x *= upperDir.x;
+				vertices[idx].y *= upperDir.y;
+				vertices[idx].z *= upperDir.z;
+			}
+		}
+		else {
+			cout << "lll" << endl;
+			for (int j = 0; j < bodySegment[sections[i]].size(); j++) {
+				int idx = bodySegment[sections[i]][j];
+				vertices[idx].x *= lowerDir.x;
+				vertices[idx].y *= lowerDir.y;
+				vertices[idx].z *= lowerDir.z;
+			}
+		}
+	}
+}
+
 void HumanOBJ::setSize(float s, int type, int index, float oldSize, float newSize) {
 	float scale = newSize / oldSize;
 	vector<int> sections(landmarks[index].region);
@@ -1012,6 +1066,7 @@ void HumanOBJ::setSize(float s, int type, int index, float oldSize, float newSiz
 
 	int upperTorsoFlag = 0, lowerTorsoFlag = 0;
 	int upperArmRFlag = 0, upperArmLFlag = 0;
+	int upperLegRFlag = 0, upperLegLFlag = 0;
 
 	if (index == 0 || type == Girth) { // Handle height here
 		float level = landmarks[index].level;
@@ -1152,16 +1207,22 @@ void HumanOBJ::setSize(float s, int type, int index, float oldSize, float newSiz
 				else if (sections[i] == Segment_UpperArmR) {
 					upperArmRFlag = 1;
 				}
-				else if (sections[i] == Segment_LowerArmR) {
-					cout << "lower arm" << endl;
-					vertices[idx].x *= scale;
+				/*
+				else if (sections[i] == Segment_UpperArmL) {
+					upperArmLFlag = 1;
 				}
+				else if (sections[i] == Segment_UpperLegR) {
+					upperLegRFlag = 1;
+				}
+				else if (sections[i] == Segment_UpperLegL) {
+					upperLegLFlag = 1;
+				}
+				*/
 				else {
 					vertices[idx].y *= scale;
 				}
 			}
 		}
-
 	}
 
 	if (upperTorsoFlag) {
@@ -1201,41 +1262,50 @@ void HumanOBJ::setSize(float s, int type, int index, float oldSize, float newSiz
 	if (upperArmRFlag == 1) {
 		Vertex shoulderR = joints[Joint_shoulderR].getCoord();
 		Vertex elbowR = joints[Joint_elbowR].getCoord();
-		Vertex direction = Vertex((elbowR.x - shoulderR.x) * scale / 2, (elbowR.y - shoulderR.y) * scale / 2, (elbowR.z - shoulderR.z) * scale / 2);
+		Vertex wristR = joints[Joint_wristR].getCoord();
 
-		for (int i = 0; i < bodySegment[Segment_LowerArmR].size(); i++) {
-			vertices[bodySegment[Segment_LowerArmR][i]].x += direction.x;
-			vertices[bodySegment[Segment_LowerArmR][i]].y += direction.y;
-			vertices[bodySegment[Segment_LowerArmR][i]].z += direction.z;
+		Vertex direction0 = Vertex((elbowR.x - shoulderR.x), (elbowR.y - shoulderR.y), (elbowR.z - shoulderR.z));
+		Vertex direction1 = Vertex((wristR.x - elbowR.x), (wristR.y - elbowR.y), (wristR.z - elbowR.z));
+		direction0.normalize();
+		direction1.normalize();
+
+		Vertex upper = Vertex(direction0.x * scale, direction0.y * scale, direction0.z * scale);
+		Vertex lower = Vertex(direction1.x * scale, direction1.y * scale, direction1.z * scale);
+
+		cout << "scale: " << scale << endl;
+		for (int i = 0; i < bodySegment[Segment_UpperArmR].size(); i++) {
+			int idx = bodySegment[Segment_UpperArmR][i];
+
+			vertices[idx].x += upper.x;
+			vertices[idx].y += upper.x;
+			vertices[idx].z += upper.x;
 		}
-		for (int i = 0; i < bodySegment[Segment_HandR].size(); i++) {
-			vertices[bodySegment[Segment_HandR][i]].x += direction.x;
-			vertices[bodySegment[Segment_HandR][i]].y += direction.y;
-			vertices[bodySegment[Segment_HandR][i]].z += direction.z;
+
+
+		vector<int> segments;
+		segments.push_back(Segment_LowerArmR);
+		segments.push_back(Segment_HandR);
+		for (int k = 0; k < segments.size(); k++) {
+			for (int l = 0; l < bodySegment[segments[k]].size(); l++) {
+				int nidx = bodySegment[segments[k]][l];
+				vertices[nidx].x += lower.x;
+				vertices[nidx].y += lower.y;
+				vertices[nidx].z += lower.z;
+			}
 		}
 	}
-	*/
+	else if (upperArmLFlag == 1) {
+		Vertex shoulderL = joints[Joint_shoulderL].getCoord();
+		Vertex wristL = joints[Joint_wristL].getCoord();
+		Vertex direction = Vertex((wristL.x - shoulderL.x), (wristL.y - shoulderL.y), (wristL.z - shoulderL.z));
+		direction.normalize();
+		Vertex m = Vertex(direction.x * scale, direction.y * scale, direction.z * scale);
 
-	Vertex shoulderR = joints[Joint_shoulderR].getCoord();
-	Vertex elbowR = joints[Joint_elbowR].getCoord();
-	Vertex wristR = joints[Joint_wristR].getCoord();
-	Vertex direction = Vertex((wristR.x - shoulderR.x), (wristR.y - shoulderR.y), (wristR.z - shoulderR.z));
-	direction.normalize();
-	Vertex m = Vertex(direction.x * scale, direction.y * scale, direction.z * scale);
-
-	/*
-	Vertex direction = Vertex((elbowR.x - shoulderR.x)* scale/2, (elbowR.y - shoulderR.y) * scale/2, (elbowR.z - shoulderR.z) * scale/2);
-	vertices[idx].x += direction.x;
-	vertices[idx].y += direction.y;
-	vertices[idx].z += direction.z;
-	*/
-
-	cout << "scale: " << scale << endl;
-	vector<int> segments;
-	segments.push_back(Segment_UpperArmR);
-	segments.push_back(Segment_LowerArmR);
-	segments.push_back(Segment_HandR);
-	if (upperArmRFlag == 1) {
+		cout << "scale: " << scale << endl;
+		vector<int> segments;
+		segments.push_back(Segment_UpperArmL);
+		segments.push_back(Segment_LowerArmL);
+		segments.push_back(Segment_HandL);
 		for (int k = 0; k < segments.size(); k++) {
 			for (int l = 0; l < bodySegment[segments[k]].size(); l++) {
 				int nidx = bodySegment[segments[k]][l];
@@ -1245,6 +1315,49 @@ void HumanOBJ::setSize(float s, int type, int index, float oldSize, float newSiz
 			}
 		}
 	}
+	else if (upperLegRFlag == 1) {
+		Vertex pelvisR = joints[Joint_pelvisR].getCoord();
+		Vertex ankleR = joints[Joint_ankleR].getCoord();
+		Vertex direction = Vertex((ankleR.x - pelvisR.x), (ankleR.y - pelvisR.y), (ankleR.z - pelvisR.z));
+		direction.normalize();
+		Vertex m = Vertex(direction.x * scale, direction.y * scale, direction.z * scale);
+
+		cout << "scale: " << scale << endl;
+		vector<int> segments;
+		segments.push_back(Segment_UpperLegR);
+		segments.push_back(Segment_LowerLegR);
+		segments.push_back(Segment_FootR);
+		for (int i = 0; i < segments.size(); i++) {
+			for (int j = 0; j < bodySegment[segments[i]].size(); j++) {
+				int nidx = bodySegment[segments[i]][j];
+				vertices[nidx].x += m.x;
+				vertices[nidx].y += m.y;
+				vertices[nidx].z += m.z;
+			}
+		}
+	}
+	else if (upperLegLFlag == 1) {
+		Vertex pelvisL = joints[Joint_pelvisL].getCoord();
+		Vertex ankleL = joints[Joint_ankleL].getCoord();
+		Vertex direction = Vertex((ankleL.x - pelvisL.x), (ankleL.y - pelvisL.y), (ankleL.z - pelvisL.z));
+		direction.normalize();
+		Vertex m = Vertex(direction.x * scale, direction.y * scale, direction.z * scale);
+
+		cout << "scale: " << scale << endl;
+		vector<int> segments;
+		segments.push_back(Segment_UpperLegL);
+		segments.push_back(Segment_LowerLegL);
+		segments.push_back(Segment_FootL);
+		for (int i = 0; i < segments.size(); i++) {
+			for (int j = 0; j < bodySegment[segments[i]].size(); j++) {
+				int nidx = bodySegment[segments[i]][j];
+				vertices[nidx].x += m.x;
+				vertices[nidx].y += m.y;
+				vertices[nidx].z += m.z;
+			}
+		}
+	}
+	*/
 
 	updateRigs();
 }
@@ -1669,7 +1782,124 @@ void HumanOBJ::setFeatures(float s) {
 		landmarks.push_back(Landmark(_T("Hip"), secs, Girth, hipSize, hipLevel, inds));
 		/*************************************************/
 
-		/********************** Neck **********************/
+		/********************** Arm **********************/
+		/*** Right ***/
+		Vertex shoulderR = joints[Joint_shoulderR].getCoord();
+		Vertex elbowR = joints[Joint_elbowR].getCoord();
+		Vertex wristR = joints[Joint_wristR].getCoord();
+
+		dist = 0;
+		dist += shoulderR.distance(elbowR);
+		dist += elbowR.distance(wristR);
+
+		inds.clear();
+		secs.clear();
+
+		inds.push_back(Joint_shoulderR);
+		inds.push_back(Joint_elbowR);
+		inds.push_back(Joint_wristR);
+		secs.push_back(Segment_UpperArmR);
+		secs.push_back(Segment_LowerArmR);
+		secs.push_back(Segment_HandR);
+		landmarks.push_back(Landmark(_T("Arm Length R"), secs, Length, dist, 0, inds));
+		/*************/
+
+		/*** Left ***/
+		Vertex shoulderL = joints[Joint_shoulderL].getCoord();
+		Vertex elbowL = joints[Joint_elbowL].getCoord();
+		Vertex wristL = joints[Joint_wristL].getCoord();
+
+		dist = 0;
+		dist += shoulderL.distance(elbowL);
+		dist += elbowL.distance(wristL);
+
+		inds.clear();
+		secs.clear();
+
+		inds.push_back(Joint_shoulderL);
+		inds.push_back(Joint_elbowL);
+		inds.push_back(Joint_wristL);
+		secs.push_back(Segment_UpperArmL);
+		secs.push_back(Segment_LowerArmL);
+		secs.push_back(Segment_HandL);
+		landmarks.push_back(Landmark(_T("Arm Length L"), secs, Length, dist, 0, inds));
+		/*************/
+		/*************************************************/
+
+		/********************** Leg **********************/
+		/*** Right ***/
+		Vertex pelvisR = joints[Joint_pelvisR].getCoord();
+		Vertex kneeR = joints[Joint_kneeR].getCoord();
+		Vertex ankleR = joints[Joint_ankleR].getCoord();
+
+		dist = 0;
+		dist += pelvisR.distance(kneeR);
+		dist += kneeR.distance(ankleR);
+
+		inds.clear();
+		secs.clear();
+		inds.push_back(Joint_pelvisR);
+		inds.push_back(Joint_kneeR);
+		inds.push_back(Joint_ankleR);
+
+		secs.push_back(Segment_UpperLegR);
+		secs.push_back(Segment_LowerLegR);
+		secs.push_back(Segment_FootR);
+		landmarks.push_back(Landmark(_T("Leg Length R"), secs, Length, dist, 0, inds));
+		/*************/
+
+
+		/*** Left ***/
+		Vertex pelvisL = joints[Joint_pelvisL].getCoord();
+		Vertex kneeL = joints[Joint_kneeL].getCoord();
+		Vertex ankleL = joints[Joint_ankleL].getCoord();
+
+		dist = 0;
+		dist += pelvisL.distance(kneeL);
+		dist += kneeL.distance(ankleL);
+
+		inds.clear();
+		secs.clear();
+		inds.push_back(Joint_pelvisL);
+		inds.push_back(Joint_kneeL);
+		inds.push_back(Joint_ankleL);
+
+		secs.push_back(Segment_UpperLegL);
+		secs.push_back(Segment_LowerLegL);
+		secs.push_back(Segment_FootL);
+		landmarks.push_back(Landmark(_T("Leg Length L"), secs, Length, dist, 0, inds));
+		/*************/
+		/*************************************************/
+
+		/********************** Shoulder **********************/
+		/*** Right ***/
+		Vertex shoulderMid = joints[Joint_shoulderMid].getCoord();
+
+		dist = 0;
+		dist += shoulderMid.distance(shoulderR);
+
+		inds.clear();
+		secs.clear();
+		inds.push_back(Joint_shoulderMid);
+		inds.push_back(Joint_shoulderR);
+		secs.push_back(Segment_UpperTorso);
+		landmarks.push_back(Landmark(_T("Shoulder Length R"), secs, Length, dist, 0, inds));
+		/*************/
+
+
+		/*** Left ***/
+		dist = 0;
+		dist += shoulderMid.distance(shoulderL);
+
+		inds.clear();
+		secs.clear();
+		inds.push_back(Joint_shoulderMid);
+		inds.push_back(Joint_shoulderL);
+		secs.push_back(Segment_UpperTorso);
+		landmarks.push_back(Landmark(_T("Shoulder Length L"), secs, Length, dist, 0, inds));
+		/*************/
+		/*************************************************/
+
 	}
 	else {
 		bustSize = landmarks[1].value;

@@ -36,7 +36,7 @@ void main() {
 	vec3 result = (ambient + diffuse + specular) * objColor;
 
 	float alpha = 1.0f;
-	// o_color = texture(tex, fTexCoord) * vec4(result, alpha);
+	o_color = texture(texture, fTexCoord) * vec4(result, alpha);
 	// o_color = texture(texture, fTexCoord);
-	o_color = vec4(result, alpha);
+	// o_color = vec4(result, alpha);
 }
