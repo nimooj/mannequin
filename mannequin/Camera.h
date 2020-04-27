@@ -14,6 +14,12 @@ class Camera {
 		Camera();
 		~Camera();
 
+		float yaw;
+		float pitch;
+		float speed;
+		float sensitivity;
+		float zoom;
+
 		void ViewFront();
 		void ViewBack();
 		void ViewRight();

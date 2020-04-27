@@ -49,6 +49,13 @@ public :
 	vector<int> weightHash[WeightNum]; // vert indices
 	vector<float> weightValueHash[WeightNum]; // vert indices
 
+	vector<float>* bra;
+	vector<float>* underpants;
+	Vertex* crotch;
+	void setBra();
+	void setUnderpants();
+
+
 	void getVert(int, float*); // DLL
 	vector<Vertex>& getVerts();
 	void getVerts(float*); // DLL

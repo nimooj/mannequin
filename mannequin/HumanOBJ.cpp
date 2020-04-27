@@ -1022,24 +1022,33 @@ void HumanOBJ::setArmLength(int side, float v) {
 		wrist = joints[Joint_wristL].getCoord();
 	}
 
-	//Vertex upperDir = Vertex((elbow.x - shoulder.x), (elbow.y - shoulder.y), (elbow.z - shoulder.z));
+	cout << scale << endl;
+
+	// Vertex upperDir = Vertex((elbow.x - shoulder.x), (elbow.y - shoulder.y), (elbow.z - shoulder.z));
 	Vertex upperDir = Vertex((shoulder.x - elbow.x), (shoulder.y - elbow.y), (shoulder.z - elbow.z));
-	upperDir.normalize();
+	// upperDir.normalize();
 	// upperDir.multiply(scale);
+	/*
 	upperDir.x *= scale;
 	upperDir.y *= scale;
 	upperDir.z *= scale;
+	*/
+	upperDir.print();
 
-	Vertex lowerDir = Vertex((wrist.x - elbow.x), (wrist.y - elbow.y), (wrist.z - elbow.z));
-	lowerDir.normalize();
+
+	// Vertex lowerDir = Vertex((wrist.x - elbow.x), (wrist.y - elbow.y), (wrist.z - elbow.z));
+	Vertex lowerDir = Vertex((elbow.x - wrist.x), (elbow.y - wrist.y), (elbow.z - wrist.z));
+	// lowerDir.normalize();
 	// lowerDir.multiply(scale);
+	/*
 	lowerDir.x *= scale;
 	lowerDir.y *= scale;
 	lowerDir.z *= scale;
+	*/
+	lowerDir.print();
 	
 	for (int i = 0; i < sections.size(); i++) {
 		if (sections[i] == Segment_UpperArmR || sections[i] == Segment_UpperArmL) {
-			cout << "uu" << endl;
 			for (int j = 0; j < bodySegment[sections[i]].size(); j++) {
 				int idx = bodySegment[sections[i]][j];
 				vertices[idx].x *= upperDir.x;
@@ -1048,7 +1057,6 @@ void HumanOBJ::setArmLength(int side, float v) {
 			}
 		}
 		else {
-			cout << "lll" << endl;
 			for (int j = 0; j < bodySegment[sections[i]].size(); j++) {
 				int idx = bodySegment[sections[i]][j];
 				vertices[idx].x *= lowerDir.x;
@@ -1914,6 +1922,7 @@ void HumanOBJ::setFeatures(float s) {
 		hipLevel = landmarks[3].level;
 		hipConvexIndices.insert(hipConvexIndices.end(), landmarks[3].vertIdx.begin(), landmarks[3].vertIdx.end());
 	}
+
 }
 
 void HumanOBJ::updateRigs() {
@@ -2450,6 +2459,54 @@ void HumanOBJ::writeToOBJ(char* path) {
 void HumanOBJ::generateBoundingSurface() {
 
 }
+
+
+void HumanOBJ::setBra() {
+	bra = new vector<float>;
+	for (int i = 0; i < bodySegment[Segment_UpperTorso].size(); i++) {
+		int idx = bodySegment[Segment_UpperTorso][i];
+		Vertex* v = &vertices[idx];
+
+		if (abs(v->y - bustLevel) < 3.0f) {
+			// Position
+			bra->push_back(v->x);
+			bra->push_back(v->y);
+			bra->push_back(v->z);
+
+			// Color
+			bra->push_back(1.0f);
+			bra->push_back(1.0f);
+			bra->push_back(1.0f);
+		}
+	}
+}
+
+void HumanOBJ::setUnderpants() {
+	vector<int> sections;
+	sections.push_back(Segment_LowerTorso);
+	sections.push_back(Segment_UpperLegR);
+	sections.push_back(Segment_UpperLegL);
+
+	for (int i = 0; i < sections.size(); i++) {
+		for (int j = 0; j < bodySegment[sections[i]].size(); j++) {
+			int idx = bodySegment[sections[i]][j];
+			Vertex* v = &vertices[idx];
+
+			if (v->y > crotch->y && v->y < waistLevel) {
+				// Position
+				underpants->push_back(v->x);
+				underpants->push_back(v->y);
+				underpants->push_back(v->z);
+
+				// Color
+				underpants->push_back(1.0f);
+				underpants->push_back(1.0f);
+				underpants->push_back(1.0f);
+			}
+		}
+	}
+}
+
 
 void HumanOBJ::generateTights(vector<Vertex> verts) {
 	int** adjacencyMatrix;

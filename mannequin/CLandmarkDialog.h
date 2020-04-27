@@ -63,6 +63,7 @@ public:
 	vector<Vertex>* vertices;
 	vector<int>* indices;
 	vector<Joint>* joints;
+	Vertex* crotch;
 
 	vector<Landmark>* variables;
 	vector<vec3> varPos;
@@ -152,4 +153,6 @@ public:
 	afx_msg void OnBnClickedMovedown();
 	afx_msg void OnLbnSelchangeLandmarklist();
 	afx_msg void OnBnClickedRemoveButton();
+	afx_msg void OnBnClickedCrotch();
+	CButton crotchType;
 };

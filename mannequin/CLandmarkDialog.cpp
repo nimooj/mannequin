@@ -19,6 +19,7 @@ BEGIN_MESSAGE_MAP(CLandmarkDialog, CDialogEx)
 	ON_BN_CLICKED(IDC_MOVEDOWN, &CLandmarkDialog::OnBnClickedMovedown)
 	ON_LBN_SELCHANGE(IDC_LANDMARKLIST, &CLandmarkDialog::OnLbnSelchangeLandmarklist)
 	ON_BN_CLICKED(IDC_REMOVE_BUTTON, &CLandmarkDialog::OnBnClickedRemoveButton)
+	ON_BN_CLICKED(IDC_CROTCH, &CLandmarkDialog::OnBnClickedCrotch)
 END_MESSAGE_MAP()
 
 CLandmarkDialog::CLandmarkDialog() {
@@ -62,6 +63,7 @@ void CLandmarkDialog::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHECK_LOWERLEGL, showLowerLegLBodySegment);
 	DDX_Control(pDX, IDC_CHECK_FOOTL, showFootLBodySegment);
 	DDX_Control(pDX, IDC_LANDMARKSLIDER, landmarkSlider);
+	DDX_Control(pDX, IDC_CROTCH, crotchType);
 }
 
 void CLandmarkDialog::OnDestroy()
@@ -225,6 +227,7 @@ void CLandmarkDialog::OnBnClickedLength()
 	// TODO: Add your control notification handler code here
 	girthType.SetCheck(false);
 	lengthType.SetCheck(true);
+	crotchType.SetCheck(false);
 }
 
 void CLandmarkDialog::OnBnClickedGirth()
@@ -232,6 +235,7 @@ void CLandmarkDialog::OnBnClickedGirth()
 	// TODO: Add your control notification handler code here
 	girthType.SetCheck(true);
 	lengthType.SetCheck(false);
+	crotchType.SetCheck(false);
 }
 
 void CLandmarkDialog::defineVAO(GLuint& vao) {
@@ -517,7 +521,7 @@ void CLandmarkDialog::SetGirthVariable(CString n, vector<int> segment, float h) 
 void CLandmarkDialog::SetLengthVariable(CString n, vector<int> segment, vector<Joint> relatedJoints) {
 	Landmark* l = new Landmark(n, Length);
 
-	bool result = l->SetLengthFeature(segment, relatedJoints);;
+	bool result = l->SetLengthFeature(segment, relatedJoints);
 	if (result) {
 		variables->push_back(*l);
 
@@ -803,6 +807,30 @@ void CLandmarkDialog::OnBnClickedButton1()
 					showHandLBodySegment.SetCheck(false);
 				}
 			}
+			else if (crotchType.GetCheck()) {
+				// area[0].y // Crotch Level
+				vector<int> secs;
+				secs.push_back(Segment_UpperLegR);
+				secs.push_back(Segment_UpperLegL);
+
+				float crotchY = 1000;
+				int crotchIdx = 0;
+
+				for (int i = 0; i < secs.size(); i++) {
+					for (int j = 0; j < bodySegment[secs[i]].size(); j++) {
+						int idx = bodySegment[secs[i]][j];
+						Vertex* v = &(*vertices)[idx];
+
+						if (abs(v->x) < 0.5f) {
+							if (v->y < crotchY) {
+								crotchY = v->y;
+								crotchIdx = idx;
+							}
+						}
+					}
+				}
+				crotch = &(*vertices)[crotchIdx];
+			}
 		}
 	}
 	// variableEdit.SetWindowTextW(_T(""));
@@ -1079,4 +1107,13 @@ void CLandmarkDialog::OnBnClickedRemoveButton()
 		variables->erase(variables->begin() + selItem);
 		landmarkList.DeleteString(selItem);
 	}
+}
+
+
+void CLandmarkDialog::OnBnClickedCrotch()
+{
+	// TODO: Add your control notification handler code here
+	girthType.SetCheck(false);
+	lengthType.SetCheck(false);
+	crotchType.SetCheck(true);
 }

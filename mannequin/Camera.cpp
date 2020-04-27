@@ -13,6 +13,12 @@ Camera::Camera() {
 	cameraRight = normalize(cross(up, cameraDirection));
 	cameraUp = cross(cameraDirection, cameraRight);
 
+	yaw = 0.0f;
+	pitch = 0.0f;
+	speed = 2.5f;
+	sensitivity = 0.1f;
+	zoom = 45.0f; // fov
+
 	//view = lookAt(cameraPosition, -cameraDirection, cameraUp);
 	step = 1;
 }
