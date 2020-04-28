@@ -234,6 +234,7 @@ HumanOBJ::HumanOBJ(string dir) {
 	skinning = Skinning();
 
 	/*** Create neighbor matrix ***/
+	/*
 	neighbor = (int**)malloc(sizeof(int*) * vertices.size());
 	for (int i = 0; i < vertices.size(); i++) {
 		neighbor[i] = (int*)malloc(sizeof(int) * vertices.size());
@@ -260,6 +261,7 @@ HumanOBJ::HumanOBJ(string dir) {
 		*(neighbor[id3] + id2) = 1;
 		*(neighbor[id3] + id3) = 1;
 	}
+	*/
 	
 	importWeights();
 }
@@ -2463,11 +2465,16 @@ void HumanOBJ::generateBoundingSurface() {
 
 void HumanOBJ::setBra() {
 	bra = new vector<float>;
+	braArea = new vector<Mesh>;
+	braIndices = new vector<int>;
+	braEBO = new vector<int>;
+
 	for (int i = 0; i < bodySegment[Segment_UpperTorso].size(); i++) {
 		int idx = bodySegment[Segment_UpperTorso][i];
 		Vertex* v = &vertices[idx];
 
-		if (abs(v->y - bustLevel) < 3.0f) {
+		if (abs(v->y - bustLevel) < 5.0f) {
+			/*
 			// Position
 			bra->push_back(v->x);
 			bra->push_back(v->y);
@@ -2477,7 +2484,56 @@ void HumanOBJ::setBra() {
 			bra->push_back(1.0f);
 			bra->push_back(1.0f);
 			bra->push_back(1.0f);
+			*/
+
+			braIndices->push_back(v->idx);
 		}
+	}
+
+	// Get meshes that includes vertices in bra
+	for (int i = 0; i < meshes.size(); i++) {
+		for (int j = 0; j < braIndices->size(); j++) {
+			if ((*braIndices)[j] == meshes[i].index1 || (*braIndices)[j] == meshes[i].index2 || (*braIndices)[j] == meshes[i].index3) {
+				braArea->push_back(meshes[i]);
+			}
+		}
+	}
+
+	int vCount = 0;
+	for (int i = 0; i < braArea->size(); i++) {
+		Mesh* m = &(*braArea)[i];
+		Vertex* v1 = &m->v1;
+		Vertex* v2 = &m->v2;
+		Vertex* v3 = &m->v3;
+
+		braEBO->push_back(vCount);
+		// Position
+		bra->push_back(v1->x/10);
+		bra->push_back(v1->y/10);
+		bra->push_back(v1->z/10);
+		// Color
+		bra->push_back(1.0f);
+		bra->push_back(1.0f);
+		bra->push_back(1.0f);
+		vCount += 1;
+
+		braEBO->push_back(vCount);
+		bra->push_back(v2->x/10);
+		bra->push_back(v2->y/10);
+		bra->push_back(v2->z/10);
+		bra->push_back(1.0f);
+		bra->push_back(1.0f);
+		bra->push_back(1.0f);
+		vCount += 1;
+
+		braEBO->push_back(vCount);
+		bra->push_back(v3->x/10);
+		bra->push_back(v3->y/10);
+		bra->push_back(v3->z/10);
+		bra->push_back(1.0f);
+		bra->push_back(1.0f);
+		bra->push_back(1.0f);
+		vCount += 1;
 	}
 }
 

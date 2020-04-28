@@ -50,8 +50,14 @@ public :
 	vector<float> weightValueHash[WeightNum]; // vert indices
 
 	vector<float>* bra;
+	vector<Mesh>* braArea;
+	vector<int>* braIndices;
+	vector<int>* braEBO;
+
 	vector<float>* underpants;
+
 	Vertex* crotch;
+
 	void setBra();
 	void setUnderpants();
 
