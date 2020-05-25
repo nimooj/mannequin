@@ -1108,7 +1108,8 @@ void HumanOBJ::setShoulderLength(int index, float v) {
 
 	for (int i = 0; i < sections.size(); i++) {
 		for (int j = 0; j < bodySegment[sections[i]].size(); j++) {
-			int idx = bodySetment[sections[i]][j];
+			int idx = bodySegment[sections[i]][j];
+
 		}
 	}
 
