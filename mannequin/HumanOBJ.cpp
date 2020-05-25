@@ -1024,8 +1024,6 @@ void HumanOBJ::setArmLength(int side, float v) {
 		wrist = joints[Joint_wristL].getCoord();
 	}
 
-	cout << scale << endl;
-
 	// Vertex upperDir = Vertex((elbow.x - shoulder.x), (elbow.y - shoulder.y), (elbow.z - shoulder.z));
 	Vertex upperDir = Vertex((shoulder.x - elbow.x), (shoulder.y - elbow.y), (shoulder.z - elbow.z));
 	// upperDir.normalize();
@@ -1067,6 +1065,121 @@ void HumanOBJ::setArmLength(int side, float v) {
 			}
 		}
 	}
+}
+
+void HumanOBJ::setShoulderLength(int index, float v) {
+	float scale = v / landmarks[index].value;
+	vector<int> sections(landmarks[index].region);
+
+	float level = landmarks[index].level;
+
+	float topLevel = 0;
+	float bottomLevel = 0;
+
+	vector<float> bigger, smaller;
+
+	for (int i = 0; i < landmarks.size(); i++) {
+		if (i != index) {
+			float thisLevel = landmarks[i].level;
+			if (thisLevel > level) {
+				bigger.push_back(thisLevel);
+			}
+			else if (thisLevel < level) {
+				smaller.push_back(thisLevel);
+			}
+		}
+	}
+
+	std::sort(bigger.begin(), bigger.end());
+	std::sort(smaller.begin(), smaller.end(), greater<float>());
+
+	if (!bigger.empty()) {
+		topLevel = bigger[0];
+	}
+	else {
+		topLevel = topMostLevel;
+	}
+	if (!smaller.empty()) {
+		bottomLevel = smaller[0];
+	}
+	else {
+		bottomLevel = bottomMostLevel;
+	}
+
+	for (int i = 0; i < sections.size(); i++) {
+		for (int j = 0; j < bodySegment[sections[i]].size(); j++) {
+			int idx = bodySetment[sections[i]][j];
+		}
+	}
+
+
+	/*
+
+		float range = 1/s;
+		int trial = 0;
+
+		vector<int> rangeVs;
+		while (rangeVs.size() < 12 && trial < 20) {
+			rangeVs.clear();
+
+			for (int i = 0; i < sections.size(); i++) {
+				for (int j = 0; j < bodySegment[sections[i]].size(); j++) {
+					int idx = bodySegment[sections[i]][j];
+
+					if (abs(vertices[idx].y - level) < range) {
+						rangeVs.push_back(idx);
+					}
+				}
+			}
+
+			range += range/8;
+			trial++;
+		}
+
+		for (int i = 0; i < sections.size(); i++) {
+			for (int j = 0; j < bodySegment[sections[i]].size(); j++) {
+				int idx = bodySegment[sections[i]][j];
+
+				if (abs(vertices[idx].y - level) < range) {
+					vertices[idx].x *= scale;
+					vertices[idx].z *= scale;
+				}
+				else if (vertices[idx].y < topLevel && vertices[idx].y >= level + range) {
+					Vertex* v = &vertices[idx];
+					Vertex v_upper = vertices[idx];
+					Vertex v_lower = vertices[idx];
+
+					float toUpper = (topLevel)-v->y;
+					float toLower = v->y - (level + range);
+
+					v_upper.x *= 1;
+					v_upper.z *= 1;
+					v_lower.x *= scale;
+					v_lower.z *= scale;
+
+					v->x = (v_upper.x * toLower + v_lower.x * toUpper) / (toUpper + toLower);
+					v->z = (v_upper.z * toLower + v_lower.z * toUpper) / (toUpper + toLower);
+				}
+				else if (vertices[idx].y <= level - range && vertices[idx].y > bottomLevel) {
+					Vertex* v = &vertices[idx];
+					Vertex v_upper = vertices[idx];
+					Vertex v_lower = vertices[idx];
+
+					float toUpper = (level - range) - v->y;
+					float toLower = v->y - (bottomLevel);
+
+					v_upper.x *= scale;
+					v_upper.z *= scale;
+					v_lower.x *= 1;
+					v_lower.z *= 1;
+
+					v->x = (v_upper.x * toLower + v_lower.x * toUpper) / (toUpper + toLower);
+					v->z = (v_upper.z * toLower + v_lower.z * toUpper) / (toUpper + toLower);
+				}
+			}
+		}
+	}
+	*/
 }
 
 void HumanOBJ::setSize(float s, int type, int index, float oldSize, float newSize) {
@@ -1882,32 +1995,15 @@ void HumanOBJ::setFeatures(float s) {
 		/*************************************************/
 
 		/********************** Shoulder **********************/
-		/*** Right ***/
-		Vertex shoulderMid = joints[Joint_shoulderMid].getCoord();
-
 		dist = 0;
-		dist += shoulderMid.distance(shoulderR);
+		dist += shoulderR.distance(shoulderL);
 
 		inds.clear();
 		secs.clear();
-		inds.push_back(Joint_shoulderMid);
 		inds.push_back(Joint_shoulderR);
-		secs.push_back(Segment_UpperTorso);
-		landmarks.push_back(Landmark(_T("Shoulder Length R"), secs, Length, dist, 0, inds));
-		/*************/
-
-
-		/*** Left ***/
-		dist = 0;
-		dist += shoulderMid.distance(shoulderL);
-
-		inds.clear();
-		secs.clear();
-		inds.push_back(Joint_shoulderMid);
 		inds.push_back(Joint_shoulderL);
 		secs.push_back(Segment_UpperTorso);
-		landmarks.push_back(Landmark(_T("Shoulder Length L"), secs, Length, dist, 0, inds));
-		/*************/
+		landmarks.push_back(Landmark(_T("Shoulder Length"), secs, Length, dist, 0, inds));
 		/*************************************************/
 
 	}

@@ -88,6 +88,7 @@ public :
 	void setWaistSize(float, float);
 	void setHipSize(float, float);
 	void setArmLength(int, float);
+	void setShoulderLength(float);
 
 	void setSize(float, int, int, float, float); // DLL
 	void setSize(float, float, float, float, float);
